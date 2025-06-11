@@ -48,7 +48,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from 'vue'
 import { Card, CardContent } from '@/components/ui/card'
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
@@ -103,7 +103,7 @@ const filteredTrades = computed(() => {
   return trades.value.filter(t => t.status.toLowerCase() === filter.value)
 })
 
-const badgeVariant = (status) => {
+const badgeVariant = (status: string) => {
   if (status === 'active') return 'success'
   if (status === 'closed') return 'destructive'
   return 'secondary'
