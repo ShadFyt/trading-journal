@@ -12,10 +12,9 @@
           <SelectValue placeholder="Filter by Status" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All</SelectItem>
-          <SelectItem value="active">Active</SelectItem>
-          <SelectItem value="closed">Closed</SelectItem>
-          <SelectItem value="waiting">Watchlist</SelectItem>
+          <SelectItem v-for="option in statusOptions" :key="option.value" :value="option.value">
+            {{ option.label }}
+          </SelectItem>
         </SelectContent>
       </Select>
     </div>
@@ -33,14 +32,8 @@
               <h2 class="text-2xl font-bold text-blue-700 tracking-wide">{{ trade.symbol }}</h2>
             </div>
             <Badge
-              :variant="badgeVariant(trade.status)"
               class="capitalize px-3 py-1 text-xs rounded-full border font-semibold"
-              :class="{
-                'bg-blue-100 text-blue-700 border-blue-300': trade.status === 'active',
-                'bg-green-100 text-green-700 border-green-300': trade.status === 'closed',
-                'bg-yellow-100 text-yellow-700 border-yellow-300': trade.status === 'waiting',
-                'bg-gray-100 text-gray-700 border-gray-300': trade.status === 'all',
-              }"
+              :class="statusBadgeClass[trade.status]"
             >
               {{ trade.status }}
             </Badge>
@@ -133,6 +126,7 @@ import {
   SelectItem,
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
+import { statusOptions, statusBadgeClass } from '@/shared/status'
 
 const filter = ref('all')
 
@@ -278,12 +272,6 @@ const filteredTrades = computed(() => {
   if (filter.value === 'all') return trades.value
   return trades.value.filter((t) => t.status.toLowerCase() === filter.value)
 })
-
-const badgeVariant = (status: string) => {
-  if (status === 'active') return 'default'
-  if (status === 'closed') return 'destructive'
-  return 'secondary'
-}
 </script>
 
 <style scoped></style>
