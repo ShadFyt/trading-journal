@@ -27,7 +27,7 @@ export const statusOptions: StatusOption[] = [
  */
 export const statusBadgeClass: Record<string, string> = {
   all: 'bg-gray-100 text-gray-700 border-gray-300',
-  active: 'bg-blue-100 text-blue-700 border-blue-300',
-  closed: 'bg-green-100 text-green-700 border-green-300',
+  inProgress: 'bg-blue-100 text-blue-700 border-blue-300',
+  invalidated: 'bg-red-100 text-red-700 border-red-300',
   waiting: 'bg-yellow-100 text-yellow-700 border-yellow-300',
 }
