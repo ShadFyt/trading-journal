@@ -1,4 +1,4 @@
-export type Status = 'waiting' | 'inProgress' | 'invalidated' | 'closed'
+export type Status = 'waiting' | 'inProgress' | 'invalidated' | 'closed' | 'live'
 
 export interface WatchlistItem {
   symbol: string
