@@ -83,7 +83,7 @@ const filteredWatchlist = computed(() => {
   <div class="p-4 max-w-7xl mx-auto">
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-3xl font-extrabold tracking-tight text-blue-800 drop-shadow-sm">
-        Swing Trading Journal
+        Swing Trading Watchlist
       </h1>
       <Select
         v-model="filter"
@@ -125,7 +125,7 @@ const filteredWatchlist = computed(() => {
             <p><span class="font-semibold">Entry Range:</span> {{ trade.entryRange }}</p>
             <p><span class="font-semibold">Stop:</span> ${{ trade.stop }}</p>
             <p><span class="font-semibold">Target:</span> ${{ trade.target }}</p>
-            <p><span class="font-semibold">Risk/Reward:</span> {{ trade.rr }}</p>
+            <p><span class="font-semibold">Risk/Reward:</span> 1:{{ trade.rr }}</p>
             <p><span class="font-semibold">Rating:</span> {{ trade.rating }}/10</p>
             <p v-if="trade.catalyst" class="col-span-2">
               <span class="font-semibold">Catalyst:</span> {{ trade.catalyst }}

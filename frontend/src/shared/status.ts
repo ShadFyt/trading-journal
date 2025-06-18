@@ -1,10 +1,10 @@
 // Shared trade status definitions and style mapping
 // Readability > cleverness, explicit types, and clear error handling
 
-export type TradeStatus = 'all' | 'active' | 'closed' | 'waiting'
+import type { Status } from '@/interfaces/watchlist.type'
 
 export interface StatusOption {
-  value: TradeStatus
+  value: Status | 'all'
   label: string
 }
 
@@ -15,8 +15,8 @@ export interface StatusOption {
  */
 export const statusOptions: StatusOption[] = [
   { value: 'all', label: 'All' },
-  { value: 'active', label: 'Active' },
-  { value: 'closed', label: 'Closed' },
+  { value: 'inProgress', label: 'Executing Trade' },
+  { value: 'invalidated', label: 'Trade invalidated' },
   { value: 'waiting', label: 'Watchlist' },
 ]
 
