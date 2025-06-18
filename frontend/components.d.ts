@@ -9,6 +9,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     Badge: typeof import('./src/components/ui/badge/Badge.vue')['default']
+    Button: typeof import('./src/components/ui/button/Button.vue')['default']
     Card: typeof import('./src/components/ui/card/Card.vue')['default']
     CardAction: typeof import('./src/components/ui/card/CardAction.vue')['default']
     CardContent: typeof import('./src/components/ui/card/CardContent.vue')['default']
@@ -16,6 +17,8 @@ declare module 'vue' {
     CardFooter: typeof import('./src/components/ui/card/CardFooter.vue')['default']
     CardHeader: typeof import('./src/components/ui/card/CardHeader.vue')['default']
     CardTitle: typeof import('./src/components/ui/card/CardTitle.vue')['default']
+    FabButton: typeof import('./src/components/FabRoutingButton.vue')['default']
+    FabRoutingButton: typeof import('./src/components/FabRoutingButton.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

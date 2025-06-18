@@ -138,5 +138,11 @@ const filteredWatchlist = computed(() => {
         </CardContent>
       </Card>
     </div>
+    <FabRoutingButton
+      to="/watchlist/new-entry"
+      message="Add New Entry"
+      position="bottom-right"
+      size="m"
+    />
   </div>
 </template>
