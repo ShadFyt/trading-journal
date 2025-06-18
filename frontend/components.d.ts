@@ -17,6 +17,8 @@ declare module 'vue' {
     CardHeader: typeof import('./src/components/ui/card/CardHeader.vue')['default']
     CardTitle: typeof import('./src/components/ui/card/CardTitle.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
+    RouterLink: typeof import('vue-router')['RouterLink']
+    RouterView: typeof import('vue-router')['RouterView']
     Select: typeof import('./src/components/ui/select/Select.vue')['default']
     SelectContent: typeof import('./src/components/ui/select/SelectContent.vue')['default']
     SelectGroup: typeof import('./src/components/ui/select/SelectGroup.vue')['default']
