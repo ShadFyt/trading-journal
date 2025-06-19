@@ -1,16 +1,17 @@
-export type Status = 'waiting' | 'inProgress' | 'invalidated' | 'closed' | 'live'
+export type TradeIdeaStatus = 'waiting' | 'inProgress' | 'invalidated' | 'closed' | 'live'
 
-export interface WatchlistItem {
+export interface TradeIdea {
   symbol: string
-  status: Status
+  status: TradeIdeaStatus
   setupType: string
   rating: number
-  entryRange: string
+  entryRange: [number, number | undefined]
   stop: number
-  target: number
+  targetPrices: [number, number | undefined]
   rr: number
   catalyst?: string
   ideaDate: string
+  notes?: string
 }
 
-export type Watchlist = WatchlistItem[]
+export type Watchlist = TradeIdea[]

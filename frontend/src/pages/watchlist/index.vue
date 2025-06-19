@@ -20,9 +20,9 @@ const watchlist = ref<Watchlist>([
     status: 'waiting',
     setupType: 'Ascending Triangle Breakout + Golden Cross Formation',
     rating: 8,
-    entryRange: '$22.50-$23.00',
+    entryRange: [22.5, 23],
     stop: 21.5,
-    target: 25.5,
+    targetPrices: [25.5, 28],
     rr: 2.5,
     catalyst: 'Citigroup raised PT to $28 from $25',
     ideaDate: '',
@@ -32,9 +32,9 @@ const watchlist = ref<Watchlist>([
     status: 'invalidated',
     setupType: 'Upside Continuation',
     rating: 6,
-    entryRange: '$50',
+    entryRange: [50, undefined],
     stop: 44,
-    target: 58,
+    targetPrices: [58, 62],
     rr: 1.33,
     ideaDate: '',
   },
@@ -43,9 +43,9 @@ const watchlist = ref<Watchlist>([
     status: 'waiting',
     setupType: 'Double Top short',
     rating: 6,
-    entryRange: 'Close < $47.00 (Vol 3-5M+)',
+    entryRange: [47, undefined],
     stop: 48.5,
-    target: 38,
+    targetPrices: [38, undefined],
     rr: 1.6,
     ideaDate: '',
   },
@@ -54,9 +54,9 @@ const watchlist = ref<Watchlist>([
     status: 'invalidated',
     setupType: 'Double Top short',
     rating: 8.5,
-    entryRange: 'Break < $18.90',
+    entryRange: [18.9, undefined],
     stop: 20.5,
-    target: 15.5,
+    targetPrices: [15.5, undefined],
     rr: 2.3,
     ideaDate: 'June 7',
   },
@@ -65,9 +65,9 @@ const watchlist = ref<Watchlist>([
     status: 'waiting',
     setupType: 'Breakout',
     rating: 7.5,
-    entryRange: 'Break > 84.30',
+    entryRange: [84.3, undefined],
     stop: 82,
-    target: 87,
+    targetPrices: [87, undefined],
     rr: 2.3,
     ideaDate: 'June 7',
   },
@@ -122,9 +122,17 @@ const filteredWatchlist = computed(() => {
           <p class="text-xs text-gray-400 mb-3 italic">{{ trade.setupType }}</p>
 
           <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-sm mb-2">
-            <p><span class="font-semibold">Entry Range:</span> {{ trade.entryRange }}</p>
+            <p>
+              <span class="font-semibold"
+                >Entry {{ trade.entryRange[1] ? 'Range' : 'Price' }}:</span
+              >
+              ${{ trade.entryRange[0] }}
+              <template v-if="trade.entryRange[1]"> - ${{ trade.entryRange[1] }} </template>
+            </p>
             <p><span class="font-semibold">Stop:</span> ${{ trade.stop }}</p>
-            <p><span class="font-semibold">Target:</span> ${{ trade.target }}</p>
+            <p v-for="(target, idx) in trade.targetPrices" :key="target">
+              <span class="font-semibold">Target {{ idx + 1 }}:</span> ${{ target }}
+            </p>
             <p><span class="font-semibold">Risk/Reward:</span> 1:{{ trade.rr }}</p>
             <p><span class="font-semibold">Rating:</span> {{ trade.rating }}/10</p>
             <p v-if="trade.catalyst" class="col-span-2">
