@@ -8,7 +8,7 @@ export interface Trade {
   entry: number
   stop: number
   shares: number
-  target: number
+  targetPrices: number[]
   rr: number
   catalyst?: string
   entryDate: string
@@ -16,7 +16,8 @@ export interface Trade {
   exitReason?: string
   entryReason?: string
   notes?: string
-  pl?: number
+  pnl?: number
+  estimatedDuration?: string
 }
 
 export type Trades = Trade[]

@@ -1,10 +1,10 @@
 // Shared trade status definitions and style mapping
 // Readability > cleverness, explicit types, and clear error handling
 
-import type { Status } from '@/interfaces/watchlist.type'
+import type { TradeIdeaStatus } from '@/interfaces/watchlist.type'
 
 export interface StatusOption {
-  value: Status | 'all'
+  value: TradeIdeaStatus | 'all'
   label: string
 }
 
