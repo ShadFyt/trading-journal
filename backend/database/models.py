@@ -1,7 +1,7 @@
 from typing import List, Optional
 from uuid import uuid4
 from datetime import datetime
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, Relationship, SQLModel, JSON
 from sqlalchemy import Column, Enum as SAEnum
 from pydantic import field_validator
 from enum import Enum
@@ -60,7 +60,6 @@ class TradeIdeaStatus(str, Enum):
     LIVE = "Live"
     
 
-
 class TradeIdea(SQLModel, table=True):
     __tablename__ = "trade_idea"
     id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True, nullable=False)
@@ -68,12 +67,11 @@ class TradeIdea(SQLModel, table=True):
     status: TradeIdeaStatus = Field(default=TradeIdeaStatus.WATCHING)
     setup: str = Field(nullable=False)
     rating: int = Field(nullable=False)
-    entry_range: Tuple[float, Optional[float]] = Field(nullable=True)
+    entry_min: float = Field(nullable=False)
+    entry_max: Optional[float] = Field(nullable=True)
     stop: float = Field(nullable=True)
-    target_prices: List[float] = Field(nullable=True)
+    target_prices: Optional[List[float]] = Field(default=None, sa_column=Column(JSON))
     catalysts: str = Field(nullable=True)
     idea_date: datetime = Field(default=datetime.now())
     notes: str = Field(nullable=True)
     rr_ratio: float = Field(nullable=True)
-    
-
