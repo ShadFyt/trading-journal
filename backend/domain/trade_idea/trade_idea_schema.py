@@ -12,9 +12,9 @@ class TradeIdeaBase(BaseSchema):
     entry_max: Optional[float]
     stop: float
     target_prices: List[float]
-    catalysts: str
+    catalysts: Optional[str]
     idea_date: datetime
-    notes: str
+    notes: Optional[str]
     rr_ratio: float
 
 

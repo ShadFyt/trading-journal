@@ -1,18 +1,27 @@
 from database.session import SessionDep
 from database.models import TradeIdea
-from sqlalchemy import select
+from sqlmodel import select
 from fastapi import HTTPException
 from fastapi import status
+from domain.trade_idea.trade_idea_schema import TradeIdeaCreate, TradeIdeaUpdate
 
 class TradeIdeaRepo:
     def __init__(self, session: SessionDep):
         self.session = session
     
     async def get_all_trade_ideas(self) -> list[TradeIdea]:
-        return self.session.exec(select(TradeIdea)).all()
+        try:
+            stmt = select(TradeIdea).order_by(TradeIdea.idea_date.desc())
+            results = await self.session.exec(stmt)
+            return results.all()
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=str(e))
 
     async def get_trade_idea_by_id(self, trade_idea_id: str) -> TradeIdea | None:
-        return self.session.exec(select(TradeIdea).where(TradeIdea.id == trade_idea_id)).one_or_none()
+        try:
+            return self.session.exec(select(TradeIdea).where(TradeIdea.id == trade_idea_id)).one_or_none()
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=str(e))
 
     async def create_trade_idea(self, trade_idea: TradeIdeaCreate) -> TradeIdea:
         try:
