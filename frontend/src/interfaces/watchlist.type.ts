@@ -5,10 +5,11 @@ export interface TradeIdea {
   status: TradeIdeaStatus
   setupType: string
   rating: number
-  entryRange: [number, number | undefined]
+  entryMax: number
+  entryMin: number
   stop: number
   targetPrices: [number, number | undefined]
-  rr: number
+  rrRatio: number
   catalyst?: string
   ideaDate: string
   notes?: string

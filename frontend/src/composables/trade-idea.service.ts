@@ -8,7 +8,7 @@ export const tradeIdeaKeys = {
 }
 
 export const useTradeIdeaFetchingService = () => {
-  const { data: tradeIdeas } = useQuery({
+  const { data: tradeIdeas, isLoading } = useQuery({
     queryKey: tradeIdeaKeys.list(),
     queryFn: () => getTradeIdeas(),
     staleTime: 60 * 60 * 1000, // 1 hour
@@ -17,5 +17,6 @@ export const useTradeIdeaFetchingService = () => {
 
   return {
     tradeIdeas,
+    isLoading,
   }
 }

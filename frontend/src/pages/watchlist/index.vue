@@ -10,72 +10,17 @@ import {
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { statusOptions, statusBadgeClass } from '@/shared/status'
-import type { Watchlist } from '@/interfaces/watchlist.type'
+import { useTradeIdeaFetchingService } from '@/composables'
 
 const filter = ref('all')
 
-const watchlist = ref<Watchlist>([
-  {
-    symbol: 'CCL',
-    status: 'waiting',
-    setupType: 'Ascending Triangle Breakout + Golden Cross Formation',
-    rating: 8,
-    entryRange: [22.5, 23],
-    stop: 21.5,
-    targetPrices: [25.5, 28],
-    rr: 2.5,
-    catalyst: 'Citigroup raised PT to $28 from $25',
-    ideaDate: '',
-  },
-  {
-    symbol: 'HIMS',
-    status: 'invalidated',
-    setupType: 'Upside Continuation',
-    rating: 6,
-    entryRange: [50, undefined],
-    stop: 44,
-    targetPrices: [58, 62],
-    rr: 1.33,
-    ideaDate: '',
-  },
-  {
-    symbol: 'OKLO',
-    status: 'waiting',
-    setupType: 'Double Top short',
-    rating: 6,
-    entryRange: [47, undefined],
-    stop: 48.5,
-    targetPrices: [38, undefined],
-    rr: 1.6,
-    ideaDate: '',
-  },
-  {
-    symbol: 'GLXY',
-    status: 'invalidated',
-    setupType: 'Double Top short',
-    rating: 8.5,
-    entryRange: [18.9, undefined],
-    stop: 20.5,
-    targetPrices: [15.5, undefined],
-    rr: 2.3,
-    ideaDate: 'June 7',
-  },
-  {
-    symbol: 'XBI',
-    status: 'waiting',
-    setupType: 'Breakout',
-    rating: 7.5,
-    entryRange: [84.3, undefined],
-    stop: 82,
-    targetPrices: [87, undefined],
-    rr: 2.3,
-    ideaDate: 'June 7',
-  },
-])
+const { tradeIdeas: watchlist, isLoading } = useTradeIdeaFetchingService()
 
 const filteredWatchlist = computed(() => {
+  console.info('watchlist', watchlist.value)
+  if (isLoading.value || !watchlist.value) return []
   if (filter.value === 'all') return watchlist.value
-  return watchlist.value.filter((t) => t.status.toLowerCase() === filter.value)
+  return watchlist.value?.filter((t) => t.status.toLowerCase() === filter.value)
 })
 </script>
 
@@ -123,17 +68,14 @@ const filteredWatchlist = computed(() => {
 
           <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-sm mb-2">
             <p>
-              <span class="font-semibold"
-                >Entry {{ trade.entryRange[1] ? 'Range' : 'Price' }}:</span
-              >
-              ${{ trade.entryRange[0] }}
-              <template v-if="trade.entryRange[1]"> - ${{ trade.entryRange[1] }} </template>
+              <span class="font-semibold">Entry:</span>
+              ${{ trade.entryMin }} - ${{ trade.entryMax }}
             </p>
             <p><span class="font-semibold">Stop:</span> ${{ trade.stop }}</p>
             <p v-for="(target, idx) in trade.targetPrices" :key="target">
               <span class="font-semibold">Target {{ idx + 1 }}:</span> ${{ target }}
             </p>
-            <p><span class="font-semibold">Risk/Reward:</span> 1:{{ trade.rr }}</p>
+            <p><span class="font-semibold">Risk/Reward:</span> 1:{{ trade.rrRatio }}</p>
             <p><span class="font-semibold">Rating:</span> {{ trade.rating }}/10</p>
             <p v-if="trade.catalyst" class="col-span-2">
               <span class="font-semibold">Catalyst:</span> {{ trade.catalyst }}
