@@ -55,5 +55,6 @@ declare module 'vue' {
     SelectValue: typeof import('./src/components/ui/select/SelectValue.vue')['default']
     SlideOverPanel: typeof import('./src/components/ui/SlideOverPanel.vue')['default']
     TradeIdeaCardView: typeof import('./src/components/trade-ideas/TradeIdeaCardView.vue')['default']
+    TradeIdeaForm: typeof import('./src/components/trade-ideas/TradeIdeaForm.vue')['default']
   }
 }
