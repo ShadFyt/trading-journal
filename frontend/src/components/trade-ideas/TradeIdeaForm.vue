@@ -6,12 +6,12 @@ import { Button } from '@/components/ui/button'
 import { FormField } from '../ui/form'
 import { toTypedSchema } from '@vee-validate/zod'
 import { tradeIdeaSchema } from '@/schemas'
-import { useForm } from 'vee-validate'
+import { useFieldArray, useForm } from 'vee-validate'
 
 defineProps<{ close: () => void }>()
 
 const formSchema = toTypedSchema(tradeIdeaSchema)
-const { isFieldDirty, handleSubmit, setFieldValue, values } = useForm({
+const { isFieldDirty, handleSubmit } = useForm({
   validationSchema: formSchema,
   initialValues: {
     targetPrices: [] as number[],
@@ -19,6 +19,9 @@ const { isFieldDirty, handleSubmit, setFieldValue, values } = useForm({
     entryMin: 0,
   },
 })
+
+const { fields, push, remove } = useFieldArray<number>('targetPrices');
+
 
 const onSubmit = handleSubmit(async (values) => {
   try {
@@ -29,15 +32,12 @@ const onSubmit = handleSubmit(async (values) => {
 })
 
 const addPrice = () => {
-  console.info('targetPrices', values.symbol)
-  values.targetPrices?.push(0)
-  setFieldValue('targetPrices', values.targetPrices)
-}
+  push(0);
+};
 
 const removePrice = (index: number) => {
-  values.targetPrices?.splice(index, 1)
-  setFieldValue('targetPrices', values.targetPrices)
-}
+  remove(index);
+};
 </script>
 
 <template>
@@ -82,31 +82,30 @@ const removePrice = (index: number) => {
         />
       </FormItem>
     </FormField>
-    <!-- <div class="col-span-2">
-      <FormField v-slot="{ componentField }" name="targetPrices" :validate-on-blur="!isFieldDirty">
-        <FormItem>
-          <FormLabel class="block text-sm font-medium text-gray-700">Target Prices</FormLabel>
-          <FormControl>
-            <div
-              v-for="(price, index) in values.targetPrices"
-              :key="index"
-              class="flex items-center mb-2"
-            >
-              <Input
-                type="number"
-                placeholder="e.g. 150.50"
-                class="mr-2"
-                v-bind="componentField"
-                v-model="values.targetPrices[index]"
-              />
-              <button type="button" @click="removePrice(index)" class="text-red-500">Remove</button>
-            </div>
-            <button type="button" @click="addPrice" class="text-blue-500">Add Price</button>
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      </FormField>
-    </div> -->
+    <div class="col-span-2">
+    <FormField v-slot="{ componentField }" name="targetPrices" :validate-on-blur="!isFieldDirty">
+      <FormItem>
+        <FormLabel class="block text-sm font-medium text-gray-700">Target Prices</FormLabel>
+        <FormControl>
+          <div
+            v-for="(price, index) in fields"
+            :key="index"
+            class="flex items-center mb-2"
+          >
+            <Input
+              type="number"
+              placeholder="e.g. 150.50"
+              class="mr-2"
+              v-model="price.value"
+            />
+            <button type="button" @click="removePrice(index)" class="text-red-500">Remove</button>
+          </div>
+          <button type="button" @click="addPrice" class="text-blue-500">Add Price</button>
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    </FormField>
+  </div>
     <div class="col-span-2">
       <FormField v-slot="{ componentField }" name="catalysts" :validate-on-blur="!isFieldDirty">
         <FormItem>
