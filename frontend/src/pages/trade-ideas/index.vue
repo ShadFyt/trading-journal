@@ -23,7 +23,7 @@ function closePanel() {
       <h1 class="text-2xl font-bold">Trade Ideas</h1>
       <Button @click="openPanel">
         <Plus class="w-4 h-4 mr-2" />
-        Add Trade Idea
+        Add Trade Idea  
       </Button>
     </div>
 
@@ -34,14 +34,7 @@ function closePanel() {
 
     <!-- Slide Over Panel for adding new trade ideas -->
     <SlideOverPanel v-model:is-open="isPanelOpen" title="Add New Trade Idea">
-      <TradeIdeaForm />
-
-      <template #footer>
-        <div class="flex justify-end space-x-3">
-          <Button variant="outline" @click="closePanel">Cancel</Button>
-          <Button>Save</Button>
-        </div>
-      </template>
+      <TradeIdeaForm :close="closePanel" />
     </SlideOverPanel>
   </div>
 </template>

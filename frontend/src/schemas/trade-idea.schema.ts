@@ -10,17 +10,16 @@ export enum TradeIdeaStatus {
 }
 
 export const tradeIdeaSchema = z.object({
-  id: z.string().uuid(),
   symbol: z.string().min(1, 'Symbol is required'),
-  status: z.nativeEnum(TradeIdeaStatus).default(TradeIdeaStatus.WATCHING),
-  setup: z.string().min(1, 'Setup is required'),
-  rating: z.number().int().min(1, 'Rating is required'),
-  entryMin: z.number().min(0, 'Entry min is required'),
+  // status: z.nativeEnum(TradeIdeaStatus).default(TradeIdeaStatus.WATCHING),
+  // setup: z.string().min(1, 'Setup is required'),
+  // rating: z.number().int().min(1, 'Rating is required'),
+  entryMin: z.number().min(5, 'Entry min is required'),
   entryMax: z.number().optional(),
-  stop: z.number().optional(),
-  targetPrices: z.array(z.number()).optional(),
+  // stop: z.number().optional(),
+  targetPrices: z.array(z.number()),
   catalysts: z.string().optional(),
-  ideaDate: z.date().default(() => new Date()),
+  // ideaDate: z.date().default(() => new Date()),
   notes: z.string().optional(),
-  rrRatio: z.number().optional(),
+  // rrRatio: z.number().optional(),
 })
