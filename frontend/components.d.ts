@@ -45,6 +45,7 @@ declare module 'vue' {
     FormLabel: typeof import('./src/components/ui/form/FormLabel.vue')['default']
     FormMessage: typeof import('./src/components/ui/form/FormMessage.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
+    Input: typeof import('./src/components/ui/input/Input.vue')['default']
     Label: typeof import('./src/components/ui/label/Label.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
@@ -60,6 +61,7 @@ declare module 'vue' {
     SelectTrigger: typeof import('./src/components/ui/select/SelectTrigger.vue')['default']
     SelectValue: typeof import('./src/components/ui/select/SelectValue.vue')['default']
     SlideOverPanel: typeof import('./src/components/ui/SlideOverPanel.vue')['default']
+    Textarea: typeof import('./src/components/ui/textarea/Textarea.vue')['default']
     TradeIdeaCardView: typeof import('./src/components/trade-ideas/TradeIdeaCardView.vue')['default']
     TradeIdeaForm: typeof import('./src/components/trade-ideas/TradeIdeaForm.vue')['default']
   }
