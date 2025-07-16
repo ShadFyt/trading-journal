@@ -91,16 +91,16 @@ const removePrice = (index: number) => {
             v-for="(price, index) in fields"
             :key="index"
             class="flex items-center mb-2"
-          >
+          ><span class="mr-2">T{{ index + 1 }}</span>
             <Input
               type="number"
               placeholder="e.g. 150.50"
               class="mr-2"
               v-model="price.value"
             />
-            <button type="button" @click="removePrice(index)" class="text-red-500">Remove</button>
+            <Button type="button" @click="removePrice(index)" variant="destructive">Remove</Button>
           </div>
-          <button type="button" @click="addPrice" class="text-blue-500">Add Price</button>
+          <Button type="button" @click="addPrice" variant="ghost">Add Price</Button>
         </FormControl>
         <FormMessage />
       </FormItem>
@@ -143,5 +143,4 @@ const removePrice = (index: number) => {
     <Button variant="outline" @click="close">Cancel</Button>
     <Button type="submit">Save</Button>
   </form>
-  <!-- <Button type="button" @click="onSubmit">Save</Button> -->
 </template>
