@@ -40,14 +40,16 @@ const removePrice = (index: number) => {
 <template>
   <Sheet>
     <SheetTrigger as-child>
-      <Button>
-        <Plus class="w-4 h-4 mr-2" />
-        Add Trade Idea
-      </Button>
+      <FabRoutingButton
+        message="Add Trade Idea"
+        iconName="lucide:plus"
+        position="bottom-right"
+        size="s"
+      />
     </SheetTrigger>
     <SheetContent>
       <form class="flex flex-col h-full" :validation-schema="formSchema" @submit="onSubmit">
-        <section class="w-full grid grid-cols-6 p-2">
+        <section class="w-full grid grid-cols-6 p-2 space-x-2">
           <SheetHeader class="col-span-6">
             <SheetTitle>Trade Ideas</SheetTitle>
             <SheetDescription>
