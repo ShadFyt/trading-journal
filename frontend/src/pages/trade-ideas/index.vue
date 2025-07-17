@@ -1,40 +1,15 @@
 <script setup lang="ts">
-import { TradeIdeaCardView } from '@/components/trade-ideas'
-import { Button } from '@/components/ui/button'
-import { Plus } from 'lucide-vue-next'
-import { ref } from 'vue'
-import SlideOverPanel from '@/components/ui/SlideOverPanel.vue'
-import TradeIdeaForm from '@/components/trade-ideas/TradeIdeaForm.vue'
-
-const isPanelOpen = ref(false)
-
-function openPanel() {
-  isPanelOpen.value = true
-}
-
-function closePanel() {
-  isPanelOpen.value = false
-}
+import { TradeIdeaCardView, TradeIdeaForm } from '@/components/trade-ideas'
 </script>
 
 <template>
   <div class="flex flex-col h-full">
-    <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold">Trade Ideas</h1>
-      <Button @click="openPanel">
-        <Plus class="w-4 h-4 mr-2" />
-        Add Trade Idea  
-      </Button>
+    <div>
+      <TradeIdeaForm />
     </div>
 
-    <!-- Trade Ideas List -->
     <div class="flex-1 overflow-y-auto">
       <TradeIdeaCardView />
     </div>
-
-    <!-- Slide Over Panel for adding new trade ideas -->
-    <SlideOverPanel v-model:is-open="isPanelOpen" title="Add New Trade Idea">
-      <TradeIdeaForm :close="closePanel" />
-    </SlideOverPanel>
   </div>
 </template>
