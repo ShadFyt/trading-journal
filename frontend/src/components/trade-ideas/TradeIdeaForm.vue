@@ -5,12 +5,12 @@ import { Button } from '@/components/ui/button'
 
 import { FormField } from '../ui/form'
 import { toTypedSchema } from '@vee-validate/zod'
-import { tradeIdeaSchema } from '@/schemas'
+import { tradeIdeaCreateSchema } from '@/schemas'
 import { useFieldArray, useForm } from 'vee-validate'
 
 defineProps<{ close: () => void }>()
 
-const formSchema = toTypedSchema(tradeIdeaSchema)
+const formSchema = toTypedSchema(tradeIdeaCreateSchema)
 const { isFieldDirty, handleSubmit } = useForm({
   validationSchema: formSchema,
   initialValues: {
@@ -40,8 +40,8 @@ const removePrice = (index: number) => {
 </script>
 
 <template>
-  <form :validation-schema="formSchema" class="w-full grid grid-cols-2 gap-6" @submit="onSubmit">
-    <div class="col-span-2">
+  <form :validation-schema="formSchema" class="w-full grid grid-cols-6 gap-6" @submit="onSubmit">
+    <div class="col-span-6">
       <FormField v-slot="{ componentField }" name="symbol" :validate-on-blur="!isFieldDirty">
         <FormItem>
           <FormLabel for="symbol" class="block text-sm font-medium text-gray-700">Symbol</FormLabel>
@@ -52,35 +52,85 @@ const removePrice = (index: number) => {
         <FormMessage />
       </FormField>
     </div>
-    <FormField v-slot="{ componentField }" name="entryMin" :validate-on-blur="!isFieldDirty">
-      <FormItem>
-        <FormLabel for="entry-min" class="block text-sm font-medium text-gray-700">
-          Entry Min
-        </FormLabel>
-        <Input
-          type="number"
-          id="entry-min"
-          v-bind="componentField"
-          placeholder="e.g. 150.50"
-          step="0.01"
-        />
-      </FormItem>
-    </FormField>
-    <FormField v-slot="{ componentField }" name="entryMax" :validate-on-blur="!isFieldDirty">
-      <FormItem>
-        <FormLabel for="entry-max" class="block text-sm font-medium text-gray-700">
-          Entry Max
-        </FormLabel>
-        <Input
-          type="number"
-          id="entry-max"
-          v-bind="componentField"
-          placeholder="e.g. 150.50"
-          step="0.01"
-        />
-      </FormItem>
-    </FormField>
+    <div class="col-span-4">
+      <FormField v-slot="{ componentField }" name="setup" :validate-on-blur="!isFieldDirty">
+        <FormItem>
+          <FormLabel for="setup" class="block text-sm font-medium text-gray-700">Setup</FormLabel>
+          <FormControl>
+            <Input type="text" id="setup" placeholder="e.g. Breakout" v-bind="componentField" />
+          </FormControl>
+        </FormItem>
+        <FormMessage />
+      </FormField>
+    </div>
     <div class="col-span-2">
+      <FormField v-slot="{ componentField }" name="rrRatio" :validate-on-blur="!isFieldDirty">
+        <FormItem>
+          <FormLabel for="rr-ratio" class="block text-sm font-medium text-gray-700"
+            >R/R Ratio</FormLabel
+          >
+          <FormControl>
+            <Input
+              type="number"
+              id="rr-ratio"
+              placeholder="e.g. 2"
+              v-bind="componentField"
+              step="1"
+            />
+          </FormControl>
+        </FormItem>
+        <FormMessage />
+      </FormField>
+    </div>
+    <div class="col-span-2">
+      <FormField v-slot="{ componentField }" name="entryMin" :validate-on-blur="!isFieldDirty">
+        <FormItem>
+          <FormLabel for="entry-min" class="block text-sm font-medium text-gray-700">
+            Entry Min
+          </FormLabel>
+          <Input
+            type="number"
+            id="entry-min"
+            v-bind="componentField"
+            placeholder="e.g. 150.50"
+            step="0.01"
+          />
+        </FormItem>
+      </FormField>
+    </div>
+    <div class="col-span-2">
+      <FormField v-slot="{ componentField }" name="entryMax" :validate-on-blur="!isFieldDirty">
+        <FormItem>
+          <FormLabel for="entry-max" class="block text-sm font-medium text-gray-700">
+            Entry Max
+          </FormLabel>
+          <Input
+            type="number"
+            id="entry-max"
+            v-bind="componentField"
+            placeholder="e.g. 150.50"
+            step="0.01"
+          />
+        </FormItem>
+      </FormField>
+    </div>
+    <div class="col-span-2">
+      <FormField v-slot="{ componentField }" name="stop" :validate-on-blur="!isFieldDirty">
+        <FormItem>
+          <FormLabel for="stop" class="block text-sm font-medium text-gray-700"
+            >Stop Loss</FormLabel
+          >
+          <Input
+            type="number"
+            id="stop"
+            v-bind="componentField"
+            placeholder="e.g. 150.50"
+            step="0.01"
+          />
+        </FormItem>
+      </FormField>
+    </div>
+    <div class="col-span-6">
       <FormField name="targetPrices" :validate-on-blur="!isFieldDirty">
         <FormItem>
           <FormLabel class="block text-sm font-medium text-gray-700">Target Prices</FormLabel>
@@ -98,7 +148,7 @@ const removePrice = (index: number) => {
         </FormItem>
       </FormField>
     </div>
-    <div class="col-span-2">
+    <div class="col-span-6">
       <FormField v-slot="{ componentField }" name="catalysts" :validate-on-blur="!isFieldDirty">
         <FormItem>
           <FormLabel for="catalysts" class="block text-sm font-medium text-gray-700"
@@ -116,7 +166,7 @@ const removePrice = (index: number) => {
         </FormItem>
       </FormField>
     </div>
-    <div class="col-span-2">
+    <div class="col-span-6">
       <FormField v-slot="{ componentField }" name="notes" :validate-on-blur="!isFieldDirty">
         <FormItem>
           <FormLabel for="notes" class="block text-sm font-medium text-gray-700">Notes</FormLabel>
@@ -132,7 +182,9 @@ const removePrice = (index: number) => {
         </FormItem>
       </FormField>
     </div>
-    <Button variant="outline" @click="close">Cancel</Button>
-    <Button type="submit">Save</Button>
+    <div class="col-span-6 flex justify-end gap-2">
+      <Button variant="outline" @click="close">Cancel</Button>
+      <Button type="submit">Save</Button>
+    </div>
   </form>
 </template>
