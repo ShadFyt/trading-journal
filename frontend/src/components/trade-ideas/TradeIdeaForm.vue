@@ -9,7 +9,7 @@ import { tradeIdeaCreateSchema } from '@/schemas'
 import { useFieldArray, useForm } from 'vee-validate'
 
 const formSchema = toTypedSchema(tradeIdeaCreateSchema)
-const { isFieldDirty, handleSubmit } = useForm({
+const { isFieldDirty, handleSubmit, setFieldValue } = useForm({
   validationSchema: formSchema,
   initialValues: {
     targetPrices: [] as number[],
@@ -21,8 +21,8 @@ const { isFieldDirty, handleSubmit } = useForm({
 const { fields, push, remove } = useFieldArray<number>('targetPrices')
 
 const onSubmit = handleSubmit(async (values) => {
+  console.log('submit', values)
   try {
-    console.log('submit', values)
   } catch (error) {
     console.error(error)
   }
@@ -49,9 +49,9 @@ const removePrice = (index: number) => {
     </SheetTrigger>
     <SheetContent>
       <form class="flex flex-col h-full" :validation-schema="formSchema" @submit="onSubmit">
-        <section class="w-full grid grid-cols-6 p-2 space-x-2">
+        <section class="w-full grid grid-cols-6 p-2 space-x-2 gap-1">
           <SheetHeader class="col-span-6">
-            <SheetTitle>Trade Ideas</SheetTitle>
+            <SheetTitle class="text-lg">New trade idea</SheetTitle>
             <SheetDescription>
               Add a new trade idea here. Click save when you're done.
             </SheetDescription>
@@ -88,19 +88,38 @@ const removePrice = (index: number) => {
             </FormField>
           </div>
           <div class="col-span-2">
-            <FormField v-slot="{ componentField }" name="rrRatio" :validate-on-blur="!isFieldDirty">
+            <FormField v-slot="{ value }" name="rating" :validate-on-blur="!isFieldDirty">
               <FormItem>
-                <FormLabel for="rr-ratio" class="block text-sm font-medium text-gray-700"
-                  >R/R Ratio</FormLabel
+                <FormLabel for="rating" class="block text-sm font-medium text-gray-700"
+                  >Rating</FormLabel
                 >
                 <FormControl>
-                  <Input
-                    type="number"
-                    id="rr-ratio"
-                    placeholder="e.g. 2"
-                    v-bind="componentField"
-                    step="1"
-                  />
+                  <NumberField
+                    id="rating"
+                    :min="1"
+                    :max="10"
+                    :step="0.1"
+                    :format-options="{
+                      style: 'decimal',
+                      minimumFractionDigits: 1,
+                    }"
+                    :model-value="value"
+                    @update:model-value="
+                      (v) => {
+                        if (v) {
+                          setFieldValue('rating', v)
+                        } else {
+                          setFieldValue('rating', undefined)
+                        }
+                      }
+                    "
+                  >
+                    <NumberFieldContent>
+                      <NumberFieldDecrement />
+                      <NumberFieldInput />
+                      <NumberFieldIncrement />
+                    </NumberFieldContent>
+                  </NumberField>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -226,9 +245,8 @@ const removePrice = (index: number) => {
             </FormField>
           </div>
         </section>
-        <SheetFooter class="flex justify-end">
-          <Button class="col-span-6" type="submit"> Save changes </Button>
-        </SheetFooter>
+        <SheetFooter class="flex justify-end"> </SheetFooter>
+        <Button class="col-span-6" type="submit">Save</Button>
       </form>
     </SheetContent>
   </Sheet>
