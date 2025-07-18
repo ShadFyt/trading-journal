@@ -15,8 +15,16 @@ export const tradeIdeaCreateSchema = z.object({
   rating: z.number().min(1, 'Rating is required'),
   entryMin: z.number().min(5, 'Entry min is required'),
   entryMax: z.number().optional(),
-  stop: z.number().optional(),
+  stop: z.number().min(1, 'Stop is required'),
   targetPrices: z.array(z.number()),
   catalysts: z.string().optional(),
   notes: z.string().optional(),
+})
+
+export const tradeIdeaSchema = tradeIdeaCreateSchema.extend({
+  id: z.string().uuid(),
+  status: z.nativeEnum(TradeIdeaStatus),
+  ideaDate: z.date(),
+  riskPerShare: z.number(),
+  rrRatio: z.number().optional(),
 })
