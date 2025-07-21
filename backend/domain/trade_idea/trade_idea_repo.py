@@ -23,7 +23,7 @@ class TradeIdeaRepo:
         except Exception as e:
             raise HTTPException(status_code=400, detail=str(e))
 
-    async def create_trade_idea(self, trade_idea: TradeIdeaCreate) -> TradeIdea:
+    async def create_trade_idea(self, trade_idea: TradeIdea) -> TradeIdea:
         try:
             trade_idea = TradeIdea.model_validate(trade_idea)
             return await self._save_trade_idea(trade_idea)

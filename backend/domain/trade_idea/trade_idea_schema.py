@@ -8,11 +8,11 @@ class TradeIdeaBase(BaseSchema):
     setup: str
     rating: int
     entry_min: float
-    entry_max: Optional[float]
+    entry_max: Optional[float] = None
     stop: float
     target_prices: List[float]
-    catalysts: Optional[str]
-    notes: Optional[str]
+    catalysts: Optional[str] = None
+    notes: Optional[str] = None
 
 
 class TradeIdeaCreate(TradeIdeaBase):
