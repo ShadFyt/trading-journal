@@ -6,7 +6,7 @@ from core.base_schema import BaseSchema
 class TradeIdeaBase(BaseSchema):
     symbol: str
     setup: str
-    rating: int
+    rating: float
     entry_min: float
     entry_max: Optional[float] = None
     stop: float

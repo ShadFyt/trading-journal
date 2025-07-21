@@ -66,7 +66,7 @@ class TradeIdea(SQLModel, table=True):
     symbol: str = Field(nullable=False)
     status: TradeIdeaStatus = Field(default=TradeIdeaStatus.WATCHING)
     setup: str = Field(nullable=False)
-    rating: int = Field(nullable=False)
+    rating: float = Field(nullable=False)
     entry_min: float = Field(nullable=True)
     entry_max: Optional[float] = Field(nullable=True)
     stop: float = Field(nullable=True)
