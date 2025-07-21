@@ -1,21 +1,8 @@
-import { tradeIdeaCreateSchema } from '@/schemas'
+import { tradeIdeaCreateSchema, tradeIdeaSchema } from '@/schemas'
 import type z from 'zod'
 export type TradeIdeaStatus = 'waiting' | 'inProgress' | 'invalidated' | 'closed' | 'live'
 
-export interface TradeIdea {
-  symbol: string
-  status: TradeIdeaStatus
-  setupType: string
-  rating: number
-  entryMax: number
-  entryMin: number
-  stop: number
-  targetPrices: [number, number | undefined]
-  rrRatio: number
-  catalysts?: string
-  ideaDate: string
-  notes?: string
-}
+export type TradeIdea = z.infer<typeof tradeIdeaSchema>
 
 export type Watchlist = TradeIdea[]
 

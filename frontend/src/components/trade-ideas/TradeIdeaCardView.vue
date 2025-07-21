@@ -10,11 +10,12 @@ import {
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { statusOptions, statusBadgeClass } from '@/shared/status'
-import { useTradeIdeaFetchingService } from '@/composables'
+import { useTradeIdeaFetchingService, useTradeIdeaMutationService } from '@/composables'
 
 const filter = ref('all')
 
 const { tradeIdeas: watchlist, isLoading } = useTradeIdeaFetchingService()
+const { deleteMutation } = useTradeIdeaMutationService()
 
 const filteredWatchlist = computed(() => {
   console.info('watchlist', watchlist.value)
@@ -22,6 +23,10 @@ const filteredWatchlist = computed(() => {
   if (filter.value === 'all') return watchlist.value
   return watchlist.value?.filter((t) => t.status.toLowerCase() === filter.value)
 })
+
+const handleDelete = (id: string) => {
+  deleteMutation.mutate(id)
+}
 </script>
 
 <template>
@@ -58,7 +63,9 @@ const filteredWatchlist = computed(() => {
             </DropdownMenuTrigger>
             <DropdownMenuContent side="bottom" align="end" :avoidCollisions="false">
               <DropdownMenuItem>Edit</DropdownMenuItem>
-              <DropdownMenuItem class="text-red-600">Delete</DropdownMenuItem>
+              <DropdownMenuItem class="text-red-600" @click="handleDelete(trade.id)"
+                >Delete</DropdownMenuItem
+              >
             </DropdownMenuContent>
           </DropdownMenu>
         </CardHeader>

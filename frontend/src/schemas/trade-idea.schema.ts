@@ -25,6 +25,6 @@ export const tradeIdeaSchema = tradeIdeaCreateSchema.extend({
   id: z.string().uuid(),
   status: z.nativeEnum(TradeIdeaStatus),
   ideaDate: z.date(),
-  riskPerShare: z.number(),
+  // riskPerShare: z.number(),
   rrRatio: z.number().optional(),
 })

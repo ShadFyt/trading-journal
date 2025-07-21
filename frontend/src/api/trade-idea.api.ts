@@ -10,3 +10,7 @@ export const getTradeIdeas = () => {
 export const createTradeIdea = (data: TradeIdeaCreate) => {
   return apiClient.post<TradeIdeaCreate>(TRADE_IDEA_API_URL, data)
 }
+
+export const deleteTradeIdea = (id: string) => {
+  return apiClient.delete(`${TRADE_IDEA_API_URL}/${id}`)
+}
