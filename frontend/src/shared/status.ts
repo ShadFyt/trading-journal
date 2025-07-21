@@ -1,7 +1,7 @@
 // Shared trade status definitions and style mapping
 // Readability > cleverness, explicit types, and clear error handling
 
-import type { TradeIdeaStatus } from '@/interfaces/watchlist.type'
+import type { TradeIdeaStatus } from '@/interfaces/trade-idea.type'
 
 export interface StatusOption {
   value: TradeIdeaStatus | 'all'
