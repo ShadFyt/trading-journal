@@ -75,6 +75,7 @@ declare module 'vue' {
     SheetTitle: typeof import('./src/components/ui/sheet/SheetTitle.vue')['default']
     SheetTrigger: typeof import('./src/components/ui/sheet/SheetTrigger.vue')['default']
     SlideOverPanel: typeof import('./src/components/ui/SlideOverPanel.vue')['default']
+    Sonner: typeof import('./src/components/ui/sonner/Sonner.vue')['default']
     Textarea: typeof import('./src/components/ui/textarea/Textarea.vue')['default']
     TradeIdeaCardView: typeof import('./src/components/trade-ideas/TradeIdeaCardView.vue')['default']
     TradeIdeaForm: typeof import('./src/components/trade-ideas/TradeIdeaForm.vue')['default']
