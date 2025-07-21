@@ -4,12 +4,12 @@ import { TradeIdeaCardView, TradeIdeaForm } from '@/components/trade-ideas'
 
 <template>
   <div class="flex flex-col h-full">
-    <div>
+    <aside>
       <TradeIdeaForm />
-    </div>
+    </aside>
 
-    <div class="flex-1 overflow-y-auto">
+    <main class="flex-1 overflow-y-auto">
       <TradeIdeaCardView />
-    </div>
+    </main>
   </div>
 </template>

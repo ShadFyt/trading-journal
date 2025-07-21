@@ -69,7 +69,7 @@ const filteredWatchlist = computed(() => {
           <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-sm mb-2">
             <p>
               <span class="font-semibold">Entry:</span>
-              ${{ trade.entryMin }} - ${{ trade.entryMax }}
+              ${{ trade.entryMin }} {{ trade.entryMax ? `-${trade.entryMax}` : '' }}
             </p>
             <p><span class="font-semibold">Stop:</span> ${{ trade.stop }}</p>
             <p v-for="(target, idx) in trade.targetPrices" :key="target">
@@ -83,7 +83,13 @@ const filteredWatchlist = computed(() => {
           </div>
 
           <div class="mt-3 flex justify-between text-xs text-gray-500">
-            <span>💡 {{ trade.ideaDate }}</span>
+            <span class="text-xs text-gray-400">{{
+              new Date(trade.ideaDate).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+              })
+            }}</span>
           </div>
         </CardContent>
       </Card>
