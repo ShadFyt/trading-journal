@@ -5,7 +5,6 @@ from core.base_schema import BaseSchema
 
 class TradeIdeaBase(BaseSchema):
     symbol: str
-    status: TradeIdeaStatus
     setup: str
     rating: int
     entry_min: float
@@ -13,9 +12,7 @@ class TradeIdeaBase(BaseSchema):
     stop: float
     target_prices: List[float]
     catalysts: Optional[str]
-    idea_date: datetime
     notes: Optional[str]
-    rr_ratio: float
 
 
 class TradeIdeaCreate(TradeIdeaBase):
@@ -37,3 +34,6 @@ class TradeIdeaUpdate(BaseSchema):
 
 class TradeIdeaResponse(TradeIdeaBase):
     id: str
+    status: TradeIdeaStatus
+    idea_date: datetime
+    rr_ratio: float
