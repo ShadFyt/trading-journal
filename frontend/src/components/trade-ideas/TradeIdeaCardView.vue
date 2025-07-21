@@ -10,12 +10,13 @@ import {
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { statusOptions, statusBadgeClass } from '@/shared/status'
-import { useTradeIdeaFetchingService, useTradeIdeaMutationService } from '@/composables'
+import { useTradeIdeaFetchingService } from '@/composables'
+import type { TradeIdea } from '@/interfaces/trade-idea.type'
 
 const filter = ref('all')
-
+const isOpen = ref(false)
+const selectedTrade = ref<TradeIdea | null>(null)
 const { tradeIdeas: watchlist, isLoading } = useTradeIdeaFetchingService()
-const { deleteMutation } = useTradeIdeaMutationService()
 
 const filteredWatchlist = computed(() => {
   console.info('watchlist', watchlist.value)
@@ -24,8 +25,13 @@ const filteredWatchlist = computed(() => {
   return watchlist.value?.filter((t) => t.status.toLowerCase() === filter.value)
 })
 
-const handleDelete = (id: string) => {
-  deleteMutation.mutate(id)
+const handleDialogOpen = (idea: TradeIdea) => {
+  selectedTrade.value = idea
+  isOpen.value = true
+}
+const handleDialogClose = () => {
+  isOpen.value = false
+  selectedTrade.value = null
 }
 </script>
 
@@ -63,7 +69,7 @@ const handleDelete = (id: string) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent side="bottom" align="end" :avoidCollisions="false">
               <DropdownMenuItem>Edit</DropdownMenuItem>
-              <DropdownMenuItem class="text-red-600" @click="handleDelete(trade.id)"
+              <DropdownMenuItem class="text-red-600" @click="handleDialogOpen(trade)"
                 >Delete</DropdownMenuItem
               >
             </DropdownMenuContent>
@@ -82,7 +88,7 @@ const handleDelete = (id: string) => {
               {{ trade.status }}
             </Badge>
           </div>
-          <p class="text-xs text-gray-400 mb-3 italic">{{ trade.setupType }}</p>
+          <p class="text-xs text-gray-400 mb-3 italic">{{ trade.setup }}</p>
 
           <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-sm mb-2">
             <p>
@@ -116,4 +122,10 @@ const handleDelete = (id: string) => {
       </Card>
     </div>
   </main>
+  <ConfirmationDialog
+    v-if="selectedTrade"
+    :open="isOpen"
+    :selectedTrade="selectedTrade"
+    @close="handleDialogClose"
+  />
 </template>
