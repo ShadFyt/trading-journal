@@ -51,7 +51,18 @@ const filteredWatchlist = computed(() => {
         :key="trade.symbol"
         class="relative transition-shadow hover:shadow-2xl border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden group animate-fadein"
       >
-        <CardContent class="p-6">
+        <CardHeader>
+          <DropdownMenu>
+            <DropdownMenuTrigger class="absolute top-2 right-2">
+              <Button variant="ghost" size="sm">⋯</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent side="bottom" align="end" :avoidCollisions="false">
+              <DropdownMenuItem>Edit</DropdownMenuItem>
+              <DropdownMenuItem class="text-red-600">Delete</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </CardHeader>
+        <CardContent>
           <div class="flex justify-between items-center mb-2">
             <div class="flex items-center gap-2">
               <span class="text-2xl">💹</span>
