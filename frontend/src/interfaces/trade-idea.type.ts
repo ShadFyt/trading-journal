@@ -12,7 +12,7 @@ export interface TradeIdea {
   stop: number
   targetPrices: [number, number | undefined]
   rrRatio: number
-  catalyst?: string
+  catalysts?: string
   ideaDate: string
   notes?: string
 }

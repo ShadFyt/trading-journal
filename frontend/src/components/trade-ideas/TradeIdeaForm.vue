@@ -206,6 +206,7 @@ const removePrice = (index: number) => {
                       placeholder="e.g. 150.50"
                       class="mr-2"
                       v-model="price.value"
+                      step="0.01"
                     />
                     <Button type="button" @click="removePrice(index)" variant="destructive"
                       >Remove</Button

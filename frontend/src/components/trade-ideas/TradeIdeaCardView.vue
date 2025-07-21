@@ -77,8 +77,11 @@ const filteredWatchlist = computed(() => {
             </p>
             <p><span class="font-semibold">Risk/Reward:</span> 1:{{ trade.rrRatio }}</p>
             <p><span class="font-semibold">Rating:</span> {{ trade.rating }}/10</p>
-            <p v-if="trade.catalyst" class="col-span-2">
-              <span class="font-semibold">Catalyst:</span> {{ trade.catalyst }}
+            <p v-if="trade.catalysts" class="col-span-2">
+              <span class="font-semibold">Catalyst:</span> {{ trade.catalysts }}
+            </p>
+            <p v-if="trade.notes" class="col-span-2">
+              <span class="font-semibold">Notes:</span> {{ trade.notes }}
             </p>
           </div>
 
