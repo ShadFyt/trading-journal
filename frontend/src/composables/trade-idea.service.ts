@@ -78,6 +78,7 @@ export const useTradeIdeaMutationService = () => {
             return
           } catch (parseError) {
             console.error('Failed to parse validation errors:', parseError)
+            toast.error('Failed to create trade idea')
           }
         }
 

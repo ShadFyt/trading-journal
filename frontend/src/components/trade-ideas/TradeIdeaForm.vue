@@ -50,8 +50,18 @@ const removePrice = (index: number) => {
         size="s"
       />
     </SheetTrigger>
-    <SheetContent>
-      <form class="flex flex-col h-full" :validation-schema="formSchema" @submit="onSubmit">
+    <SheetContent :class="{ 'opacity-50': isSubmitting, 'pointer-events-none': isSubmitting }">
+      <form
+        class="flex flex-col h-full relative"
+        :validation-schema="formSchema"
+        @submit="onSubmit"
+      >
+        <!-- Loading spinner -->
+
+        <div v-if="isSubmitting" class="absolute inset-0 flex items-center justify-center z-50">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        </div>
+
         <section class="w-full grid grid-cols-6 p-2 space-x-2 gap-1">
           <SheetHeader class="col-span-6">
             <SheetTitle class="text-lg">New trade idea</SheetTitle>
