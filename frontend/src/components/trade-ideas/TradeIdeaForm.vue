@@ -7,9 +7,11 @@ import { FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { toTypedSchema } from '@vee-validate/zod'
 import { tradeIdeaCreateSchema } from '@/schemas'
 import { useFieldArray, useForm } from 'vee-validate'
+import { useTradeIdeaMutationService } from '@/composables'
 
+const { createMutation } = useTradeIdeaMutationService()
 const formSchema = toTypedSchema(tradeIdeaCreateSchema)
-const { isFieldDirty, handleSubmit, setFieldValue } = useForm({
+const { isFieldDirty, handleSubmit, setFieldValue, isSubmitting } = useForm({
   validationSchema: formSchema,
   initialValues: {
     targetPrices: [] as number[],
@@ -23,6 +25,7 @@ const { fields, push, remove } = useFieldArray<number>('targetPrices')
 const onSubmit = handleSubmit(async (values) => {
   console.log('submit', values)
   try {
+    await createMutation.mutateAsync(values)
   } catch (error) {
     console.error(error)
   }
@@ -245,8 +248,9 @@ const removePrice = (index: number) => {
             </FormField>
           </div>
         </section>
-        <SheetFooter class="flex justify-end"> </SheetFooter>
-        <Button class="col-span-6" type="submit">Save</Button>
+        <SheetFooter class="flex justify-end">
+          <Button :disabled="isSubmitting" type="submit">Save</Button>
+        </SheetFooter>
       </form>
     </SheetContent>
   </Sheet>

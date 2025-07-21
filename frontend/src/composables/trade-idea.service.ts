@@ -1,5 +1,6 @@
-import { getTradeIdeas } from '@/api'
-import { useQuery } from '@tanstack/vue-query'
+import { createTradeIdea, getTradeIdeas } from '@/api'
+import type { TradeIdeaCreate } from '@/interfaces/trade-idea.type'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 
 export const tradeIdeaKeys = {
   all: ['trade-ideas'] as const,
@@ -18,5 +19,19 @@ export const useTradeIdeaFetchingService = () => {
   return {
     tradeIdeas,
     isLoading,
+  }
+}
+
+export const useTradeIdeaMutationService = () => {
+  const queryClient = useQueryClient()
+  const createMutation = useMutation({
+    mutationFn: (data: TradeIdeaCreate) => createTradeIdea(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: tradeIdeaKeys.list() })
+    },
+  })
+
+  return {
+    createMutation,
   }
 }

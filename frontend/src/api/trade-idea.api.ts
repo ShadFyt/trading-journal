@@ -6,3 +6,7 @@ const TRADE_IDEA_API_URL = '/trade-ideas'
 export const getTradeIdeas = () => {
   return apiClient.get<Watchlist>(TRADE_IDEA_API_URL)
 }
+
+export const createTradeIdea = (data: TradeIdeaCreate) => {
+  return apiClient.post<TradeIdeaCreate>(TRADE_IDEA_API_URL, data)
+}
