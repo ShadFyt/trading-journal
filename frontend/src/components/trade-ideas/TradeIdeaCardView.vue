@@ -15,11 +15,11 @@ import type { TradeIdea } from '@/interfaces/trade-idea.type'
 
 const filter = ref('all')
 const isOpen = ref(false)
+const isFormOpen = ref(false)
 const selectedTrade = ref<TradeIdea | null>(null)
 const { tradeIdeas: watchlist, isLoading } = useTradeIdeaFetchingService()
 
 const filteredWatchlist = computed(() => {
-  console.info('watchlist', watchlist.value)
   if (isLoading.value || !watchlist.value) return []
   if (filter.value === 'all') return watchlist.value
   return watchlist.value?.filter((t) => t.status.toLowerCase() === filter.value)
@@ -31,6 +31,14 @@ const handleDialogOpen = (idea: TradeIdea) => {
 }
 const handleDialogClose = () => {
   isOpen.value = false
+  selectedTrade.value = null
+}
+const handleFormOpen = (idea: TradeIdea) => {
+  isFormOpen.value = true
+  selectedTrade.value = idea
+}
+const handleFormClose = () => {
+  isFormOpen.value = false
   selectedTrade.value = null
 }
 </script>
@@ -68,7 +76,7 @@ const handleDialogClose = () => {
               <Button variant="ghost" size="sm">⋯</Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent side="bottom" align="end" :avoidCollisions="false">
-              <DropdownMenuItem>Edit</DropdownMenuItem>
+              <DropdownMenuItem @click="handleFormOpen(trade)"> Edit </DropdownMenuItem>
               <DropdownMenuItem class="text-red-600" @click="handleDialogOpen(trade)"
                 >Delete</DropdownMenuItem
               >
@@ -82,7 +90,7 @@ const handleDialogClose = () => {
               <h2 class="text-2xl font-bold text-blue-700 tracking-wide">{{ trade.symbol }}</h2>
             </div>
             <Badge
-              class="capitalize px-3 py-1 text-xs rounded-full border font-semibold"
+              class="cursor-pointer hover:opacity-80 capitalize px-3 py-1 text-xs rounded-full border font-semibold"
               :class="statusBadgeClass[trade.status]"
             >
               {{ trade.status }}
@@ -127,5 +135,11 @@ const handleDialogClose = () => {
     :open="isOpen"
     :selectedTrade="selectedTrade"
     @close="handleDialogClose"
+  />
+  <TradeIdeaForm
+    v-if="selectedTrade"
+    :selectedTrade="selectedTrade"
+    :isOpen="isFormOpen"
+    :close="handleFormClose"
   />
 </template>

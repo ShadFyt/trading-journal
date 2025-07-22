@@ -8,6 +8,31 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { tradeIdeaCreateSchema } from '@/schemas'
 import { useFieldArray, useForm } from 'vee-validate'
 import { useTradeIdeaMutationService } from '@/composables'
+import type { TradeIdea } from '@/interfaces/trade-idea.type'
+
+const {
+  selectedTrade,
+  isOpen = null,
+  close,
+} = defineProps<{
+  selectedTrade?: TradeIdea | null
+  isOpen?: boolean | null
+  close?: (v: boolean) => void
+}>()
+
+const message = computed(() => {
+  if (selectedTrade) {
+    return `Update Trade Idea For ${selectedTrade.symbol}`
+  }
+  return 'Add Trade Idea'
+})
+
+const getSheetProps = () => {
+  return isOpen ? { open: isOpen } : {}
+}
+const sheetListeners = computed(() => {
+  return isOpen !== null && close ? { 'update:open': close } : {}
+})
 
 const { createMutation } = useTradeIdeaMutationService()
 const formSchema = toTypedSchema(tradeIdeaCreateSchema)
@@ -15,8 +40,9 @@ const { isFieldDirty, handleSubmit, setFieldValue, isSubmitting } = useForm({
   validationSchema: formSchema,
   initialValues: {
     targetPrices: [] as number[],
-    symbol: '',
+    symbol: selectedTrade?.symbol ?? '',
     entryMin: 0,
+    ...(selectedTrade ? selectedTrade : {}),
   },
 })
 
@@ -41,8 +67,8 @@ const removePrice = (index: number) => {
 </script>
 
 <template>
-  <Sheet>
-    <SheetTrigger as-child>
+  <Sheet v-bind="getSheetProps()" v-on="sheetListeners">
+    <SheetTrigger v-if="!isOpen" as-child>
       <slot name="trigger-button" />
     </SheetTrigger>
     <SheetContent :class="{ 'opacity-50': isSubmitting, 'pointer-events-none': isSubmitting }">
@@ -59,10 +85,8 @@ const removePrice = (index: number) => {
 
         <section class="w-full grid grid-cols-6 p-2 space-x-2 gap-1">
           <SheetHeader class="col-span-6">
-            <SheetTitle class="text-lg">New trade idea</SheetTitle>
-            <SheetDescription>
-              Add a new trade idea here. Click save when you're done.
-            </SheetDescription>
+            <SheetTitle class="text-lg">{{ message }}</SheetTitle>
+            <SheetDescription> Click save when you're done. </SheetDescription>
           </SheetHeader>
           <div class="col-span-6">
             <FormField v-slot="{ componentField }" name="symbol" :validate-on-blur="!isFieldDirty">
