@@ -34,13 +34,13 @@ class TradeIdeaRepo:
         except Exception as e:
             raise HTTPException(status_code=400, detail=str(e))
 
-    async def update_trade_idea(self, trade_idea_id: str, update_data: TradeIdeaUpdate) -> TradeIdea | None:
+    async def update_trade_idea(self, trade_idea_id: str, payload: TradeIdeaUpdate) -> TradeIdea | None:
         try:
-            db_trade_idea = self.session.exec(select(TradeIdea).where(TradeIdea.id == trade_idea_id)).one_or_none()
+            db_trade_idea = await self.get_trade_idea_by_id(trade_idea_id)
             if not db_trade_idea:
                 raise HTTPException(status_code=404, detail="Trade idea not found")
             # Update only provided fields (exclude_unset=True)
-            update_fields = update_data.model_dump(exclude_unset=True)
+            update_fields = payload.model_dump(exclude_unset=True)
             for key, value in update_fields.items():
                 setattr(db_trade_idea, key, value)
             return await self._save_trade_idea(db_trade_idea)

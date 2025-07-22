@@ -25,8 +25,8 @@ class TradeIdeaService:
         trade_idea_instance = TradeIdea(**trade_idea_data)
         return await self.repo.create_trade_idea(trade_idea_instance)
     
-    async def update_trade_idea(self, trade_idea_id: str, update_data: TradeIdeaUpdate) -> TradeIdeaResponse | None:
-        return await self.repo.update_trade_idea(trade_idea_id, update_data)
+    async def update_trade_idea(self, trade_idea_id: str, payload: TradeIdeaUpdate) -> TradeIdeaResponse | None:
+        return await self.repo.update_trade_idea(trade_idea_id, payload)
     
     async def delete_trade_idea(self, trade_idea_id: str) -> None:
         return await self.repo.delete_trade_idea(trade_idea_id)
