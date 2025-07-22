@@ -1,5 +1,5 @@
-import { createTradeIdea, getTradeIdeas, deleteTradeIdea } from '@/api'
-import type { TradeIdeaCreate } from '@/interfaces/trade-idea.type'
+import { createTradeIdea, getTradeIdeas, deleteTradeIdea, updateTradeIdea } from '@/api'
+import type { TradeIdeaCreate, TradeIdeaUpdate } from '@/interfaces/trade-idea.type'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue-sonner'
 import { AxiosError } from 'axios'
@@ -91,6 +91,22 @@ export const useTradeIdeaMutationService = () => {
     },
   })
 
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: TradeIdeaUpdate }) => updateTradeIdea(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: tradeIdeaKeys.list() })
+      toast.success('Trade idea updated successfully')
+    },
+    onError: (e) => {
+      if (e instanceof AxiosError) {
+        const errorMessage = e.response?.data?.message || e.message || 'An error occurred'
+        toast.error(`Failed to update trade idea: ${errorMessage}`)
+      } else {
+        toast.error('Failed to update trade idea')
+      }
+    },
+  })
+
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteTradeIdea(id),
     onSuccess: () => {
@@ -110,5 +126,6 @@ export const useTradeIdeaMutationService = () => {
   return {
     createMutation,
     deleteMutation,
+    updateMutation,
   }
 }

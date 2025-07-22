@@ -1,4 +1,4 @@
-import type { TradeIdeaCreate, Watchlist } from '@/interfaces/trade-idea.type'
+import type { TradeIdeaCreate, TradeIdeaUpdate, Watchlist } from '@/interfaces/trade-idea.type'
 import { apiClient } from './client'
 
 const TRADE_IDEA_API_URL = '/trade-ideas'
@@ -9,6 +9,10 @@ export const getTradeIdeas = () => {
 
 export const createTradeIdea = (data: TradeIdeaCreate) => {
   return apiClient.post<TradeIdeaCreate>(TRADE_IDEA_API_URL, data)
+}
+
+export const updateTradeIdea = (id: string, data: TradeIdeaUpdate) => {
+  return apiClient.put(`${TRADE_IDEA_API_URL}/${id}`, data)
 }
 
 export const deleteTradeIdea = (id: string) => {

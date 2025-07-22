@@ -21,6 +21,8 @@ export const tradeIdeaCreateSchema = z.object({
   notes: z.string().optional(),
 })
 
+export const tradeIdeaUpdateSchema = tradeIdeaCreateSchema.partial()
+
 export const tradeIdeaSchema = tradeIdeaCreateSchema.extend({
   id: z.string().uuid(),
   status: z.nativeEnum(TradeIdeaStatus),
