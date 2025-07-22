@@ -1,6 +1,6 @@
 import { tradeIdeaCreateSchema, tradeIdeaSchema } from '@/schemas'
 import type z from 'zod'
-export type TradeIdeaStatus = 'waiting' | 'inProgress' | 'invalidated' | 'closed' | 'live'
+export type TradeIdeaStatus = 'Watching' | 'InProgress' | 'Invalidated' | 'Closed' | 'Live'
 
 export type TradeIdea = z.infer<typeof tradeIdeaSchema>
 
