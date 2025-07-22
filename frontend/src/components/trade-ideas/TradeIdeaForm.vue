@@ -43,12 +43,7 @@ const removePrice = (index: number) => {
 <template>
   <Sheet>
     <SheetTrigger as-child>
-      <FabRoutingButton
-        message="Add Trade Idea"
-        iconName="lucide:plus"
-        position="bottom-right"
-        size="s"
-      />
+      <slot name="trigger-button" />
     </SheetTrigger>
     <SheetContent :class="{ 'opacity-50': isSubmitting, 'pointer-events-none': isSubmitting }">
       <form

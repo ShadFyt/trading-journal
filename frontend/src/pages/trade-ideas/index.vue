@@ -5,7 +5,16 @@ import { TradeIdeaCardView, TradeIdeaForm } from '@/components/trade-ideas'
 <template>
   <div class="flex flex-col h-full">
     <aside>
-      <TradeIdeaForm />
+      <TradeIdeaForm>
+        <template #trigger-button>
+          <FabRoutingButton
+            message="Add Trade Idea"
+            iconName="lucide:plus"
+            position="bottom-right"
+            size="s"
+          />
+        </template>
+      </TradeIdeaForm>
     </aside>
 
     <main class="flex-1 overflow-y-auto">
