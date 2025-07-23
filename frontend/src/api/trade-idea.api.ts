@@ -12,7 +12,7 @@ export const createTradeIdea = (data: TradeIdeaCreate) => {
 }
 
 export const updateTradeIdea = (id: string, data: TradeIdeaUpdate) => {
-  return apiClient.put(`${TRADE_IDEA_API_URL}/${id}`, data)
+  return apiClient.patch(`${TRADE_IDEA_API_URL}/${id}`, data)
 }
 
 export const deleteTradeIdea = (id: string) => {

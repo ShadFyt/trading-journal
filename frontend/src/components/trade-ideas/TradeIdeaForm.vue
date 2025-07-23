@@ -5,13 +5,12 @@ import { Button } from '@/components/ui/button'
 
 import { FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { toTypedSchema } from '@vee-validate/zod'
-import { tradeIdeaCreateSchema } from '@/schemas'
+import { tradeIdeaCreateSchema, tradeIdeaUpdateSchema } from '@/schemas'
 import { useFieldArray, useForm } from 'vee-validate'
 import { useTradeIdeaMutationService } from '@/composables'
 import type { TradeIdea } from '@/interfaces/trade-idea.type'
 
-const { createMutation } = useTradeIdeaMutationService()
-const formSchema = toTypedSchema(tradeIdeaCreateSchema)
+const { createMutation, updateMutation } = useTradeIdeaMutationService()
 
 const {
   selectedTrade,
@@ -23,22 +22,37 @@ const {
   close?: (v: boolean) => void
 }>()
 
+const isEditMode = computed(() => Boolean(selectedTrade))
+
+const formSchema = toTypedSchema(isEditMode.value ? tradeIdeaUpdateSchema : tradeIdeaCreateSchema)
+const getInitialValues = () => {
+  const baseValues = {
+    targetPrices: [] as number[],
+    symbol: '',
+    setup: '',
+    rating: 1,
+    entryMin: 0,
+    entryMax: 0,
+    stop: 0,
+    catalysts: '',
+    notes: '',
+  }
+
+  // If editing, merge with existing trade data
+  return isEditMode.value && selectedTrade ? { ...baseValues, ...selectedTrade } : baseValues
+}
+
 const { isFieldDirty, handleSubmit, setFieldValue, isSubmitting } = useForm({
   validationSchema: formSchema,
-  initialValues: {
-    targetPrices: [] as number[],
-    symbol: selectedTrade?.symbol ?? '',
-    entryMin: 0,
-    ...(selectedTrade ? selectedTrade : {}),
-  },
+  initialValues: getInitialValues(),
 })
+
 const { fields, push, remove } = useFieldArray<number>('targetPrices')
 
 const message = computed(() => {
-  if (selectedTrade) {
-    return `Update Trade Idea For ${selectedTrade.symbol}`
-  }
-  return 'Add Trade Idea'
+  return isEditMode.value && selectedTrade
+    ? `Update Trade Idea For ${selectedTrade.symbol}`
+    : 'Add Trade Idea'
 })
 
 const sheetListeners = computed(() => {
@@ -46,11 +60,20 @@ const sheetListeners = computed(() => {
 })
 
 const onSubmit = handleSubmit(async (values) => {
-  console.log('submit', values)
   try {
-    await createMutation.mutateAsync(values)
+    if (isEditMode.value && selectedTrade) {
+      // Update existing trade
+      await updateMutation.mutateAsync({
+        id: selectedTrade.id,
+        data: tradeIdeaUpdateSchema.parse(values),
+      })
+      close?.(false)
+    } else {
+      // Create new trade
+      await createMutation.mutateAsync(tradeIdeaCreateSchema.parse(values))
+    }
   } catch (error) {
-    console.error(error)
+    console.error('Form submission error:', error)
   }
 })
 
