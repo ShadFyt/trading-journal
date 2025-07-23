@@ -11,14 +11,19 @@ const { tradeIdeas: watchlist, isLoading } = useTradeIdeaFetchingService()
 const { formatTradeDate, formatEntryPrice } = useFormatters()
 
 const filter = ref('all')
+const searchQuery = ref('')
 const isOpen = ref(false)
 const isFormOpen = ref(false)
 const selectedTrade = ref<TradeIdea | null>(null)
 
 const filteredWatchlist = computed(() => {
+  console.info('searchQuery', searchQuery.value)
   if (isLoading.value || !watchlist.value) return []
-  if (filter.value === 'all') return watchlist.value
-  return watchlist.value?.filter((t) => t.status.toLowerCase() === filter.value.toLowerCase())
+  const filtered = watchlist.value?.filter((t) =>
+    t.symbol.toLowerCase().includes(searchQuery.value.toLowerCase()),
+  )
+  if (filter.value === 'all') return filtered
+  return filtered?.filter((t) => t.status.toLowerCase() === filter.value.toLowerCase())
 })
 
 const getStatusBadgeProps = computed(() => (status: string) => ({
@@ -48,7 +53,7 @@ const handleFormClose = () => {
 
 <template>
   <main class="p-4 max-w-7xl mx-auto">
-    <TradeIdeaHeader :v-model="filter" />
+    <TradeIdeaHeader v-model:statusFilter="filter" v-model:searchQuery="searchQuery" />
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
       <Card
