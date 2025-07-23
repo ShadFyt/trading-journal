@@ -103,5 +103,6 @@ declare module 'vue' {
     Textarea: typeof import('./src/components/ui/textarea/Textarea.vue')['default']
     TradeIdeaCardView: typeof import('./src/components/trade-ideas/TradeIdeaCardView.vue')['default']
     TradeIdeaForm: typeof import('./src/components/trade-ideas/TradeIdeaForm.vue')['default']
+    TradeIdeaHeader: typeof import('./src/components/trade-ideas/TradeIdeaHeader.vue')['default']
   }
 }

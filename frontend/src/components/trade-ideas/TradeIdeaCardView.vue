@@ -1,15 +1,8 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { Card, CardContent } from '@/components/ui/card'
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { statusOptions, statusBadgeClass } from '@/shared/status'
+import { statusBadgeClass } from '@/shared/status'
 import { useTradeIdeaFetchingService } from '@/composables'
 import type { TradeIdea } from '@/interfaces/trade-idea.type'
 import { useFormatters } from '@/composables/useFormatters'
@@ -25,7 +18,7 @@ const selectedTrade = ref<TradeIdea | null>(null)
 const filteredWatchlist = computed(() => {
   if (isLoading.value || !watchlist.value) return []
   if (filter.value === 'all') return watchlist.value
-  return watchlist.value?.filter((t) => t.status.toLowerCase() === filter.value)
+  return watchlist.value?.filter((t) => t.status.toLowerCase() === filter.value.toLowerCase())
 })
 
 const getStatusBadgeProps = computed(() => (status: string) => ({
@@ -55,24 +48,7 @@ const handleFormClose = () => {
 
 <template>
   <main class="p-4 max-w-7xl mx-auto">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-3xl font-extrabold tracking-tight text-blue-800 drop-shadow-sm">
-        Swing Trading Watchlist
-      </h1>
-      <Select
-        v-model="filter"
-        class="w-56 shadow-md rounded-lg border-blue-200 border-2 focus:ring-2 focus:ring-blue-400"
-      >
-        <SelectTrigger>
-          <SelectValue placeholder="Filter by Status" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem v-for="option in statusOptions" :key="option.value" :value="option.value">
-            {{ option.label }}
-          </SelectItem>
-        </SelectContent>
-      </Select>
-    </div>
+    <TradeIdeaHeader :filter="filter" @update:filter="filter = $event" />
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
       <Card
