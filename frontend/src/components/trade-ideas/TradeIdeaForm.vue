@@ -56,7 +56,7 @@ const message = computed(() => {
 })
 
 const sheetListeners = computed(() => {
-  return isOpen !== null && close ? { 'update:open': close } : {}
+  return isEditMode.value && close ? { 'update:open': close } : {}
 })
 
 const onSubmit = handleSubmit(async (values) => {
@@ -92,7 +92,7 @@ const getSheetProps = () => {
 
 <template>
   <Sheet v-bind="getSheetProps()" v-on="sheetListeners">
-    <SheetTrigger v-if="!isOpen" as-child>
+    <SheetTrigger v-if="!isEditMode" as-child>
       <slot name="trigger-button" />
     </SheetTrigger>
     <SheetContent :class="{ 'opacity-50': isSubmitting, 'pointer-events-none': isSubmitting }">
@@ -303,7 +303,10 @@ const getSheetProps = () => {
           </div>
         </section>
         <SheetFooter class="flex justify-end">
-          <Button :disabled="isSubmitting" type="submit">Save</Button>
+          <SheetClose v-if="!isEditMode" as-child>
+            <Button :disabled="isSubmitting" type="submit">Save</Button>
+          </SheetClose>
+          <Button v-else :disabled="isSubmitting" type="submit">Update</Button>
         </SheetFooter>
       </form>
     </SheetContent>

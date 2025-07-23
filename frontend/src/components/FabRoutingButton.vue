@@ -78,7 +78,7 @@ const handleClick = (event: MouseEvent) => {
 </script>
 
 <template>
-  <div :class="['fixed', positionClasses]">
+  <div :class="['fixed', positionClasses]" class="z-50">
     <div class="relative">
       <transition name="fade">
         <div
