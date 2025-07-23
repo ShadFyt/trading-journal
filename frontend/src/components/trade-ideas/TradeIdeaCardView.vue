@@ -48,7 +48,7 @@ const handleFormClose = () => {
 
 <template>
   <main class="p-4 max-w-7xl mx-auto">
-    <TradeIdeaHeader :filter="filter" @update:filter="filter = $event" />
+    <TradeIdeaHeader :v-model="filter" />
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
       <Card

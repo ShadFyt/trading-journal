@@ -1,12 +1,6 @@
 <script lang="ts" setup>
 import { statusOptions } from '@/shared/status'
-const { filter } = defineProps<{ filter: string }>()
-const emit = defineEmits(['update:filter'])
-const localFilter = ref(filter)
-
-watch(localFilter, (newValue) => {
-  emit('update:filter', newValue)
-})
+defineModel('statusFilter', { type: String })
 </script>
 
 <template>
@@ -15,7 +9,7 @@ watch(localFilter, (newValue) => {
       Swing Trading Watchlist
     </h1>
     <Select
-      v-model="localFilter"
+      v-model="statusFilter"
       class="w-56 shadow-md rounded-lg border-blue-200 border-2 focus:ring-2 focus:ring-blue-400"
     >
       <SelectTrigger>
