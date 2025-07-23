@@ -74,4 +74,22 @@ class TradeIdea(SQLModel, table=True):
     catalysts: str = Field(nullable=True, default="")
     idea_date: datetime = Field(default_factory=datetime.now)
     notes: str = Field(nullable=True, default="")
-    rr_ratio: float = Field(nullable=True)
+
+
+    @property
+    def rr_ratio(self) -> float:
+        if self.entry_min is None or self.stop is None or not self.target_prices:
+            return 0.0
+        risk = abs(self.entry_min - self.stop)
+        if risk == 0:
+            return 0.0
+        
+        # Calculate average risk-reward ratio if all targets are met
+        total_rr = 0.0
+        
+        for target in self.target_prices:
+            reward = abs(target - self.entry_min)
+            rr = reward / risk
+            total_rr += rr
+        
+        return round(total_rr / len(self.target_prices), 2)
