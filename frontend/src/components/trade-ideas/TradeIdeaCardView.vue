@@ -12,18 +12,27 @@ import { Badge } from '@/components/ui/badge'
 import { statusOptions, statusBadgeClass } from '@/shared/status'
 import { useTradeIdeaFetchingService } from '@/composables'
 import type { TradeIdea } from '@/interfaces/trade-idea.type'
+import { useFormatters } from '@/composables/useFormatters'
 
 const filter = ref('all')
 const isOpen = ref(false)
 const isFormOpen = ref(false)
 const selectedTrade = ref<TradeIdea | null>(null)
 const { tradeIdeas: watchlist, isLoading } = useTradeIdeaFetchingService()
+const { formatTradeDate, formatEntryPrice } = useFormatters()
 
 const filteredWatchlist = computed(() => {
   if (isLoading.value || !watchlist.value) return []
   if (filter.value === 'all') return watchlist.value
   return watchlist.value?.filter((t) => t.status.toLowerCase() === filter.value)
 })
+
+const getStatusBadgeProps = computed(() => (status: string) => ({
+  class: [
+    'cursor-pointer hover:opacity-80 capitalize px-3 py-1 text-xs rounded-full border font-semibold',
+    statusBadgeClass[status],
+  ],
+}))
 
 const handleDialogOpen = (idea: TradeIdea) => {
   selectedTrade.value = idea
@@ -89,19 +98,14 @@ const handleFormClose = () => {
               <span class="text-2xl">💹</span>
               <h2 class="text-2xl font-bold text-blue-700 tracking-wide">{{ trade.symbol }}</h2>
             </div>
-            <Badge
-              class="cursor-pointer hover:opacity-80 capitalize px-3 py-1 text-xs rounded-full border font-semibold"
-              :class="statusBadgeClass[trade.status]"
-            >
-              {{ trade.status }}
-            </Badge>
+            <Badge v-bind="getStatusBadgeProps(trade.status)">{{ trade.status }}</Badge>
           </div>
           <p class="text-xs text-gray-400 mb-3 italic">{{ trade.setup }}</p>
 
           <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-sm mb-2">
             <p>
               <span class="font-semibold">Entry:</span>
-              ${{ trade.entryMin }} {{ trade.entryMax ? `- $${trade.entryMax}` : '' }}
+              {{ formatEntryPrice(trade.entryMin, trade.entryMax) }}
             </p>
             <p><span class="font-semibold">Stop:</span> ${{ trade.stop }}</p>
             <p v-for="(target, idx) in trade.targetPrices" :key="target">
@@ -119,11 +123,7 @@ const handleFormClose = () => {
 
           <div class="mt-3 flex justify-between text-xs text-gray-500">
             <span class="text-xs text-gray-400">{{
-              new Date(trade.ideaDate).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-              })
+              formatTradeDate(trade.ideaDate.toString())
             }}</span>
           </div>
         </CardContent>
