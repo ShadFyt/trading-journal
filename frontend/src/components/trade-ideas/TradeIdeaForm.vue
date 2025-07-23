@@ -10,6 +10,9 @@ import { useFieldArray, useForm } from 'vee-validate'
 import { useTradeIdeaMutationService } from '@/composables'
 import type { TradeIdea } from '@/interfaces/trade-idea.type'
 
+const { createMutation } = useTradeIdeaMutationService()
+const formSchema = toTypedSchema(tradeIdeaCreateSchema)
+
 const {
   selectedTrade,
   isOpen = null,
@@ -20,22 +23,6 @@ const {
   close?: (v: boolean) => void
 }>()
 
-const message = computed(() => {
-  if (selectedTrade) {
-    return `Update Trade Idea For ${selectedTrade.symbol}`
-  }
-  return 'Add Trade Idea'
-})
-
-const getSheetProps = () => {
-  return isOpen ? { open: isOpen } : {}
-}
-const sheetListeners = computed(() => {
-  return isOpen !== null && close ? { 'update:open': close } : {}
-})
-
-const { createMutation } = useTradeIdeaMutationService()
-const formSchema = toTypedSchema(tradeIdeaCreateSchema)
 const { isFieldDirty, handleSubmit, setFieldValue, isSubmitting } = useForm({
   validationSchema: formSchema,
   initialValues: {
@@ -45,8 +32,18 @@ const { isFieldDirty, handleSubmit, setFieldValue, isSubmitting } = useForm({
     ...(selectedTrade ? selectedTrade : {}),
   },
 })
-
 const { fields, push, remove } = useFieldArray<number>('targetPrices')
+
+const message = computed(() => {
+  if (selectedTrade) {
+    return `Update Trade Idea For ${selectedTrade.symbol}`
+  }
+  return 'Add Trade Idea'
+})
+
+const sheetListeners = computed(() => {
+  return isOpen !== null && close ? { 'update:open': close } : {}
+})
 
 const onSubmit = handleSubmit(async (values) => {
   console.log('submit', values)
@@ -63,6 +60,10 @@ const addPrice = () => {
 
 const removePrice = (index: number) => {
   remove(index)
+}
+
+const getSheetProps = () => {
+  return isOpen ? { open: isOpen } : {}
 }
 </script>
 

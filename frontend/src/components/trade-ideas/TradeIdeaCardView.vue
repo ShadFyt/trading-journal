@@ -14,12 +14,13 @@ import { useTradeIdeaFetchingService } from '@/composables'
 import type { TradeIdea } from '@/interfaces/trade-idea.type'
 import { useFormatters } from '@/composables/useFormatters'
 
+const { tradeIdeas: watchlist, isLoading } = useTradeIdeaFetchingService()
+const { formatTradeDate, formatEntryPrice } = useFormatters()
+
 const filter = ref('all')
 const isOpen = ref(false)
 const isFormOpen = ref(false)
 const selectedTrade = ref<TradeIdea | null>(null)
-const { tradeIdeas: watchlist, isLoading } = useTradeIdeaFetchingService()
-const { formatTradeDate, formatEntryPrice } = useFormatters()
 
 const filteredWatchlist = computed(() => {
   if (isLoading.value || !watchlist.value) return []
