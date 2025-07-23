@@ -2,10 +2,10 @@ import { z } from 'zod'
 
 // Define the TradeIdeaStatus enum in TypeScript
 export enum TradeIdeaStatus {
-  WATCHING = 'WATCHING',
-  IN_PROGRESS = 'IN_PROGRESS',
-  INVALIDATED = 'INVALIDATED',
-  LIVE = 'LIVE',
+  WATCHING = 'Watching',
+  IN_PROGRESS = 'InProgress',
+  INVALIDATED = 'Invalidated',
+  LIVE = 'Live',
   // Add other statuses as needed
 }
 
@@ -21,7 +21,10 @@ export const tradeIdeaCreateSchema = z.object({
   notes: z.string().optional(),
 })
 
-export const tradeIdeaUpdateSchema = tradeIdeaCreateSchema.partial()
+export const tradeIdeaUpdateSchema = tradeIdeaCreateSchema.partial().extend({
+  ideaDate: z.date(),
+  status: z.nativeEnum(TradeIdeaStatus),
+})
 
 export const tradeIdeaSchema = tradeIdeaCreateSchema.extend({
   id: z.string().uuid(),
