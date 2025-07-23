@@ -72,6 +72,6 @@ class TradeIdea(SQLModel, table=True):
     stop: float = Field(nullable=True)
     target_prices: Optional[List[float]] = Field(default=None, sa_column=Column(JSON))
     catalysts: str = Field(nullable=True, default="")
-    idea_date: datetime = Field(default=datetime.now())
+    idea_date: datetime = Field(default_factory=datetime.now)
     notes: str = Field(nullable=True, default="")
     rr_ratio: float = Field(nullable=True)
