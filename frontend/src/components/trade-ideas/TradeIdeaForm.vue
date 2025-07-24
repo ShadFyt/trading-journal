@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 
-import { FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
-import { useFieldArray } from 'vee-validate'
+import { FormField, FormItem, FormLabel } from '../ui/form'
 import { useTradeIdeaForm } from '@/composables'
 import type { TradeIdea } from '@/interfaces/trade-idea.type'
 
@@ -21,8 +19,6 @@ const {
 const { isEditMode, isFieldDirty, onSubmit, setFieldValue, isSubmitting, schema } =
   useTradeIdeaForm(selectedTrade, close)
 
-const { fields, push, remove } = useFieldArray<number>('targetPrices')
-
 const message = computed(() => {
   return isEditMode.value && selectedTrade
     ? `Update Trade Idea For ${selectedTrade.symbol}`
@@ -32,14 +28,6 @@ const message = computed(() => {
 const sheetListeners = computed(() => {
   return isEditMode.value && close ? { 'update:open': close } : {}
 })
-
-const addPrice = () => {
-  push(0)
-}
-
-const removePrice = (index: number) => {
-  remove(index)
-}
 
 const getSheetProps = () => {
   return isOpen ? { open: isOpen } : {}
@@ -70,86 +58,7 @@ const getSheetProps = () => {
             :setFieldValue="setFieldValue"
             :isFieldDirty="isFieldDirty"
           />
-          <div class="col-span-2">
-            <FormField
-              v-slot="{ componentField }"
-              name="entryMin"
-              :validate-on-blur="!isFieldDirty"
-            >
-              <FormItem>
-                <FormLabel for="entry-min" class="block text-sm font-medium text-gray-700">
-                  Entry Min
-                </FormLabel>
-                <Input
-                  type="number"
-                  id="entry-min"
-                  v-bind="componentField"
-                  placeholder="e.g. 150.50"
-                  step="0.01"
-                />
-              </FormItem>
-            </FormField>
-          </div>
-          <div class="col-span-2">
-            <FormField
-              v-slot="{ componentField }"
-              name="entryMax"
-              :validate-on-blur="!isFieldDirty"
-            >
-              <FormItem>
-                <FormLabel for="entry-max" class="block text-sm font-medium text-gray-700">
-                  Entry Max
-                </FormLabel>
-                <Input
-                  type="number"
-                  id="entry-max"
-                  v-bind="componentField"
-                  placeholder="e.g. 150.50"
-                  step="0.01"
-                />
-              </FormItem>
-            </FormField>
-          </div>
-          <div class="col-span-2">
-            <FormField v-slot="{ componentField }" name="stop" :validate-on-blur="!isFieldDirty">
-              <FormItem>
-                <FormLabel for="stop" class="block text-sm font-medium text-gray-700"
-                  >Stop Loss</FormLabel
-                >
-                <Input
-                  type="number"
-                  id="stop"
-                  v-bind="componentField"
-                  placeholder="e.g. 150.50"
-                  step="0.01"
-                />
-              </FormItem>
-            </FormField>
-          </div>
-          <div class="col-span-6">
-            <FormField name="targetPrices" :validate-on-blur="!isFieldDirty">
-              <FormItem>
-                <FormLabel class="block text-sm font-medium text-gray-700">Target Prices</FormLabel>
-                <FormControl>
-                  <div v-for="(price, index) in fields" :key="index" class="flex items-center mb-2">
-                    <span class="mr-2">T{{ index + 1 }}</span>
-                    <Input
-                      type="number"
-                      placeholder="e.g. 150.50"
-                      class="mr-2"
-                      v-model="price.value"
-                      step="0.01"
-                    />
-                    <Button type="button" @click="removePrice(index)" variant="destructive"
-                      >Remove</Button
-                    >
-                  </div>
-                  <Button type="button" @click="addPrice" variant="ghost">Add Price</Button>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-          </div>
+          <PriceFields :isFieldDirty="isFieldDirty" />
           <div class="col-span-6">
             <FormField
               v-slot="{ componentField }"

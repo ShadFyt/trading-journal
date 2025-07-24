@@ -20,7 +20,6 @@ export const useTradeIdeaForm = (
       setup: '',
       rating: 1,
       entryMin: 0,
-      entryMax: 0,
       stop: 0,
       catalysts: '',
       notes: '',
