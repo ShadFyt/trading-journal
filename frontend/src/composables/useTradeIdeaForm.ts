@@ -4,10 +4,7 @@ import type { TradeIdea } from '@/interfaces/trade-idea.type'
 import { useTradeIdeaMutationService } from '@/composables'
 import { useForm } from 'vee-validate'
 
-export const useTradeIdeaForm = (
-  selectedTrade?: TradeIdea | null,
-  close?: (v: boolean) => void,
-) => {
+export const useTradeIdeaForm = (close: (v: boolean) => void, selectedTrade?: TradeIdea | null) => {
   const { createMutation, updateMutation } = useTradeIdeaMutationService()
   const isEditMode = computed(() => Boolean(selectedTrade))
   const tradeIdeaFormSchema = toTypedSchema(
@@ -42,13 +39,14 @@ export const useTradeIdeaForm = (
           id: selectedTrade.id,
           data: tradeIdeaUpdateSchema.parse(values),
         })
-        close?.(false)
       } else {
         // Create new trade
         await createMutation.mutateAsync(tradeIdeaCreateSchema.parse(values))
       }
+      close(false)
     } catch (error) {
       console.error('Form submission error:', error)
+      throw error
     }
   })
 

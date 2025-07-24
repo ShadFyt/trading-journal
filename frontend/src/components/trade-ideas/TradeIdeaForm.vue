@@ -6,36 +6,24 @@ import { FormField, FormItem, FormLabel } from '../ui/form'
 import { useTradeIdeaForm } from '@/composables'
 import type { TradeIdea } from '@/interfaces/trade-idea.type'
 
-const {
-  selectedTrade,
-  isOpen = null,
-  close,
-} = defineProps<{
+const { selectedTrade, isOpen, close } = defineProps<{
+  isOpen: boolean
+  close: (v: boolean) => void
   selectedTrade?: TradeIdea | null
-  isOpen?: boolean | null
-  close?: (v: boolean) => void
 }>()
 
 const { isEditMode, isFieldDirty, onSubmit, setFieldValue, isSubmitting, schema } =
-  useTradeIdeaForm(selectedTrade, close)
+  useTradeIdeaForm(close, selectedTrade)
 
 const message = computed(() => {
   return isEditMode.value && selectedTrade
     ? `Update Trade Idea For ${selectedTrade.symbol}`
     : 'Add Trade Idea'
 })
-
-const sheetListeners = computed(() => {
-  return isEditMode.value && close ? { 'update:open': close } : {}
-})
-
-const getSheetProps = () => {
-  return isOpen ? { open: isOpen } : {}
-}
 </script>
 
 <template>
-  <Sheet v-bind="getSheetProps()" v-on="sheetListeners">
+  <Sheet :open="isOpen" @update:open="close">
     <SheetTrigger v-if="!isEditMode" as-child>
       <slot name="trigger-button" />
     </SheetTrigger>
@@ -101,10 +89,9 @@ const getSheetProps = () => {
           </div>
         </section>
         <SheetFooter class="flex justify-end">
-          <SheetClose v-if="!isEditMode" as-child>
-            <Button :disabled="isSubmitting" type="submit">Save</Button>
-          </SheetClose>
-          <Button v-else :disabled="isSubmitting" type="submit">Update</Button>
+          <Button :disabled="isSubmitting" type="submit">{{
+            isEditMode ? 'Update' : 'Save'
+          }}</Button>
         </SheetFooter>
       </form>
     </SheetContent>
