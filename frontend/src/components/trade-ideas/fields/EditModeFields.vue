@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import type { FormActions } from 'vee-validate'
-import type { z } from 'zod'
-import type { tradeIdeaCreateSchema, tradeIdeaUpdateSchema } from '@/schemas'
 
 import {
   Select,
@@ -23,9 +21,7 @@ import {
   parseDate,
   today,
 } from '@internationalized/date'
-type TradeIdeaFormValues =
-  | z.infer<typeof tradeIdeaCreateSchema>
-  | z.infer<typeof tradeIdeaUpdateSchema>
+import type { TradeIdeaFormValues } from '@/interfaces/trade-idea.type'
 
 interface Props {
   setFieldValue: FormActions<TradeIdeaFormValues>['setFieldValue']

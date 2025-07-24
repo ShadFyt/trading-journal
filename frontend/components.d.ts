@@ -18,6 +18,7 @@ declare module 'vue' {
     AlertDialogTitle: typeof import('./src/components/ui/alert-dialog/AlertDialogTitle.vue')['default']
     AlertDialogTrigger: typeof import('./src/components/ui/alert-dialog/AlertDialogTrigger.vue')['default']
     Badge: typeof import('./src/components/ui/badge/Badge.vue')['default']
+    BasicFields: typeof import('./src/components/trade-ideas/fields/BasicFields.vue')['default']
     Button: typeof import('./src/components/ui/button/Button.vue')['default']
     Calendar: typeof import('./src/components/ui/calendar/Calendar.vue')['default']
     CalendarCell: typeof import('./src/components/ui/calendar/CalendarCell.vue')['default']
