@@ -1,10 +1,24 @@
-from typing import List, Optional
+from typing import List, Optional, Literal
 from uuid import uuid4
 from datetime import datetime
+from sqlalchemy.util import symbol
 from sqlmodel import Field, Relationship, SQLModel, JSON
 from sqlalchemy import Column, Enum as SAEnum
 from pydantic import field_validator
 from enum import Enum
+
+class BaseTrade(SQLModel):
+    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True, nullable=False)
+    symbol: str = Field(nullable=False)
+    setup: str = Field(nullable=False)
+    rating: float = Field(nullable=False)
+    stop: float = Field(nullable=True)
+    target_prices: Optional[List[float]] = Field(default=None, sa_column=Column(JSON))
+
+
+class BaseNote(SQLModel):
+    content: str = Field(nullable=False)
+    date: datetime = Field(default_factory=datetime.now)
 
 
 class Account(SQLModel, table=True):
@@ -60,21 +74,15 @@ class TradeIdeaStatus(str, Enum):
     LIVE = "Live"
     
 
-class TradeIdea(SQLModel, table=True):
+class TradeIdea(BaseTrade, table=True):
     __tablename__ = "trade_idea"
-    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True, nullable=False)
-    symbol: str = Field(nullable=False)
     status: TradeIdeaStatus = Field(default=TradeIdeaStatus.WATCHING)
-    setup: str = Field(nullable=False)
-    rating: float = Field(nullable=False)
     entry_min: float = Field(nullable=True)
     entry_max: Optional[float] = Field(nullable=True)
-    stop: float = Field(nullable=True)
-    target_prices: Optional[List[float]] = Field(default=None, sa_column=Column(JSON))
     catalysts: str = Field(nullable=True, default="")
     idea_date: datetime = Field(default_factory=datetime.now)
     notes: str = Field(nullable=True, default="")
-
+    live_trade: Optional["LiveTrade"] = Relationship(back_populates="trade_idea")
 
     @property
     def rr_ratio(self) -> float:
@@ -93,3 +101,30 @@ class TradeIdea(SQLModel, table=True):
             total_rr += rr
         
         return round(total_rr / len(self.target_prices), 2)
+
+class Note(BaseNote, table=True):
+    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True, nullable=False)
+    live_trade_id: str = Field(foreign_key="live_trade.id", nullable=False)
+    live_trade: "LiveTrade" = Relationship(back_populates="notes")
+
+class Catalyst(BaseNote, table=True):
+    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True, nullable=False)
+    live_trade_id: str = Field(foreign_key="live_trade.id", nullable=False)
+    live_trade: "LiveTrade" = Relationship(back_populates="catalysts")
+
+class LiveTrade(BaseTrade, table=True):
+    __tablename__ = "live_trade"
+    trade_idea_id: str = Field(foreign_key="trade_idea.id", nullable=False)
+    status: Literal['open', 'closed'] = Field(default='open')
+    position_size: int = Field(nullable=False)
+    entry_price_avg: float = Field(nullable=False)
+    exit_price_avg: Optional[float] = Field(nullable=True)
+    commissions: Optional[float] = Field(nullable=True)
+    enter_date: datetime = Field(nullable=False)
+    exit_date: Optional[datetime] = Field(nullable=True)
+    net_gain_loss: Optional[float] = Field(nullable=True)
+    outcome: Optional[str] = Field(nullable=True)
+    notes: List[Note] = Relationship(back_populates="live_trade")
+    catalysts: List[Catalyst] = Relationship(back_populates="live_trade")
+
+    trade_idea: TradeIdea = Relationship(back_populates="live_trade")
