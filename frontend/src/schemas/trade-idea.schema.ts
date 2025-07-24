@@ -22,7 +22,7 @@ export const tradeIdeaCreateSchema = z.object({
 })
 
 export const tradeIdeaUpdateSchema = tradeIdeaCreateSchema.partial().extend({
-  ideaDate: z.date(),
+  ideaDate: z.date().or(z.string()),
   status: z.nativeEnum(TradeIdeaStatus),
 })
 

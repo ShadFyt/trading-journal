@@ -12,8 +12,16 @@ const { selectedTrade, isOpen, close } = defineProps<{
   selectedTrade?: TradeIdea | null
 }>()
 
-const { isEditMode, isFieldDirty, onSubmit, setFieldValue, isSubmitting, schema } =
-  useTradeIdeaForm(close, selectedTrade)
+const {
+  isEditMode,
+  isFieldDirty,
+  onSubmit,
+  setFieldValue,
+  isSubmitting,
+  schema,
+  isFormValid,
+  hasFormChanged,
+} = useTradeIdeaForm(close, selectedTrade)
 
 const message = computed(() => {
   return isEditMode.value && selectedTrade
@@ -89,7 +97,7 @@ const message = computed(() => {
           </div>
         </section>
         <SheetFooter class="flex justify-end">
-          <Button :disabled="isSubmitting" type="submit">{{
+          <Button :disabled="isSubmitting || !isFormValid || !hasFormChanged" type="submit">{{
             isEditMode ? 'Update' : 'Save'
           }}</Button>
         </SheetFooter>

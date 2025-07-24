@@ -26,10 +26,13 @@ export const useTradeIdeaForm = (close: (v: boolean) => void, selectedTrade?: Tr
     return isEditMode.value && selectedTrade ? { ...baseValues, ...selectedTrade } : baseValues
   }
 
-  const { isFieldDirty, handleSubmit, setFieldValue, isSubmitting } = useForm({
+  const { isFieldDirty, handleSubmit, setFieldValue, isSubmitting, meta } = useForm({
     validationSchema: tradeIdeaFormSchema,
     initialValues: getInitialValues(),
   })
+
+  const isFormValid = computed(() => meta.value.valid)
+  const hasFormChanged = computed(() => meta.value.dirty)
 
   const onSubmit = handleSubmit(async (values) => {
     try {
@@ -57,5 +60,7 @@ export const useTradeIdeaForm = (close: (v: boolean) => void, selectedTrade?: Tr
     isSubmitting,
     onSubmit,
     schema: tradeIdeaFormSchema,
+    isFormValid,
+    hasFormChanged,
   }
 }
