@@ -5,10 +5,8 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 import { FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
-import { toTypedSchema } from '@vee-validate/zod'
-import { tradeIdeaCreateSchema, tradeIdeaUpdateSchema } from '@/schemas'
-import { useFieldArray, useForm } from 'vee-validate'
-import { useTradeIdeaMutationService } from '@/composables'
+import { useFieldArray } from 'vee-validate'
+import { useTradeIdeaForm } from '@/composables'
 import type { TradeIdea } from '@/interfaces/trade-idea.type'
 import { statusOptions } from '@/shared/status'
 import {
@@ -18,8 +16,6 @@ import {
   parseDate,
   today,
 } from '@internationalized/date'
-
-const { createMutation, updateMutation } = useTradeIdeaMutationService()
 
 const {
   selectedTrade,
@@ -31,30 +27,8 @@ const {
   close?: (v: boolean) => void
 }>()
 
-const isEditMode = computed(() => Boolean(selectedTrade))
-
-const formSchema = toTypedSchema(isEditMode.value ? tradeIdeaUpdateSchema : tradeIdeaCreateSchema)
-const getInitialValues = () => {
-  const baseValues = {
-    targetPrices: [] as number[],
-    symbol: '',
-    setup: '',
-    rating: 1,
-    entryMin: 0,
-    entryMax: 0,
-    stop: 0,
-    catalysts: '',
-    notes: '',
-  }
-
-  // If editing, merge with existing trade data
-  return isEditMode.value && selectedTrade ? { ...baseValues, ...selectedTrade } : baseValues
-}
-
-const { isFieldDirty, handleSubmit, setFieldValue, isSubmitting } = useForm({
-  validationSchema: formSchema,
-  initialValues: getInitialValues(),
-})
+const { isEditMode, isFieldDirty, onSubmit, setFieldValue, isSubmitting, schema } =
+  useTradeIdeaForm(selectedTrade, close)
 
 const { fields, push, remove } = useFieldArray<number>('targetPrices')
 
@@ -66,24 +40,6 @@ const message = computed(() => {
 
 const sheetListeners = computed(() => {
   return isEditMode.value && close ? { 'update:open': close } : {}
-})
-
-const onSubmit = handleSubmit(async (values) => {
-  try {
-    if (isEditMode.value && selectedTrade) {
-      // Update existing trade
-      await updateMutation.mutateAsync({
-        id: selectedTrade.id,
-        data: tradeIdeaUpdateSchema.parse(values),
-      })
-      close?.(false)
-    } else {
-      // Create new trade
-      await createMutation.mutateAsync(tradeIdeaCreateSchema.parse(values))
-    }
-  } catch (error) {
-    console.error('Form submission error:', error)
-  }
 })
 
 const addPrice = () => {
@@ -109,11 +65,7 @@ const df = new DateFormatter('en-US', {
       <slot name="trigger-button" />
     </SheetTrigger>
     <SheetContent :class="{ 'opacity-50': isSubmitting, 'pointer-events-none': isSubmitting }">
-      <form
-        class="flex flex-col h-full relative"
-        :validation-schema="formSchema"
-        @submit="onSubmit"
-      >
+      <form class="flex flex-col h-full relative" :validation-schema="schema" @submit="onSubmit">
         <!-- Loading spinner -->
 
         <div v-if="isSubmitting" class="absolute inset-0 flex items-center justify-center z-50">
