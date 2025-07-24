@@ -22,7 +22,7 @@ class TradeIdeaUpdate(BaseSchema):
     symbol: Optional[str] = None
     status: Optional[TradeIdeaStatus] = None
     setup: Optional[str] = None
-    rating: Optional[int] = None
+    rating: Optional[float] = None
     entry_min: Optional[float] = None
     entry_max: Optional[float] = None
     stop: Optional[float] = None
