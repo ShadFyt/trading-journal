@@ -1,8 +1,8 @@
-"""add trade idea model
+"""inital migration
 
-Revision ID: 12afc45f40af
+Revision ID: 778328b9c311
 Revises: 
-Create Date: 2025-06-19 13:32:19.546289
+Create Date: 2025-07-24 08:57:35.013627
 
 """
 from typing import Sequence, Union
@@ -14,7 +14,7 @@ import sqlmodel
 
 
 # revision identifiers, used by Alembic.
-revision: str = '12afc45f40af'
+revision: str = '778328b9c311'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -35,15 +35,14 @@ def upgrade() -> None:
     sa.Column('symbol', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('status', sa.Enum('WATCHING', 'IN_PROGRESS', 'INVALIDATED', 'LIVE', name='tradeideastatus'), nullable=False),
     sa.Column('setup', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-    sa.Column('rating', sa.Integer(), nullable=False),
-    sa.Column('entry_min', sa.Float(), nullable=False),
+    sa.Column('rating', sa.Float(), nullable=False),
+    sa.Column('entry_min', sa.Float(), nullable=True),
     sa.Column('entry_max', sa.Float(), nullable=True),
     sa.Column('stop', sa.Float(), nullable=True),
     sa.Column('target_prices', sa.JSON(), nullable=True),
     sa.Column('catalysts', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('idea_date', sa.DateTime(), nullable=False),
     sa.Column('notes', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
-    sa.Column('rr_ratio', sa.Float(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###
