@@ -2,20 +2,11 @@
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
 
 import { FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { useFieldArray } from 'vee-validate'
 import { useTradeIdeaForm } from '@/composables'
 import type { TradeIdea } from '@/interfaces/trade-idea.type'
-import { statusOptions } from '@/shared/status'
-import {
-  CalendarDate,
-  DateFormatter,
-  getLocalTimeZone,
-  parseDate,
-  today,
-} from '@internationalized/date'
 
 const {
   selectedTrade,
@@ -53,10 +44,6 @@ const removePrice = (index: number) => {
 const getSheetProps = () => {
   return isOpen ? { open: isOpen } : {}
 }
-
-const df = new DateFormatter('en-US', {
-  dateStyle: 'long',
-})
 </script>
 
 <template>
@@ -146,74 +133,11 @@ const df = new DateFormatter('en-US', {
               </FormItem>
             </FormField>
           </div>
-          <div class="col-span-4" v-if="isEditMode && selectedTrade">
-            <FormField v-slot="{ componentField }" name="status" :validate-on-blur="!isFieldDirty">
-              <FormItem>
-                <FormLabel for="status" class="block text-sm font-medium text-gray-700"
-                  >Status</FormLabel
-                >
-                <Select v-bind="componentField">
-                  <FormControl>
-                    <SelectTrigger class="w-full">
-                      <SelectValue placeholder="Select a status" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem
-                      v-for="option in statusOptions"
-                      :key="option.value"
-                      :value="option.value"
-                    >
-                      {{ option.label }}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-          </div>
-          <div class="col-span-2" v-if="isEditMode">
-            <FormField name="ideaDate" v-slot="{ value }">
-              <FormItem class="flex flex-col">
-                <FormLabel>Idea Date</FormLabel>
-                <Popover>
-                  <PopoverTrigger as-child>
-                    <FormControl>
-                      <Button
-                        variant="outline"
-                        :class="cn('ps-3 text-start font-normal', 'text-muted-foreground')"
-                      >
-                        <span>{{ value ? df.format(new Date(value)) : 'Pick a date' }}</span>
-                        <CalendarIcon class="ms-auto h-4 w-4 opacity-50" />
-                      </Button>
-                      <input hidden />
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent class="w-auto p-0">
-                    <Calendar
-                      :model-value="
-                        value ? parseDate(new Date(value).toISOString().split('T')[0]) : undefined
-                      "
-                      calendar-label="ideaDate"
-                      initial-focus
-                      :min-value="new CalendarDate(1900, 1, 1)"
-                      :max-value="today(getLocalTimeZone())"
-                      @update:model-value="
-                        (v) => {
-                          if (v) {
-                            setFieldValue('ideaDate', v.toDate(getLocalTimeZone()))
-                          } else {
-                            setFieldValue('ideaDate', undefined)
-                          }
-                        }
-                      "
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-          </div>
+          <EditModeFields
+            v-if="isEditMode && selectedTrade"
+            :setFieldValue="setFieldValue"
+            :isFieldDirty="isFieldDirty"
+          />
           <div class="col-span-2">
             <FormField
               v-slot="{ componentField }"

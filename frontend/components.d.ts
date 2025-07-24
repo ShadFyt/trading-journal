@@ -73,6 +73,7 @@ declare module 'vue' {
     DropdownMenuSubContent: typeof import('./src/components/ui/dropdown-menu/DropdownMenuSubContent.vue')['default']
     DropdownMenuSubTrigger: typeof import('./src/components/ui/dropdown-menu/DropdownMenuSubTrigger.vue')['default']
     DropdownMenuTrigger: typeof import('./src/components/ui/dropdown-menu/DropdownMenuTrigger.vue')['default']
+    EditModeFields: typeof import('./src/components/trade-ideas/fields/EditModeFields.vue')['default']
     FabButton: typeof import('./src/components/FabRoutingButton.vue')['default']
     FabRoutingButton: typeof import('./src/components/FabRoutingButton.vue')['default']
     FormControl: typeof import('./src/components/ui/form/FormControl.vue')['default']
