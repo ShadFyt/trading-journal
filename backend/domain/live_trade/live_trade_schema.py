@@ -1,5 +1,6 @@
 from core.base_schema import BaseSchema
 from typing import List, Optional
+from datetime import datetime
 
 class NoteBase(BaseSchema):
     id: str

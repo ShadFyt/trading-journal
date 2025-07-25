@@ -1,6 +1,8 @@
 from database.session import SessionDep
 from database.models import LiveTrade
 from core.base_repo import BaseRepo
+from domain.live_trade.live_trade_schema import LiveTradeUpdate
+from fastapi import HTTPException
 
 class LiveTradeRepo(BaseRepo[LiveTrade]):
     def __init__(self, session: SessionDep):
