@@ -1,10 +1,7 @@
 from database.session import SessionDep
 from database.models import TradeIdea
-from sqlmodel import select
 from fastapi import HTTPException
-from fastapi import status
 from domain.trade_idea.trade_idea_schema import TradeIdeaUpdate
-import asyncio
 from core.base_repo import BaseRepo
 
 class TradeIdeaRepo(BaseRepo[TradeIdea]):
