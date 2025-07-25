@@ -23,7 +23,7 @@ class LiveTradeBase(BaseSchema):
     outcome: Optional[str] = None
     trade_idea_id: str
 
-class LiveTrade(LiveTradeBase):
+class LiveTradeResponse(LiveTradeBase):
     id: str
     notes: List[NoteBase]
     catalysts: List[NoteBase]
