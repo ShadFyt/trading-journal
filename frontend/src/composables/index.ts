@@ -1,3 +1,4 @@
 export * from './useTradeIdeaService'
 export * from './useFormatters'
 export * from './useTradeIdeaForm'
+export * from './useLiveTradeService'
