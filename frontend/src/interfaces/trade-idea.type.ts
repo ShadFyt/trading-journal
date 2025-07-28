@@ -11,3 +11,5 @@ export type TradeIdeaCreate = z.infer<typeof tradeIdeaCreateSchema>
 export type TradeIdeaUpdate = z.infer<typeof tradeIdeaUpdateSchema>
 
 export type TradeIdeaFormValues = TradeIdeaCreate | TradeIdeaUpdate
+
+export type FormType = 'edit' | 'convert' | 'create'
