@@ -53,6 +53,7 @@ const message = computed(() => {
             v-if="isEditMode && selectedTrade"
             :setFieldValue="setFieldValue"
             :isFieldDirty="isFieldDirty"
+            :isLiveTrade="selectedTrade.status === 'Live'"
           />
           <PriceFields :isFieldDirty="isFieldDirty" />
           <div class="col-span-6">

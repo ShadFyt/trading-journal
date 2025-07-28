@@ -26,9 +26,10 @@ import type { TradeIdeaFormValues } from '@/interfaces/trade-idea.type'
 interface Props {
   setFieldValue: FormActions<TradeIdeaFormValues>['setFieldValue']
   isFieldDirty: boolean
+  isLiveTrade: boolean
 }
 
-const { setFieldValue, isFieldDirty } = defineProps<Props>()
+const { setFieldValue, isFieldDirty, isLiveTrade } = defineProps<Props>()
 
 const df = new DateFormatter('en-US', {
   dateStyle: 'long',
@@ -40,7 +41,7 @@ const df = new DateFormatter('en-US', {
     <FormField v-slot="{ componentField }" name="status" :validate-on-blur="!isFieldDirty">
       <FormItem>
         <FormLabel for="status" class="block text-sm font-medium text-gray-700">Status</FormLabel>
-        <Select v-bind="componentField">
+        <Select v-bind="componentField" :disabled="isLiveTrade">
           <FormControl>
             <SelectTrigger class="w-full">
               <SelectValue placeholder="Select a status" />

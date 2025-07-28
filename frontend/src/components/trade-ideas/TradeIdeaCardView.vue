@@ -71,11 +71,11 @@ const handleFormClose = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent side="bottom" align="end" :avoidCollisions="false">
               <DropdownMenuItem @click="handleFormOpen(trade, 'edit')"> Edit </DropdownMenuItem>
-              <DropdownMenuItem @click="handleFormOpen(trade, 'convert')">
+              <DropdownMenuItem v-if="trade.status !== 'Live'" @click="handleFormOpen(trade, 'convert')">
                 Convert to Live Trade
               </DropdownMenuItem>
 
-              <DropdownMenuItem class="text-red-600" @click="handleDialogOpen(trade)"
+              <DropdownMenuItem disabled v-if="trade.status === 'Live'" class="text-red-600" @click="handleDialogOpen(trade)"
                 >Delete</DropdownMenuItem
               >
             </DropdownMenuContent>
