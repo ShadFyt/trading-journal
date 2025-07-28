@@ -1,7 +1,9 @@
 from database.session import SessionDep
 from domain.live_trade.live_trade_repo import LiveTradeRepo
+from domain.trade_idea.trade_idea_deps import get_trade_idea_service
 from fastapi import Depends
 from domain.live_trade.live_trade_service import LiveTradeService
+from domain.trade_idea.trade_idea_service import TradeIdeaService
 from typing import Annotated
 
 def get_live_trade_repo(session: SessionDep) -> LiveTradeRepo:
@@ -9,7 +11,8 @@ def get_live_trade_repo(session: SessionDep) -> LiveTradeRepo:
 
 def get_live_trade_service(
     repo: LiveTradeRepo = Depends(get_live_trade_repo),
+    trade_idea_service: TradeIdeaService = Depends(get_trade_idea_service),
 ) -> LiveTradeService:
-    return LiveTradeService(repo=repo)
+    return LiveTradeService(repo=repo, trade_idea_service=trade_idea_service)
 
 LiveTradeServiceDep = Annotated[LiveTradeService, Depends(get_live_trade_service)]
