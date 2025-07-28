@@ -13,7 +13,7 @@ const { formatTradeDate, formatEntryPrice } = useFormatters()
 const filter = ref('all')
 const searchQuery = ref('')
 const isOpen = ref(false)
-const isFormOpen = ref(false)
+const isTradeIdeaFormOpen = ref(false)
 const isLiveTradeFormOpen = ref(false)
 const selectedTrade = ref<TradeIdea | null>(null)
 
@@ -45,10 +45,10 @@ const handleDialogClose = () => {
 const handleFormOpen = (idea: TradeIdea, type: FormType) => {
   selectedTrade.value = idea
   if (type === 'convert') isLiveTradeFormOpen.value = true
-  else isFormOpen.value = true
+  else isTradeIdeaFormOpen.value = true
 }
 const handleFormClose = () => {
-  isFormOpen.value = false
+  isTradeIdeaFormOpen.value = false
   isLiveTradeFormOpen.value = false
   selectedTrade.value = null
 }
@@ -128,7 +128,7 @@ const handleFormClose = () => {
   <TradeIdeaForm
     v-if="selectedTrade"
     :selectedTrade="selectedTrade"
-    :isOpen="isFormOpen"
+    :isOpen="isTradeIdeaFormOpen"
     :close="handleFormClose"
   />
   <LiveTradeForm
