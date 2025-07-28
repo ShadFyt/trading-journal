@@ -100,13 +100,13 @@ class Catalyst(BaseNote, table=True):
 
 class LiveTrade(BaseTrade, RrRatioMixin, table=True):
     __tablename__ = "live_trade"
-    trade_idea_id: str = Field(foreign_key="trade_idea.id", nullable=False)
+    trade_idea_id: str = Field(foreign_key="trade_idea.id", nullable=False, unique=True)
     status: str = Field(default='open')
     position_size: int = Field(nullable=False)
     entry_price_avg: float = Field(nullable=False)
     exit_price_avg: Optional[float] = Field(nullable=True)
     commissions: Optional[float] = Field(nullable=True)
-    enter_date: datetime = Field(nullable=False)
+    enter_date: datetime = Field(default_factory=datetime.now)
     exit_date: Optional[datetime] = Field(nullable=True)
     net_gain_loss: Optional[float] = Field(nullable=True)
     outcome: Optional[str] = Field(nullable=True)

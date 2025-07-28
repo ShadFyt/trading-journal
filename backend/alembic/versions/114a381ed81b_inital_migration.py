@@ -1,8 +1,8 @@
 """inital migration
 
-Revision ID: c956b779e0b2
+Revision ID: 114a381ed81b
 Revises: 
-Create Date: 2025-07-24 14:02:20.482647
+Create Date: 2025-07-28 12:33:30.830582
 
 """
 from typing import Sequence, Union
@@ -14,7 +14,7 @@ import sqlmodel
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'c956b779e0b2'
+revision: str = '114a381ed81b'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -63,7 +63,8 @@ def upgrade() -> None:
     sa.Column('outcome', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('target_prices', sa.JSON(), nullable=True),
     sa.ForeignKeyConstraint(['trade_idea_id'], ['trade_idea.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('trade_idea_id')
     )
     op.create_table('catalyst',
     sa.Column('content', sqlmodel.sql.sqltypes.AutoString(), nullable=False),

@@ -31,10 +31,18 @@ class BaseRepo(Generic[T]):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
     async def create(self, instance: T) -> T:
+        print(instance, 'instance')
         try:
-            validated_instance = self.model.model_validate(instance)
+            # If instance is already a SQLModel object, use it directly
+            # Otherwise, validate and create from raw data
+            if isinstance(instance, self.model):
+                validated_instance = instance
+            else:
+                validated_instance = self.model.model_validate(instance)
+            print(validated_instance, 'validated_instance')
             return await self._save(validated_instance)
         except Exception as e:
+            print(e, 'error creating')
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
     async def delete(self, id: str) -> None:
