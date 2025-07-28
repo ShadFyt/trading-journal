@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue-sonner'
 import { AxiosError } from 'axios'
 import type { LiveTradeCreate } from '@/interfaces'
+import { tradeIdeaKeys } from '@/composables/useTradeIdeaService'
 
 export const liveTradeKeys = {
   all: ['live-trades'] as const,
@@ -27,6 +28,8 @@ export const useLiveTradeMutationService = () => {
     mutationFn: (data: LiveTradeCreate) => createLiveTrade(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: liveTradeKeys.list() })
+      queryClient.invalidateQueries({ queryKey: tradeIdeaKeys.list() })
+
       toast.success('Live trade created successfully')
     },
     onError: (e) => {

@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { statusBadgeClass } from '@/shared/status'
 import { useTradeIdeaFetchingService } from '@/composables'
-import type { TradeIdea } from '@/interfaces/trade-idea.type'
+import type { TradeIdea, FormType } from '@/interfaces/trade-idea.type'
 import { useFormatters } from '@/composables/useFormatters'
 
 const { tradeIdeas: watchlist, isLoading } = useTradeIdeaFetchingService()
@@ -14,6 +14,7 @@ const filter = ref('all')
 const searchQuery = ref('')
 const isOpen = ref(false)
 const isFormOpen = ref(false)
+const isLiveTradeFormOpen = ref(false)
 const selectedTrade = ref<TradeIdea | null>(null)
 
 const filteredWatchlist = computed(() => {
@@ -41,12 +42,14 @@ const handleDialogClose = () => {
   isOpen.value = false
   selectedTrade.value = null
 }
-const handleFormOpen = (idea: TradeIdea) => {
-  isFormOpen.value = true
+const handleFormOpen = (idea: TradeIdea, type: FormType) => {
   selectedTrade.value = idea
+  if (type === 'convert') isLiveTradeFormOpen.value = true
+  else isFormOpen.value = true
 }
 const handleFormClose = () => {
   isFormOpen.value = false
+  isLiveTradeFormOpen.value = false
   selectedTrade.value = null
 }
 </script>
@@ -67,7 +70,11 @@ const handleFormClose = () => {
               <Button variant="ghost" size="sm">⋯</Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent side="bottom" align="end" :avoidCollisions="false">
-              <DropdownMenuItem @click="handleFormOpen(trade)"> Edit </DropdownMenuItem>
+              <DropdownMenuItem @click="handleFormOpen(trade, 'edit')"> Edit </DropdownMenuItem>
+              <DropdownMenuItem @click="handleFormOpen(trade, 'convert')">
+                Convert to Live Trade
+              </DropdownMenuItem>
+
               <DropdownMenuItem class="text-red-600" @click="handleDialogOpen(trade)"
                 >Delete</DropdownMenuItem
               >
@@ -122,6 +129,12 @@ const handleFormClose = () => {
     v-if="selectedTrade"
     :selectedTrade="selectedTrade"
     :isOpen="isFormOpen"
+    :close="handleFormClose"
+  />
+  <LiveTradeForm
+    v-if="selectedTrade"
+    :tradeIdea="selectedTrade"
+    :isOpen="isLiveTradeFormOpen"
     :close="handleFormClose"
   />
 </template>
