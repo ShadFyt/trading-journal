@@ -17,6 +17,7 @@ export const useTradeIdeaForm = (close: (v: boolean) => void, selectedTrade?: Tr
       setup: '',
       rating: 1,
       entryMin: 0,
+      entryMax: undefined,
       stop: 0,
       catalysts: '',
       notes: '',

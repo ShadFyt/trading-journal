@@ -85,6 +85,7 @@ declare module 'vue' {
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     Input: typeof import('./src/components/ui/input/Input.vue')['default']
     Label: typeof import('./src/components/ui/label/Label.vue')['default']
+    LiveTradeCard: typeof import('./src/components/live-trades/LiveTradeCard.vue')['default']
     LiveTradeForm: typeof import('./src/components/live-trades/LiveTradeForm.vue')['default']
     NumberField: typeof import('./src/components/ui/number-field/NumberField.vue')['default']
     NumberFieldContent: typeof import('./src/components/ui/number-field/NumberFieldContent.vue')['default']
