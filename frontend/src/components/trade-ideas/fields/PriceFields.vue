@@ -2,9 +2,8 @@
 import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 
 defineProps<{
-  isFieldDirty: boolean
+  isFieldDirty: (path: any) => boolean
 }>()
-
 </script>
 
 <template>
@@ -31,6 +30,7 @@ defineProps<{
           Entry Max
         </FormLabel>
         <Input
+          :required="false"
           type="number"
           id="entryMax"
           v-bind="componentField"
@@ -51,6 +51,7 @@ defineProps<{
           placeholder="e.g. 150.50"
           step="0.01"
         />
+        <FormMessage />
       </FormItem>
     </FormField>
   </div>

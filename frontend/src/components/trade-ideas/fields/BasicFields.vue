@@ -5,7 +5,7 @@ import type { FormActions } from 'vee-validate'
 
 interface Props {
   setFieldValue: FormActions<TradeIdeaFormValues>['setFieldValue']
-  isFieldDirty: boolean
+  isFieldDirty: (path: any) => boolean
 }
 
 const { setFieldValue, isFieldDirty } = defineProps<Props>()

@@ -98,7 +98,7 @@ const message = computed(() => {
           </div>
         </section>
         <SheetFooter class="flex justify-end">
-          <Button :disabled="isSubmitting || !isFormValid || !hasFormChanged" type="submit">{{
+          <Button :disabled="isSubmitting || !hasFormChanged" type="submit">{{
             isEditMode ? 'Update' : 'Save'
           }}</Button>
         </SheetFooter>

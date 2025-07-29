@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import type { FormActions } from 'vee-validate'
-
+import { Icon } from '@iconify/vue'
 import {
   Select,
   SelectContent,
@@ -25,7 +25,7 @@ import type { TradeIdeaFormValues } from '@/interfaces/trade-idea.type'
 
 interface Props {
   setFieldValue: FormActions<TradeIdeaFormValues>['setFieldValue']
-  isFieldDirty: boolean
+  isFieldDirty: (path: any) => boolean
   isLiveTrade: boolean
 }
 
@@ -69,7 +69,7 @@ const df = new DateFormatter('en-US', {
                 :class="cn('ps-3 text-start font-normal', 'text-muted-foreground')"
               >
                 <span>{{ value ? df.format(new Date(value)) : 'Pick a date' }}</span>
-                <CalendarIcon class="ms-auto h-4 w-4 opacity-50" />
+                <Icon icon="lucide:calendar-days" width="24" height="24" />
               </Button>
               <input hidden />
             </FormControl>

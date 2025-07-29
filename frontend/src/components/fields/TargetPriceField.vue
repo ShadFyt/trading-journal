@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { useFieldArray } from 'vee-validate';
+import { useFieldArray } from 'vee-validate'
 
-defineProps<{ isFieldDirty: boolean }>()
+defineProps<{ isFieldDirty: (path: any) => boolean }>()
 
 const { fields, push, remove } = useFieldArray<number>('targetPrices')
 
