@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { useFormatters } from '@/composables'
 
 /**
  * Live trade data interface
@@ -50,6 +51,8 @@ const emit = defineEmits<{
   closeTrade: [tradeId: string]
   editTrade: [tradeId: string]
 }>()
+
+const { formatCurrency, formatPercentage } = useFormatters()
 
 /**
  * Status badge styling based on trade status
@@ -92,26 +95,6 @@ const priceProgress = computed(() => {
   const progress = ((currentPrice - stopLoss) / range) * 100
   return Math.max(0, Math.min(100, progress))
 })
-
-/**
- * Format currency values
- */
-const formatCurrency = (value: number): string => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value)
-}
-
-/**
- * Format percentage values
- */
-const formatPercentage = (value: number): string => {
-  const sign = value >= 0 ? '+' : ''
-  return `${sign}${value.toFixed(2)}%`
-}
 </script>
 
 <template>
@@ -225,7 +208,7 @@ const formatPercentage = (value: number): string => {
           <ProgressIndicator
             class="indicator rounded-full block relative w-full h-full bg-grass9 transition-transform overflow-hidden duration-[660ms] ease-[cubic-bezier(0.65, 0, 0.35, 1)] after:animate-progress after:content-[''] after:absolute after:inset-0 after:bg-[linear-gradient(-45deg,_rgba(255,255,255,0.2)_25%,_transparent_25%,_transparent_50%,_rgba(255,255,255,0.2)_50%,_rgba(255,255,255,0.2)_75%,_transparent_75%,_transparent)] after:bg-[length:30px_30px]"
             :style="`transform: translateX(-${100 - priceProgress}%)`"
-            :class="trade.pnl >= 0 ? 'bg-green-500' : 'bg-red-500'" 
+            :class="trade.pnl >= 0 ? 'bg-green-500' : 'bg-red-500'"
           />
         </ProgressRoot>
       </div>
