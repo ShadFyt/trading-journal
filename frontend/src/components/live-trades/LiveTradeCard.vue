@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { ProgressIndicator, ProgressRoot } from 'reka-ui'
+
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -216,13 +218,16 @@ const formatPercentage = (value: number): string => {
           <span>Current Position</span>
           <span>Target</span>
         </div>
-        <div class="w-full bg-gray-200 rounded-full h-2">
-          <div
-            class="h-2 rounded-full transition-all duration-300"
-            :class="trade.pnl >= 0 ? 'bg-green-500' : 'bg-red-500'"
-            :style="{ width: `${priceProgress}%` }"
-          ></div>
-        </div>
+        <ProgressRoot
+          v-model="priceProgress"
+          class="rounded-full relative h-3 overflow-hidden bg-white dark:bg-stone-950 border border-muted"
+        >
+          <ProgressIndicator
+            class="indicator rounded-full block relative w-full h-full bg-grass9 transition-transform overflow-hidden duration-[660ms] ease-[cubic-bezier(0.65, 0, 0.35, 1)] after:animate-progress after:content-[''] after:absolute after:inset-0 after:bg-[linear-gradient(-45deg,_rgba(255,255,255,0.2)_25%,_transparent_25%,_transparent_50%,_rgba(255,255,255,0.2)_50%,_rgba(255,255,255,0.2)_75%,_transparent_75%,_transparent)] after:bg-[length:30px_30px]"
+            :style="`transform: translateX(-${100 - priceProgress}%)`"
+            :class="trade.pnl >= 0 ? 'bg-green-500' : 'bg-red-500'" 
+          />
+        </ProgressRoot>
       </div>
 
       <!-- Trade Metrics -->
