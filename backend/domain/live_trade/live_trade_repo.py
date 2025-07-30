@@ -3,16 +3,29 @@ from database.models import LiveTrade
 from core.base_repo import BaseRepo
 from domain.live_trade.live_trade_schema import LiveTradeUpdate
 from fastapi import HTTPException
+from sqlmodel import select
+from sqlalchemy.orm import selectinload
 
 class LiveTradeRepo(BaseRepo[LiveTrade]):
     def __init__(self, session: SessionDep):
         super().__init__(session, LiveTrade)
     
     async def get_all_live_trades(self):
-        return await self.get_all(order_by=LiveTrade.enter_date.desc())
+        stmt = (
+            select(LiveTrade)
+            .options(selectinload(LiveTrade.annotations))
+            .order_by(LiveTrade.enter_date.desc())
+        )
+        result = await self.session.exec(stmt)
+        return result.all()    
     
     async def get_live_trade_by_id(self, id: str):
         return await self.get_by_id(id)
+    
+    async def get_live_trade_by_trade_idea_id(self, trade_idea_id: str) -> LiveTrade | None:
+        stmt = select(LiveTrade).where(LiveTrade.trade_idea_id == trade_idea_id)
+        result = await self.session.exec(stmt)
+        return result.first()
 
     async def update_live_trade(self, id: str, payload: LiveTradeUpdate):
         try:
@@ -28,7 +41,15 @@ class LiveTradeRepo(BaseRepo[LiveTrade]):
             raise HTTPException(status_code=400, detail=str(e))
     
     async def create_live_trade(self, live_trade: LiveTrade):
-        return await self.create(live_trade)
+        result = await self.create(live_trade)
+        
+        stmt = (
+            select(LiveTrade)
+            .options(selectinload(LiveTrade.annotations))
+            .where(LiveTrade.id == result.id)
+        )
+        fresh_result = await self.session.exec(stmt)
+        return fresh_result.first()
     
     async def delete_live_trade(self, id: str):
         return await self.delete(id)
