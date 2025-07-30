@@ -87,16 +87,12 @@ class TradeIdea(BaseTrade, RrRatioMixin, table=True):
     def rr_ratio(self) -> float:
         return self.calculate_rr_ratio(self.entry_min, self.stop, self.target_prices)
 
-
-class Note(BaseNote, table=True):
+class Annotation(BaseNote, table=True):
     id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True, nullable=False)
+    content: str = Field(nullable=False)
+    type: str = Field(nullable=False)  # "note" or "catalyst"
     live_trade_id: str = Field(foreign_key="live_trade.id", nullable=False)
-    live_trade: "LiveTrade" = Relationship(back_populates="notes")
-
-class Catalyst(BaseNote, table=True):
-    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True, nullable=False)
-    live_trade_id: str = Field(foreign_key="live_trade.id", nullable=False)
-    live_trade: "LiveTrade" = Relationship(back_populates="catalysts")
+    live_trade: "LiveTrade" = Relationship(back_populates="annotations")
 
 class LiveTrade(BaseTrade, RrRatioMixin, table=True):
     __tablename__ = "live_trade"
@@ -111,8 +107,7 @@ class LiveTrade(BaseTrade, RrRatioMixin, table=True):
     net_gain_loss: Optional[float] = Field(nullable=True)
     outcome: Optional[str] = Field(nullable=True)
     target_prices: List[float] = Field(sa_column=Column(JSON))
-    notes: List[Note] = Relationship(back_populates="live_trade")
-    catalysts: List[Catalyst] = Relationship(back_populates="live_trade")
+    annotations: List[Annotation] = Relationship(back_populates="live_trade")
     trade_idea: TradeIdea = Relationship(back_populates="live_trade")
 
     @property

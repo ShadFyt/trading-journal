@@ -2,10 +2,11 @@ from core.base_schema import BaseSchema
 from typing import List, Optional
 from datetime import datetime
 
-class NoteBase(BaseSchema):
+class Annotation(BaseSchema):
     id: str
     content: str
     date: datetime
+    type: 'catalyst' | 'note' | 'managementNote'
 
 class LiveTradeBase(BaseSchema):
     symbol: str
@@ -16,7 +17,6 @@ class LiveTradeBase(BaseSchema):
     stop: float
     target_prices: List[float]
     position_size: int
-    enter_date: datetime
     exit_date: Optional[datetime] = None
     status: str = 'open'
     commissions: Optional[float] = None
@@ -26,9 +26,10 @@ class LiveTradeBase(BaseSchema):
 
 class LiveTradeResponse(LiveTradeBase):
     id: str
-    notes: List[NoteBase]
-    catalysts: List[NoteBase]
+    annotations: List[Annotation]
     rr_ratio: Optional[float] = None
+    enter_date: datetime
+
 
 class LiveTradeCreate(LiveTradeBase):
     notes: List[str]
