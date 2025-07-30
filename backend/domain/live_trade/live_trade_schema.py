@@ -1,12 +1,7 @@
 from core.base_schema import BaseSchema
 from typing import List, Optional
 from datetime import datetime
-
-class Annotation(BaseSchema):
-    id: str
-    content: str
-    date: datetime
-    type: 'catalyst' | 'note' | 'managementNote'
+from domain.annotation.annotation_schema import AnnotationRead
 
 class LiveTradeBase(BaseSchema):
     symbol: str
@@ -26,7 +21,7 @@ class LiveTradeBase(BaseSchema):
 
 class LiveTradeResponse(LiveTradeBase):
     id: str
-    annotations: List[Annotation]
+    annotations: List[AnnotationRead] 
     rr_ratio: Optional[float] = None
     enter_date: datetime
 

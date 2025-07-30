@@ -1,0 +1,21 @@
+from datetime import datetime
+from typing import Optional
+from core.base_schema import BaseSchema
+from typing import Literal
+
+class AnnotationBase(BaseSchema):
+    content: str
+    type: Literal['catalyst', 'note', 'managementNote']
+
+class AnnotationCreate(AnnotationBase):
+    live_trade_id: str
+    date: datetime
+
+class AnnotationRead(AnnotationCreate):
+    id: str
+
+
+class AnnotationUpdate(AnnotationBase):
+    type: Optional[Literal['catalyst', 'note', 'managementNote']] = None
+    content: Optional[str] = None
+    date: Optional[datetime] = None

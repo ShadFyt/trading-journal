@@ -1,13 +1,13 @@
 from typing import TypeVar, Generic, List, Optional, Type
 from sqlmodel import SQLModel, select
-from sqlalchemy.ext.asyncio import AsyncSession
+from database.session import SessionDep
 from fastapi import HTTPException, status
 import asyncio
 
 T = TypeVar("T", bound=SQLModel)
 
 class BaseRepo(Generic[T]):
-    def __init__(self, session: AsyncSession, model: Type[T]):
+    def __init__(self, session: SessionDep, model: Type[T]):
         self.session = session
         self.model = model
 
@@ -31,18 +31,16 @@ class BaseRepo(Generic[T]):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
     async def create(self, instance: T) -> T:
-        print(instance, 'instance')
         try:
             # If instance is already a SQLModel object, use it directly
             # Otherwise, validate and create from raw data
+            validated_instance= None
             if isinstance(instance, self.model):
                 validated_instance = instance
             else:
                 validated_instance = self.model.model_validate(instance)
-            print(validated_instance, 'validated_instance')
             return await self._save(validated_instance)
         except Exception as e:
-            print(e, 'error creating')
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
     async def delete(self, id: str) -> None:
