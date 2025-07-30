@@ -12,24 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useFormatters } from '@/composables'
-
-/**
- * Live trade data interface
- */
-interface LiveTrade {
-  id: string
-  symbol: string
-  status: 'open' | 'partial' | 'closed'
-  entryPrice: number
-  currentPrice: number
-  positionSize: number
-  stopLoss: number
-  targetPrices: number[]
-  entryDate: Date
-  riskRewardRatio: number
-  entryReason: string
-  managementNotes?: string
-}
+import type { LiveTrade } from '@/interfaces/live-trade.type'
 
 interface Props {
   trade: LiveTrade
@@ -73,10 +56,10 @@ const statusBadgeClass = computed(() => {
  * Calculate progress percentage between stop loss and highest target
  */
 const priceProgress = computed(() => {
-  const { currentPrice, stopLoss, targetPrices } = trade
+  const { currentPrice, stop, targetPrices } = trade
   const highestTarget = Math.max(...targetPrices)
-  const range = highestTarget - stopLoss
-  const progress = ((currentPrice - stopLoss) / range) * 100
+  const range = highestTarget - stop
+  const progress = ((currentPrice - stop) / range) * 100
   return Math.max(0, Math.min(100, progress))
 })
 
@@ -89,7 +72,7 @@ const positionValue = computed(() => {
  * Calculate P&L based on current price vs entry price
  */
 const pnl = computed(() => {
-  return (trade.currentPrice - trade.entryPrice) * trade.positionSize
+  return (trade.currentPrice - trade.entryPriceAvg) * trade.positionSize
 })
 
 /**
@@ -137,7 +120,9 @@ const pnlStyling = computed(() => {
       <header class="flex justify-between items-center mb-3">
         <div class="flex items-center gap-2">
           <span class="text-2xl">📈</span>
-          <h2 class="text-2xl font-bold text-blue-700 tracking-wide">{{ trade.symbol }}</h2>
+          <h2 class="text-2xl font-bold text-blue-700 tracking-wide">
+            {{ trade.symbol.toUpperCase() }}
+          </h2>
         </div>
         <Badge :class="statusBadgeClass">{{ trade.status }}</Badge>
       </header>
@@ -156,7 +141,9 @@ const pnlStyling = computed(() => {
         <div class="text-right">
           <p class="text-xs text-gray-600 uppercase tracking-wide">Percentage</p>
           <span class="text-sm" :class="pnl >= 0 ? 'text-green-600' : 'text-red-600'">{{
-            formatPercentage(((trade.currentPrice - trade.entryPrice) / trade.entryPrice) * 100)
+            formatPercentage(
+              ((trade.currentPrice - trade.entryPriceAvg) / trade.entryPriceAvg) * 100,
+            )
           }}</span>
         </div>
       </div>
@@ -165,7 +152,7 @@ const pnlStyling = computed(() => {
       <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm mb-3">
         <div>
           <span class="font-semibold text-gray-600">Entry:</span>
-          <span class="ml-1">{{ formatCurrency(trade.entryPrice) }}</span>
+          <span class="ml-1">{{ formatCurrency(trade.entryPriceAvg) }}</span>
         </div>
         <div>
           <span class="font-semibold text-gray-600">Current:</span>
@@ -173,7 +160,7 @@ const pnlStyling = computed(() => {
         </div>
         <div>
           <span class="font-semibold text-gray-600">Stop Loss:</span>
-          <span class="ml-1">{{ formatCurrency(trade.stopLoss) }}</span>
+          <span class="ml-1">{{ formatCurrency(trade.stop) }}</span>
         </div>
         <div>
           <span class="font-semibold text-gray-600">Position:</span>
@@ -225,7 +212,7 @@ const pnlStyling = computed(() => {
       <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-sm mb-3">
         <div>
           <span class="font-semibold text-gray-600">R:R Ratio:</span>
-          <span class="ml-1">1:{{ trade.riskRewardRatio }}</span>
+          <span class="ml-1">1:{{ trade.rrRatio }}</span>
         </div>
         <div>
           <span class="font-semibold text-gray-600">Time in Trade:</span>
@@ -237,47 +224,8 @@ const pnlStyling = computed(() => {
         </div>
       </div>
 
-      <!-- Quick Actions -->
-      <div class="flex flex-wrap gap-2 mb-3">
-        <Button
-          size="sm"
-          variant="outline"
-          class="text-xs"
-          @click="emit('partialExit', trade.id, 25)"
-        >
-          Exit 25%
-        </Button>
-        <Button
-          size="sm"
-          variant="outline"
-          class="text-xs"
-          @click="emit('partialExit', trade.id, 50)"
-        >
-          Exit 50%
-        </Button>
-        <Button
-          size="sm"
-          variant="outline"
-          class="text-xs"
-          @click="emit('partialExit', trade.id, 75)"
-        >
-          Exit 75%
-        </Button>
-      </div>
-
-      <!-- Entry Reason & Notes -->
-      <div class="space-y-2">
-        <div>
-          <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Entry Reason</p>
-          <p class="text-xs text-gray-500 italic">{{ trade.entryReason }}</p>
-        </div>
-        <div v-if="trade.managementNotes">
-          <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide">
-            Management Notes
-          </p>
-          <p class="text-xs text-gray-500 italic">{{ trade.managementNotes }}</p>
-        </div>
-      </div>
+      <!-- Setup & Notes -->
+      <NotesDisplay :trade="trade" />
 
       <!-- Footer -->
       <footer class="mt-3 pt-2 border-t border-gray-100 flex justify-between text-xs text-gray-400">
