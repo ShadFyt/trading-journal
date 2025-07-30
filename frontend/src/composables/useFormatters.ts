@@ -20,6 +20,16 @@ export const useFormatters = () => {
     return `$${entryMin} - $${entryMax}`
   }
 
+  const formatTradeDuration = (entryDate: Date) => {
+    const now = new Date()
+    const diffTime = Math.abs(now.getTime() - entryDate.getTime())
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+
+    if (diffDays === 0) return 'Today'
+    if (diffDays === 1) return '1 day'
+    return `${diffDays} days`
+  }
+
   /**
    * Format currency values
    */
@@ -45,5 +55,6 @@ export const useFormatters = () => {
     formatEntryPrice,
     formatCurrency,
     formatPercentage,
+    formatTradeDuration,
   }
 }

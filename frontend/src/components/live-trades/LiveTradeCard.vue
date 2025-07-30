@@ -23,23 +23,19 @@ interface LiveTrade {
   entryPrice: number
   currentPrice: number
   positionSize: number
-  positionValue: number
   stopLoss: number
   targetPrices: number[]
   entryDate: Date
-  pnl: number
-  pnlPercentage: number
   riskRewardRatio: number
   entryReason: string
   managementNotes?: string
-  timeInTrade: string
 }
 
 interface Props {
   trade: LiveTrade
 }
 
-const props = defineProps<Props>()
+const { trade } = defineProps<Props>()
 
 /**
  * Emitted events for trade management actions
@@ -52,7 +48,7 @@ const emit = defineEmits<{
   editTrade: [tradeId: string]
 }>()
 
-const { formatCurrency, formatPercentage } = useFormatters()
+const { formatCurrency, formatPercentage, formatTradeDuration } = useFormatters()
 
 /**
  * Status badge styling based on trade status
@@ -61,7 +57,7 @@ const statusBadgeClass = computed(() => {
   const baseClasses =
     'cursor-pointer hover:opacity-80 capitalize px-3 py-1 text-xs rounded-full border font-semibold'
 
-  switch (props.trade.status) {
+  switch (trade.status) {
     case 'open':
       return `${baseClasses} bg-blue-50 text-blue-700 border-blue-200`
     case 'partial':
@@ -74,26 +70,38 @@ const statusBadgeClass = computed(() => {
 })
 
 /**
+ * Calculate progress percentage between stop loss and highest target
+ */
+const priceProgress = computed(() => {
+  const { currentPrice, stopLoss, targetPrices } = trade
+  const highestTarget = Math.max(...targetPrices)
+  const range = highestTarget - stopLoss
+  const progress = ((currentPrice - stopLoss) / range) * 100
+  return Math.max(0, Math.min(100, progress))
+})
+
+const positionValue = computed(() => {
+  const { positionSize, currentPrice } = trade
+  return positionSize * currentPrice
+})
+
+/**
+ * Calculate P&L based on current price vs entry price
+ */
+const pnl = computed(() => {
+  return (trade.currentPrice - trade.entryPrice) * trade.positionSize
+})
+
+/**
  * P&L styling based on profit/loss
  */
 const pnlStyling = computed(() => {
-  const isProfit = props.trade.pnl >= 0
+  const isProfit = pnl.value >= 0
   return {
     textColor: isProfit ? 'text-green-600' : 'text-red-600',
     bgColor: isProfit ? 'bg-green-50' : 'bg-red-50',
     borderColor: isProfit ? 'border-green-200' : 'border-red-200',
   }
-})
-
-/**
- * Calculate progress percentage between stop loss and highest target
- */
-const priceProgress = computed(() => {
-  const { currentPrice, stopLoss, targetPrices } = props.trade
-  const highestTarget = Math.max(...targetPrices)
-  const range = highestTarget - stopLoss
-  const progress = ((currentPrice - stopLoss) / range) * 100
-  return Math.max(0, Math.min(100, progress))
 })
 </script>
 
@@ -126,13 +134,13 @@ const priceProgress = computed(() => {
 
     <CardContent class="pt-0">
       <!-- Header Section -->
-      <div class="flex justify-between items-center mb-3">
+      <header class="flex justify-between items-center mb-3">
         <div class="flex items-center gap-2">
           <span class="text-2xl">📈</span>
           <h2 class="text-2xl font-bold text-blue-700 tracking-wide">{{ trade.symbol }}</h2>
         </div>
         <Badge :class="statusBadgeClass">{{ trade.status }}</Badge>
-      </div>
+      </header>
 
       <!-- P&L Display -->
       <div
@@ -141,15 +149,15 @@ const priceProgress = computed(() => {
       >
         <div>
           <p class="text-xs text-gray-600 uppercase tracking-wide">Profit/Loss</p>
-          <p class="text-xl font-bold" :class="pnlStyling.textColor">
-            {{ formatCurrency(trade.pnl) }}
-          </p>
+          <span class="text-2xl font-bold" :class="pnl >= 0 ? 'text-green-600' : 'text-red-600'">{{
+            formatCurrency(pnl)
+          }}</span>
         </div>
         <div class="text-right">
           <p class="text-xs text-gray-600 uppercase tracking-wide">Percentage</p>
-          <p class="text-xl font-bold" :class="pnlStyling.textColor">
-            {{ formatPercentage(trade.pnlPercentage) }}
-          </p>
+          <span class="text-sm" :class="pnl >= 0 ? 'text-green-600' : 'text-red-600'">{{
+            formatPercentage(((trade.currentPrice - trade.entryPrice) / trade.entryPrice) * 100)
+          }}</span>
         </div>
       </div>
 
@@ -208,7 +216,7 @@ const priceProgress = computed(() => {
           <ProgressIndicator
             class="indicator rounded-full block relative w-full h-full bg-grass9 transition-transform overflow-hidden duration-[660ms] ease-[cubic-bezier(0.65, 0, 0.35, 1)] after:animate-progress after:content-[''] after:absolute after:inset-0 after:bg-[linear-gradient(-45deg,_rgba(255,255,255,0.2)_25%,_transparent_25%,_transparent_50%,_rgba(255,255,255,0.2)_50%,_rgba(255,255,255,0.2)_75%,_transparent_75%,_transparent)] after:bg-[length:30px_30px]"
             :style="`transform: translateX(-${100 - priceProgress}%)`"
-            :class="trade.pnl >= 0 ? 'bg-green-500' : 'bg-red-500'"
+            :class="pnl >= 0 ? 'bg-green-500' : 'bg-red-500'"
           />
         </ProgressRoot>
       </div>
@@ -221,11 +229,11 @@ const priceProgress = computed(() => {
         </div>
         <div>
           <span class="font-semibold text-gray-600">Time in Trade:</span>
-          <span class="ml-1">{{ trade.timeInTrade }}</span>
+          <span class="ml-1">{{ formatTradeDuration(trade.entryDate) }}</span>
         </div>
         <div class="col-span-2">
           <span class="font-semibold text-gray-600">Position Value:</span>
-          <span class="ml-1">{{ formatCurrency(trade.positionValue) }}</span>
+          <span class="ml-1">{{ formatCurrency(positionValue) }}</span>
         </div>
       </div>
 
@@ -272,10 +280,10 @@ const priceProgress = computed(() => {
       </div>
 
       <!-- Footer -->
-      <div class="mt-3 pt-2 border-t border-gray-100 flex justify-between text-xs text-gray-400">
+      <footer class="mt-3 pt-2 border-t border-gray-100 flex justify-between text-xs text-gray-400">
         <span>Entered {{ trade.entryDate.toLocaleDateString() }}</span>
         <span>ID: {{ trade.id.slice(-6) }}</span>
-      </div>
+      </footer>
     </CardContent>
   </Card>
 </template>
