@@ -6,6 +6,7 @@ from domain.live_trade.live_trade_service import LiveTradeService
 from domain.trade_idea.trade_idea_service import TradeIdeaService
 from domain.annotation.annotation_deps import get_annotation_repo
 from typing import Annotated
+from domain.annotation.annotation_repo import AnnotationRepo
 
 def get_live_trade_repo(session: SessionDep) -> LiveTradeRepo:
     return LiveTradeRepo(session=session)

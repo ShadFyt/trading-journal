@@ -1,4 +1,9 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useLiveTradeFetchingService } from '@/composables/useLiveTradeService'
+import LiveTrades from '@/components/live-trades/LiveTrades.vue'
+
+const { liveTrades } = useLiveTradeFetchingService()
+</script>
 <template>
-  <h1>Trades</h1>
+  <LiveTrades />
 </template>
