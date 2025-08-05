@@ -24,6 +24,11 @@ class LiveTradeResponse(LiveTradeBase):
     annotations: List[AnnotationRead] 
     rr_ratio: Optional[float] = None
     enter_date: datetime
+    
+    # Current market data (added for real-time price display)
+    current_price: Optional[float] = None
+    price_change: Optional[float] = None
+    percent_change: Optional[float] = None
 
 
 class LiveTradeCreate(LiveTradeBase):

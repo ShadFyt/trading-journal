@@ -27,6 +27,8 @@ export const LiveTradeSchema = liveTradeCreateSchema.extend({
   notes: z.array(NoteSchema),
   catalysts: z.array(NoteSchema),
   currentPrice: z.number(),
+  priceChange: z.number().optional(),
+  percentChange: z.number().optional(),
 })
 
 export const LiveTradeUpdateSchema = LiveTradeSchema.omit({ id: true })
