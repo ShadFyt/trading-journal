@@ -1,29 +1,8 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import LiveTradeCard from './LiveTradeCard.vue'
-import { useMockLiveTrades } from '@/composables/useMockLiveTrades'
-import { useFormatters, useLiveTradeFetchingService } from '@/composables'
+import { useLiveTradeFetchingService } from '@/composables'
 
 const { liveTrades: activeTrades } = useLiveTradeFetchingService()
-const { getTotalPnL, getTotalPortfolioValue } = useMockLiveTrades()
-const { formatCurrency } = useFormatters()
-
-/**
- * Get only active trades for display
- */
-// const activeTrades = computed(() => getActiveTrades())
-
-/**
- * Portfolio summary stats
- */
-const portfolioStats = computed(() => {
-  return {
-    totalPnL: getTotalPnL(),
-    totalValue: getTotalPortfolioValue(),
-    activePositions: activeTrades.value?.length ?? 0,
-    profitablePositions: 3,
-  }
-})
 
 /**
  * Handle trade management actions
@@ -59,40 +38,8 @@ const handleEditTrade = (tradeId: string) => {
     <!-- Header -->
     <header class="mb-6">
       <h1 class="text-3xl font-bold text-gray-900 mb-2">Live Trades</h1>
-
       <!-- Portfolio Summary -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-          <p class="text-xs text-gray-600 uppercase tracking-wide">Total P&L</p>
-          <p
-            class="text-2xl font-bold"
-            :class="portfolioStats.totalPnL >= 0 ? 'text-green-600' : 'text-red-600'"
-          >
-            {{ formatCurrency(portfolioStats.totalPnL) }}
-          </p>
-        </div>
-
-        <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-          <p class="text-xs text-gray-600 uppercase tracking-wide">Portfolio Value</p>
-          <p class="text-2xl font-bold text-gray-900">
-            {{ formatCurrency(portfolioStats.totalValue) }}
-          </p>
-        </div>
-
-        <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-          <p class="text-xs text-gray-600 uppercase tracking-wide">Active Positions</p>
-          <p class="text-2xl font-bold text-blue-600">
-            {{ portfolioStats.activePositions }}
-          </p>
-        </div>
-
-        <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-          <p class="text-xs text-gray-600 uppercase tracking-wide">Profitable</p>
-          <p class="text-2xl font-bold text-green-600">
-            {{ portfolioStats.profitablePositions }}/{{ portfolioStats.activePositions }}
-          </p>
-        </div>
-      </div>
+      <PortfolioSummary />
     </header>
 
     <!-- Live Trades Grid -->
