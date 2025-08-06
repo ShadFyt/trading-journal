@@ -134,6 +134,14 @@ const pnlStyling = computed(() => {
         :class="[pnlStyling.bgColor, pnlStyling.borderColor]"
       >
         <div>
+          <p class="text-xs text-gray-600 uppercase tracking-wide">Current Price</p>
+          <span
+            class="text-xl font-bold"
+            :class="trade.currentPrice >= trade.entryPriceAvg ? 'text-green-600' : 'text-red-600'"
+            >{{ formatCurrency(trade.currentPrice) }}</span
+          >
+        </div>
+        <div>
           <p class="text-xs text-gray-600 uppercase tracking-wide">Profit/Loss</p>
           <span class="text-2xl font-bold" :class="pnl >= 0 ? 'text-green-600' : 'text-red-600'">{{
             formatCurrency(pnl)
@@ -154,10 +162,6 @@ const pnlStyling = computed(() => {
         <div>
           <span class="font-semibold text-gray-600">Entry:</span>
           <span class="ml-1">{{ formatCurrency(trade.entryPriceAvg) }}</span>
-        </div>
-        <div>
-          <span class="font-semibold text-gray-600">Current:</span>
-          <span class="ml-1">{{ formatCurrency(trade.currentPrice) }}</span>
         </div>
         <div>
           <span class="font-semibold text-gray-600">Stop Loss:</span>

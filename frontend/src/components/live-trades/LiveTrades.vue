@@ -49,7 +49,7 @@ const handleEditTrade = (tradeId: string) => {
     </header>
 
     <!-- Live Trades Grid -->
-    <div v-if="activeTrades?.values" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <main v-if="activeTrades?.values" class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <LiveTradeCard
         v-for="trade in activeTrades"
         :key="trade.id"
@@ -60,7 +60,7 @@ const handleEditTrade = (tradeId: string) => {
         @close-trade="handleCloseTrade"
         @edit-trade="handleEditTrade"
       />
-    </div>
+    </main>
 
     <!-- Empty State -->
     <div v-if="activeTrades?.length === 0" class="text-center py-12">
