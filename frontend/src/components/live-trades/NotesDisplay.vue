@@ -28,7 +28,7 @@ const formatDate = (date: Date) => {
     </div>
 
     <!-- Catalysts -->
-    <div v-if="trade.catalysts.length > 0">
+    <div v-if="trade.catalysts && trade?.catalysts?.length > 0">
       <div class="flex justify-between items-center">
         <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Catalysts</p>
         <Button
@@ -56,7 +56,7 @@ const formatDate = (date: Date) => {
     </div>
 
     <!-- Notes -->
-    <div v-if="trade.notes.length > 0">
+    <div v-if="trade.notes && trade.notes.length > 0">
       <div class="flex justify-between items-center">
         <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Notes</p>
         <Button

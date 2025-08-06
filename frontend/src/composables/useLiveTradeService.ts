@@ -12,12 +12,13 @@ export const liveTradeKeys = {
 }
 
 export const useLiveTradeFetchingService = () => {
-  const { data: liveTrades, isLoading } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: liveTradeKeys.list(),
     queryFn: () => getLiveTrades(),
     staleTime: 60 * 60 * 1000, // 1 hour
     refetchOnWindowFocus: true,
   })
+  const liveTrades = computed(() => data.value)
 
   return { liveTrades, isLoading }
 }

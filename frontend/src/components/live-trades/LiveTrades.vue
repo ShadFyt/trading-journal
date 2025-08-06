@@ -2,25 +2,28 @@
 import { computed } from 'vue'
 import LiveTradeCard from './LiveTradeCard.vue'
 import { useMockLiveTrades } from '@/composables/useMockLiveTrades'
-import { useFormatters } from '@/composables'
+import { useFormatters, useLiveTradeFetchingService } from '@/composables'
 
-const { getActiveTrades, getTotalPnL, getTotalPortfolioValue } = useMockLiveTrades()
+const { liveTrades: activeTrades } = useLiveTradeFetchingService()
+const { getTotalPnL, getTotalPortfolioValue } = useMockLiveTrades()
 const { formatCurrency } = useFormatters()
 
 /**
  * Get only active trades for display
  */
-const activeTrades = computed(() => getActiveTrades())
+// const activeTrades = computed(() => getActiveTrades())
 
 /**
  * Portfolio summary stats
  */
-const portfolioStats = computed(() => ({
-  totalPnL: getTotalPnL(),
-  totalValue: getTotalPortfolioValue(),
-  activePositions: activeTrades.value.length,
-  profitablePositions: 3,
-}))
+const portfolioStats = computed(() => {
+  return {
+    totalPnL: getTotalPnL(),
+    totalValue: getTotalPortfolioValue(),
+    activePositions: activeTrades.value?.length ?? 0,
+    profitablePositions: 3,
+  }
+})
 
 /**
  * Handle trade management actions
@@ -93,7 +96,7 @@ const handleEditTrade = (tradeId: string) => {
     </header>
 
     <!-- Live Trades Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div v-if="activeTrades?.values" class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <LiveTradeCard
         v-for="trade in activeTrades"
         :key="trade.id"
@@ -107,7 +110,7 @@ const handleEditTrade = (tradeId: string) => {
     </div>
 
     <!-- Empty State -->
-    <div v-if="activeTrades.length === 0" class="text-center py-12">
+    <div v-if="activeTrades?.length === 0" class="text-center py-12">
       <div class="text-6xl mb-4">📈</div>
       <h3 class="text-xl font-semibold text-gray-900 mb-2">No Active Trades</h3>
       <p class="text-gray-600">
