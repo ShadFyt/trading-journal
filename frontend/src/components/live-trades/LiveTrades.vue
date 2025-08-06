@@ -49,7 +49,7 @@ const handleEditTrade = (tradeId: string) => {
     </header>
 
     <!-- Live Trades Grid -->
-    <main v-if="activeTrades?.values" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <main v-if="activeTrades?.values" class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
       <LiveTradeCard
         v-for="trade in activeTrades"
         :key="trade.id"
