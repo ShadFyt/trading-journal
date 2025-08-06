@@ -12,7 +12,7 @@ export const liveTradeKeys = {
 }
 
 export const useLiveTradeFetchingService = () => {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: liveTradeKeys.list(),
     queryFn: () => getLiveTrades(),
     staleTime: 60 * 60 * 1000, // 1 hour
@@ -20,7 +20,7 @@ export const useLiveTradeFetchingService = () => {
   })
   const liveTrades = computed(() => data.value)
 
-  return { liveTrades, isLoading }
+  return { liveTrades, isLoading, refetchLiveTrades: refetch }
 }
 
 export const useLiveTradeMutationService = () => {

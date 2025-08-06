@@ -1,8 +1,13 @@
 <script setup lang="ts">
+import { onMounted, onUnmounted, ref } from 'vue'
 import LiveTradeCard from './LiveTradeCard.vue'
 import { useLiveTradeFetchingService } from '@/composables'
+import PortfolioSummary from './PortfolioSummary.vue'
+import { Icon } from '@iconify/vue'
 
-const { liveTrades: activeTrades } = useLiveTradeFetchingService()
+const { liveTrades: activeTrades, refetchLiveTrades } = useLiveTradeFetchingService()
+
+const refetchProgress = ref(0)
 
 /**
  * Handle trade management actions
@@ -31,13 +36,57 @@ const handleEditTrade = (tradeId: string) => {
   console.log(`Editing trade ${tradeId}`)
   // Implementation would go here
 }
+
+const handleRefresh = () => {
+  refetchLiveTrades()
+  refetchProgress.value = 0
+}
+
+let interval: ReturnType<typeof setInterval> | null = null
+
+const startTimer = () => {
+  refetchProgress.value = 0
+  interval = setInterval(() => {
+    refetchProgress.value += 1.6667 // 100% / 60 seconds ≈ 1.6667% per second
+    if (refetchProgress.value >= 100) {
+      handleRefresh()
+      refetchProgress.value = 0 // Reset to 0 instead of clearing
+    }
+  }, 500) // Update every second for 60 seconds total
+}
+
+onMounted(() => {
+  startTimer()
+})
+
+onUnmounted(() => {
+  if (interval) {
+    clearInterval(interval)
+  }
+})
 </script>
 
 <template>
   <main class="p-4 max-w-7xl mx-auto">
     <!-- Header -->
-    <header class="mb-6">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">Live Trades</h1>
+    <header class="mb-">
+      <div class="flex justify-between items-center mb-2">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Live Trades</h1>
+        <div class="w-1/3">
+          <span class="text-sm text-gray-500">Data Refresh Timer</span>
+          <div class="flex items-center gap-3">
+            <Progress v-model="refetchProgress" class="w-5/5 h-3" />
+            <Icon
+              icon="lucide:refresh-cw"
+              width="24"
+              height="24"
+              @click="handleRefresh"
+              class="cursor-pointer hover:opacity-75"
+            />
+          </div>
+        </div>
+      </div>
+
       <!-- Portfolio Summary -->
       <PortfolioSummary />
     </header>
