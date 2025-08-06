@@ -1,5 +1,8 @@
 <script lang="ts" setup>
 import type { LiveTrade } from '@/interfaces'
+import { useFormatters } from '@/composables'
+
+const { convertStringToDate } = useFormatters()
 
 const { trade } = defineProps<{ trade: LiveTrade }>()
 
@@ -8,15 +11,17 @@ const showAllCatalysts = ref(false)
 const showAllNotes = ref(false)
 
 const displayedCatalysts = computed(() => {
-  return showAllCatalysts.value ? trade.catalysts : trade.catalysts.slice(0, 1)
+  const catalysts = trade.annotations.filter((a) => a.type === 'catalyst')
+  return showAllCatalysts.value ? catalysts : catalysts.slice(0, 1)
 })
 
 const displayedNotes = computed(() => {
-  return showAllNotes.value ? trade.notes : trade.notes.slice(0, 1)
+  const notes = trade.annotations.filter((a) => a.type === 'note')
+  return showAllNotes.value ? notes : notes.slice(0, 1)
 })
 
-const formatDate = (date: Date) => {
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+const formatDate = (date: Date | string) => {
+  return convertStringToDate(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 </script>
 
@@ -28,17 +33,17 @@ const formatDate = (date: Date) => {
     </div>
 
     <!-- Catalysts -->
-    <div v-if="trade.catalysts && trade?.catalysts?.length > 0">
+    <div v-if="displayedCatalysts.length > 0">
       <div class="flex justify-between items-center">
         <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Catalysts</p>
         <Button
-          v-if="trade.catalysts.length > 1"
+          v-if="displayedCatalysts.length > 1"
           variant="ghost"
           size="sm"
           class="text-xs px-2 py-1 h-auto text-blue-600 hover:text-blue-700"
           @click="showAllCatalysts = !showAllCatalysts"
         >
-          {{ showAllCatalysts ? 'Show Less' : `+${trade.catalysts.length - 1} more` }}
+          {{ showAllCatalysts ? 'Show Less' : `+${displayedCatalysts.length - 1} more` }}
         </Button>
       </div>
       <div class="space-y-2">
@@ -56,17 +61,17 @@ const formatDate = (date: Date) => {
     </div>
 
     <!-- Notes -->
-    <div v-if="trade.notes && trade.notes.length > 0">
+    <div v-if="displayedNotes.length > 0">
       <div class="flex justify-between items-center">
         <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Notes</p>
         <Button
-          v-if="trade.notes.length > 1"
+          v-if="displayedNotes.length > 1"
           variant="ghost"
           size="sm"
           class="text-xs px-2 py-1 h-auto text-blue-600 hover:text-blue-700"
           @click="showAllNotes = !showAllNotes"
         >
-          {{ showAllNotes ? 'Show Less' : `+${trade.notes.length - 1} more` }}
+          {{ showAllNotes ? 'Show Less' : `+${displayedNotes.length - 1} more` }}
         </Button>
       </div>
       <div class="space-y-2">

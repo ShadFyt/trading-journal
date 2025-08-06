@@ -1,10 +1,11 @@
 import { z } from 'zod'
 import { baseTradeSchema } from './base-trade.schema'
 
-const NoteSchema = z.object({
+const AnnotationSchema = z.object({
   id: z.string().uuid(),
   content: z.string(),
   date: z.date(),
+  type: z.enum(['note', 'catalyst']),
 })
 
 export const liveTradeCreateSchema = baseTradeSchema.extend({
@@ -24,8 +25,7 @@ export const LiveTradeSchema = liveTradeCreateSchema.extend({
   exitDate: z.date().optional(),
   enterDate: z.date(),
   commissions: z.number().optional(),
-  notes: z.array(NoteSchema),
-  catalysts: z.array(NoteSchema),
+  annotations: z.array(AnnotationSchema),
   currentPrice: z.number(),
   priceChange: z.number().optional(),
   percentChange: z.number().optional(),
