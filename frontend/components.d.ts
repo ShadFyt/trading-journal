@@ -40,6 +40,7 @@ declare module 'vue' {
     CardHeader: typeof import('./src/components/ui/card/CardHeader.vue')['default']
     CardTitle: typeof import('./src/components/ui/card/CardTitle.vue')['default']
     ConfirmationDialog: typeof import('./src/components/trade-ideas/ConfirmationDialog.vue')['default']
+    DataRefreshTimer: typeof import('./src/components/live-trades/DataRefreshTimer.vue')['default']
     Dialog: typeof import('./src/components/ui/dialog/Dialog.vue')['default']
     DialogClose: typeof import('./src/components/ui/dialog/DialogClose.vue')['default']
     DialogContent: typeof import('./src/components/ui/dialog/DialogContent.vue')['default']
