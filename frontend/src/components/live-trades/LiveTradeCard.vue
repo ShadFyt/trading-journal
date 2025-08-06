@@ -31,7 +31,8 @@ const emit = defineEmits<{
   editTrade: [tradeId: string]
 }>()
 
-const { formatCurrency, formatPercentage, formatTradeDuration } = useFormatters()
+const { formatCurrency, formatPercentage, formatTradeDuration, convertStringToDate } =
+  useFormatters()
 
 /**
  * Status badge styling based on trade status
@@ -216,7 +217,7 @@ const pnlStyling = computed(() => {
         </div>
         <div>
           <span class="font-semibold text-gray-600">Time in Trade:</span>
-          <span class="ml-1">{{ formatTradeDuration(trade.entryDate) }}</span>
+          <span class="ml-1">{{ formatTradeDuration(trade.enterDate) }}</span>
         </div>
         <div class="col-span-2">
           <span class="font-semibold text-gray-600">Position Value:</span>
@@ -229,7 +230,7 @@ const pnlStyling = computed(() => {
 
       <!-- Footer -->
       <footer class="mt-3 pt-2 border-t border-gray-100 flex justify-between text-xs text-gray-400">
-        <span>Entered {{ trade.entryDate.toLocaleDateString() }}</span>
+        <span>Entered {{ convertStringToDate(trade.enterDate).toLocaleDateString() }}</span>
         <span>ID: {{ trade.id.slice(-6) }}</span>
       </footer>
     </CardContent>

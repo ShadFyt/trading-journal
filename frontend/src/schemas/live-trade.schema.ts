@@ -22,7 +22,7 @@ export const LiveTradeSchema = liveTradeCreateSchema.extend({
   outcome: z.string().optional(),
   status: z.enum(['open', 'partial', 'closed']),
   exitDate: z.date().optional(),
-  entryDate: z.date(),
+  enterDate: z.date(),
   commissions: z.number().optional(),
   notes: z.array(NoteSchema),
   catalysts: z.array(NoteSchema),

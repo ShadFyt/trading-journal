@@ -15,14 +15,31 @@ export const useFormatters = () => {
     })
   }
 
+  const convertStringToDate = (dateString: string | Date) => {
+    if (dateString instanceof Date) return dateString
+    if (!dateString || dateString.trim() === '') {
+      throw new TypeError('Invalid date string: empty or whitespace')
+    }
+
+    const date = new Date(dateString)
+
+    // Check if the date is valid by checking if it returns NaN
+    if (isNaN(date.getTime())) {
+      throw new TypeError(`Invalid date string: ${dateString}`)
+    }
+
+    return date
+  }
+
   const formatEntryPrice = (entryMin: number, entryMax?: number) => {
     if (!entryMax || entryMin === entryMax) return `$${entryMin}`
     return `$${entryMin} - $${entryMax}`
   }
 
-  const formatTradeDuration = (entryDate: Date) => {
+  const formatTradeDuration = (entryDate: Date | string) => {
+    const entryDateObj = convertStringToDate(entryDate)
     const now = new Date()
-    const diffTime = Math.abs(now.getTime() - entryDate.getTime())
+    const diffTime = Math.abs(now.getTime() - entryDateObj.getTime())
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
 
     if (diffDays === 0) return 'Today'
@@ -56,5 +73,6 @@ export const useFormatters = () => {
     formatCurrency,
     formatPercentage,
     formatTradeDuration,
+    convertStringToDate,
   }
 }
