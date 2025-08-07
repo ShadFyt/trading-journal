@@ -95,7 +95,7 @@ const isExpanded = ref(false)
   <Card
     class="relative transition-shadow hover:shadow-2xl border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden group animate-fadein"
   >
-    <CardHeader class="pb-2">
+    <CardHeader>
       <DropdownMenu>
         <DropdownMenuTrigger class="absolute top-2 right-2">
           <Button variant="ghost" size="sm">⋯</Button>
