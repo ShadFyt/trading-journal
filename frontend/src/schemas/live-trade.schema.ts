@@ -1,12 +1,6 @@
 import { z } from 'zod'
 import { baseTradeSchema } from './base-trade.schema'
-
-export const AnnotationSchema = z.object({
-  id: z.string().uuid(),
-  content: z.string(),
-  date: z.date(),
-  type: z.enum(['note', 'catalyst']),
-})
+import { AnnotationSchema } from './annotation.schema'
 
 export const liveTradeCreateSchema = baseTradeSchema.extend({
   entryPriceAvg: z.number().min(1, 'Entry price is required'),
