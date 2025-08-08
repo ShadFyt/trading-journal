@@ -9,10 +9,10 @@ class AnnotationBase(BaseSchema):
 
 class AnnotationCreate(AnnotationBase):
     live_trade_id: str
-    date: datetime
 
 class AnnotationRead(AnnotationCreate):
     id: str
+    date: datetime
 
 
 class AnnotationUpdate(AnnotationBase):
