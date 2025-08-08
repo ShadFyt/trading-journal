@@ -1,8 +1,8 @@
-import { createLiveTrade, getLiveTrades } from '@/api/live-trade.api'
+import { createLiveTrade, getLiveTrades, updateLiveTrade } from '@/api/live-trade.api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue-sonner'
 import { AxiosError } from 'axios'
-import type { LiveTradeCreate } from '@/interfaces'
+import type { LiveTradeCreate, LiveTradeUpdate } from '@/interfaces'
 import { tradeIdeaKeys } from '@/composables/useTradeIdeaService'
 
 export const liveTradeKeys = {
@@ -43,5 +43,23 @@ export const useLiveTradeMutationService = () => {
     },
   })
 
-  return { createMutation }
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: LiveTradeUpdate }) => updateLiveTrade(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: liveTradeKeys.list() })
+      queryClient.invalidateQueries({ queryKey: tradeIdeaKeys.list() })
+
+      toast.success('Live trade updated successfully')
+    },
+    onError: (e) => {
+      if (e instanceof AxiosError) {
+        const errorMessage = e.response?.data?.message || e.message || 'An error occurred'
+        toast.error(`Failed to update live trade: ${errorMessage}`)
+      } else {
+        toast.error('Failed to update live trade')
+      }
+    },
+  })
+
+  return { createMutation, updateMutation }
 }

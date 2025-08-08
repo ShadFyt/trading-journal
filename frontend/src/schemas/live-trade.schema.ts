@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { baseTradeSchema } from './base-trade.schema'
 
-const AnnotationSchema = z.object({
+export const AnnotationSchema = z.object({
   id: z.string().uuid(),
   content: z.string(),
   date: z.date(),
@@ -17,18 +17,20 @@ export const liveTradeCreateSchema = baseTradeSchema.extend({
   tradeIdeaId: z.string().uuid(),
 })
 
-export const LiveTradeSchema = liveTradeCreateSchema.extend({
-  id: z.string().uuid(),
-  rrRatio: z.number().optional(),
-  outcome: z.string().optional(),
-  status: z.enum(['open', 'partial', 'closed']),
-  exitDate: z.date().optional(),
-  enterDate: z.date(),
-  commissions: z.number().optional(),
-  annotations: z.array(AnnotationSchema),
-  currentPrice: z.number(),
-  priceChange: z.number().optional(),
-  percentChange: z.number().optional(),
-})
+export const LiveTradeSchema = liveTradeCreateSchema
+  .extend({
+    id: z.string().uuid(),
+    rrRatio: z.number().optional(),
+    outcome: z.string().optional(),
+    status: z.enum(['open', 'partial', 'closed']),
+    exitDate: z.date().optional(),
+    enterDate: z.date(),
+    commissions: z.number().optional(),
+    annotations: z.array(AnnotationSchema),
+    currentPrice: z.number(),
+    priceChange: z.number().optional(),
+    percentChange: z.number().optional(),
+  })
+  .omit({ notes: true, catalysts: true })
 
 export const LiveTradeUpdateSchema = LiveTradeSchema.omit({ id: true })
