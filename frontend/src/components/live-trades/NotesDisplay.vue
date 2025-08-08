@@ -3,9 +3,6 @@ import type { LiveTrade } from '@/interfaces'
 import AnnotationsList from './AnnotationsList.vue'
 
 const { trade } = defineProps<{ trade: LiveTrade }>()
-
-const emit = defineEmits<{ (e: 'add', type: 'note' | 'catalyst'): void }>()
-const onAdd = (type: 'note' | 'catalyst') => emit('add', type)
 </script>
 
 <template>
@@ -20,10 +17,15 @@ const onAdd = (type: 'note' | 'catalyst') => emit('add', type)
       :annotations="trade.annotations"
       type="catalyst"
       title="Catalysts"
-      @add="onAdd"
+      :liveTradeId="trade.id"
     />
 
     <!-- Notes -->
-    <AnnotationsList :annotations="trade.annotations" type="note" title="Notes" @add="onAdd" />
+    <AnnotationsList
+      :annotations="trade.annotations"
+      type="note"
+      title="Notes"
+      :liveTradeId="trade.id"
+    />
   </section>
 </template>

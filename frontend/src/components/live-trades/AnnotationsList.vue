@@ -1,18 +1,18 @@
 <script lang="ts" setup>
 import type { Annotation } from '@/interfaces'
 import { Icon } from '@iconify/vue'
-import { useFormatters } from '@/composables'
+import { useAnnotationMutationService, useFormatters } from '@/composables'
+import { PopoverContent, PopoverPortal, PopoverRoot, PopoverTrigger } from 'reka-ui'
 
 const props = defineProps<{
   annotations: Annotation[]
   type: 'note' | 'catalyst'
+  liveTradeId: string
   title: string
 }>()
 
-const emit = defineEmits<{
-  (e: 'add', type: 'note' | 'catalyst'): void
-}>()
-
+const { createMutation } = useAnnotationMutationService()
+const newAnnotation = ref('')
 const showAll = ref(false)
 
 const filtered = computed(() => props.annotations.filter((a) => a.type === props.type))
@@ -25,6 +25,15 @@ const borderClass = computed(() =>
 const { convertStringToDate } = useFormatters()
 const formatDate = (date: Date | string) =>
   convertStringToDate(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+
+const handleAnnotationCreation = (close: () => void) => {
+  createMutation.mutate({
+    content: newAnnotation.value,
+    type: props.type,
+    liveTradeId: props.liveTradeId,
+  })
+  close()
+}
 </script>
 
 <template>
@@ -41,29 +50,39 @@ const formatDate = (date: Date | string) =>
         >
           {{ showAll ? 'Show Less' : `+${filtered.length - 1} more` }}
         </Button>
-        <Popover>
+        <PopoverRoot v-slot="{ close }">
           <PopoverTrigger as-child>
             <Icon
               icon="lucide:message-square-plus"
               width="20"
               height="20"
               class="hover:opacity-80 cursor-pointer"
-              @click="emit('add', props.type)"
             />
           </PopoverTrigger>
-          <PopoverContent class="flex flex-col gap-2">
-            <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide">
-              Add {{ type }}
-            </p>
-            <Textarea
-              id="annotation"
-              rows="5"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              :placeholder="`Add any additional ${type} or analysis...`"
-            />
-            <Button variant="default">Save</Button>
-          </PopoverContent>
-        </Popover>
+          <PopoverPortal>
+            <PopoverContent
+              class="rounded-lg p-5 w-[260px] bg-white shadow-sm border will-change-[transform,opacity] data-[state=open]:data-[side=top]:animate-slideDownAndFade data-[state=open]:data-[side=right]:animate-slideLeftAndFade data-[state=open]:data-[side=bottom]:animate-slideUpAndFade data-[state=open]:data-[side=left]:animate-slideRightAndFade"
+            >
+              <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide">
+                Add {{ type }}
+              </p>
+              <Textarea
+                v-model="newAnnotation"
+                id="annotation"
+                rows="5"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                :placeholder="`Add any additional ${type} or analysis...`"
+              />
+              <Button
+                class="w-full mt-2"
+                variant="default"
+                @click="handleAnnotationCreation(close)"
+              >
+                Save
+              </Button>
+            </PopoverContent>
+          </PopoverPortal>
+        </PopoverRoot>
       </div>
     </div>
 
