@@ -32,23 +32,39 @@ const formatDate = (date: Date | string) =>
     <div class="flex justify-between items-center">
       <div class="flex justify-between w-full mb-1">
         <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide">{{ title }}</p>
-        <Icon
-          icon="lucide:message-square-plus"
-          width="20"
-          height="20"
-          class="hover:opacity-80 cursor-pointer"
-          @click="emit('add', props.type)"
-        />
+        <Button
+          v-if="filtered.length > 1"
+          variant="ghost"
+          size="sm"
+          class="text-xs px-2 py-1 h-auto text-blue-600 hover:text-blue-700"
+          @click="showAll = !showAll"
+        >
+          {{ showAll ? 'Show Less' : `+${filtered.length - 1} more` }}
+        </Button>
+        <Popover>
+          <PopoverTrigger as-child>
+            <Icon
+              icon="lucide:message-square-plus"
+              width="20"
+              height="20"
+              class="hover:opacity-80 cursor-pointer"
+              @click="emit('add', props.type)"
+            />
+          </PopoverTrigger>
+          <PopoverContent class="flex flex-col gap-2">
+            <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide">
+              Add {{ type }}
+            </p>
+            <Textarea
+              id="annotation"
+              rows="5"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              :placeholder="`Add any additional ${type} or analysis...`"
+            />
+            <Button variant="default">Save</Button>
+          </PopoverContent>
+        </Popover>
       </div>
-      <Button
-        v-if="filtered.length > 1"
-        variant="ghost"
-        size="sm"
-        class="text-xs px-2 py-1 h-auto text-blue-600 hover:text-blue-700"
-        @click="showAll = !showAll"
-      >
-        {{ showAll ? 'Show Less' : `+${filtered.length - 1} more` }}
-      </Button>
     </div>
 
     <div class="space-y-2">
