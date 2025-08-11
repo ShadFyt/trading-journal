@@ -3,15 +3,19 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
 import type { LiveTrade } from '@/interfaces/live-trade.type'
 import { LiveTradeUpdateSchema } from '@/schemas'
+import { useFormatters } from './useFormatters'
 
 export const useLiveTradeFormEdit = (trade: LiveTrade) => {
+  const { convertStringToDate } = useFormatters()
   const { updateMutation } = useLiveTradeMutationService()
   const liveTradeFormSchema = toTypedSchema(LiveTradeUpdateSchema)
 
   const getInitialValues = () => {
-    const { annotations, ...rest } = trade
+    const { annotations, exitDate, enterDate, ...rest } = trade
     return {
       ...rest,
+      exitDate: exitDate ? convertStringToDate(exitDate) : undefined,
+      enterDate: convertStringToDate(enterDate),
     }
   }
 

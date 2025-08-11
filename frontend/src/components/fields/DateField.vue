@@ -2,11 +2,11 @@
 import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { cn } from '@/lib/utils'
 import {
-  CalendarDate,
   DateFormatter,
   getLocalTimeZone,
   parseDate,
   today,
+  CalendarDate,
 } from '@internationalized/date'
 import type { FormActions } from 'vee-validate'
 import type { GenericObject } from 'vee-validate'
@@ -52,6 +52,8 @@ const df = new DateFormatter('en-US', {
               (v) => {
                 if (v) {
                   setFieldValue(name, v.toDate(getLocalTimeZone()))
+                } else {
+                  setFieldValue(name, undefined)
                 }
               }
             "
