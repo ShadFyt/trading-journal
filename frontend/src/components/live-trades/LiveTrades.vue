@@ -3,8 +3,12 @@ import LiveTradeCard from './LiveTradeCard.vue'
 import { useLiveTradeFetchingService } from '@/composables'
 import PortfolioSummary from './PortfolioSummary.vue'
 import DataRefreshTimer from './DataRefreshTimer.vue'
+import type { LiveTrade } from '@/interfaces/live-trade.type'
 
 const { liveTrades: activeTrades, refetchLiveTrades } = useLiveTradeFetchingService()
+
+const selectedTrade = ref<LiveTrade | null>(null)
+const isEditFormOpen = ref(false)
 
 /**
  * Handle trade management actions
@@ -29,9 +33,16 @@ const handleCloseTrade = (tradeId: string) => {
   // Implementation would go here
 }
 
+const handleFormClose = () => {
+  isEditFormOpen.value = false
+  selectedTrade.value = null
+}
+
 const handleEditTrade = (tradeId: string) => {
   console.log(`Editing trade ${tradeId}`)
-  // Implementation would go here
+  if (!activeTrades.value) return
+  selectedTrade.value = activeTrades.value?.find((trade) => trade.id === tradeId) ?? null
+  isEditFormOpen.value = true
 }
 </script>
 
@@ -71,4 +82,10 @@ const handleEditTrade = (tradeId: string) => {
       </p>
     </div>
   </main>
+  <LiveTradeFormEdit
+    v-if="selectedTrade"
+    :trade="selectedTrade"
+    :isOpen="isEditFormOpen"
+    :close="handleFormClose"
+  />
 </template>

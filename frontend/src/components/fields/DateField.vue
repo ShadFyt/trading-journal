@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { Icon } from '@iconify/vue'
 import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { cn } from '@/lib/utils'
 import {
@@ -25,7 +26,7 @@ const df = new DateFormatter('en-US', {
 <template>
   <FormField :name="name" v-slot="{ value }">
     <FormItem class="flex flex-col">
-      <FormLabel>{{ title }}</FormLabel>
+      <FormLabel class="block text-sm font-medium text-gray-700">{{ title }}</FormLabel>
       <Popover>
         <PopoverTrigger as-child>
           <FormControl>

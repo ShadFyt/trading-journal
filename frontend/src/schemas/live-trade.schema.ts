@@ -15,7 +15,9 @@ export const LiveTradeSchema = liveTradeCreateSchema
   .extend({
     id: z.string().uuid(),
     rrRatio: z.number().optional(),
-    outcome: z.string().optional(),
+    outcome: z
+      .enum(['big win', 'small win', 'small loss', 'big loss', 'break even', 'pending'])
+      .optional(),
     status: z.enum(['open', 'partial', 'closed']),
     exitDate: z.date().optional(),
     enterDate: z.date(),
@@ -27,4 +29,13 @@ export const LiveTradeSchema = liveTradeCreateSchema
   })
   .omit({ notes: true, catalysts: true })
 
-export const LiveTradeUpdateSchema = LiveTradeSchema.omit({ id: true })
+export const LiveTradeUpdateSchema = LiveTradeSchema.omit({
+  id: true,
+  annotations: true,
+  priceChange: true,
+  percentChange: true,
+  currentPrice: true,
+  rrRatio: true,
+  tradeIdeaId: true,
+  status: true,
+}).partial()
