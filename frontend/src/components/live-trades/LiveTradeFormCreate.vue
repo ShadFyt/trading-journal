@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { FormField, FormItem, FormLabel } from '../ui/form'
-import { useLiveTradeForm } from '@/composables/useLiveTradeFormCreate'
+import { useLiveTradeFormCreate } from '@/composables/useLiveTradeFormCreate'
 import type { TradeIdea } from '@/interfaces/trade-idea.type'
 
 const { tradeIdea, isOpen, close } = defineProps<{
@@ -9,7 +9,8 @@ const { tradeIdea, isOpen, close } = defineProps<{
   close: (v: boolean) => void
 }>()
 
-const { isFieldDirty, onSubmit, setFieldValue, isSubmitting, schema } = useLiveTradeForm(tradeIdea)
+const { isFieldDirty, onSubmit, setFieldValue, isSubmitting, schema } =
+  useLiveTradeFormCreate(tradeIdea)
 </script>
 
 <template>
