@@ -2,7 +2,7 @@ from typing import List, Optional, Literal
 from uuid import uuid4
 from datetime import datetime
 from sqlmodel import Field, Relationship, SQLModel, Column, Enum as SAEnum
-from sqlalchemy import JSON
+from sqlalchemy import JSON, ForeignKey
 from pydantic import field_validator
 from enum import Enum
 from database.mixins import RrRatioMixin
@@ -91,7 +91,7 @@ class Annotation(BaseNote, table=True):
     id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True, nullable=False)
     content: str = Field(nullable=False)
     type: str = Field(nullable=False)  # "note" or "catalyst"
-    live_trade_id: str = Field(foreign_key="live_trade.id", nullable=False)
+    live_trade_id: str = Field(sa_column=Column(ForeignKey("live_trade.id", ondelete="CASCADE"), nullable=False))
     live_trade: "LiveTrade" = Relationship(back_populates="annotations")
 
 class LiveTrade(BaseTrade, RrRatioMixin, table=True):
@@ -107,7 +107,7 @@ class LiveTrade(BaseTrade, RrRatioMixin, table=True):
     net_gain_loss: Optional[float] = Field(nullable=True)
     outcome: Optional[str] = Field(nullable=True)
     target_prices: List[float] = Field(sa_column=Column(JSON))
-    annotations: List[Annotation] = Relationship(back_populates="live_trade")
+    annotations: List[Annotation] = Relationship(back_populates="live_trade", sa_relationship_kwargs={"cascade": "all, delete-orphan"})
     trade_idea: TradeIdea = Relationship(back_populates="live_trade")
 
     @property

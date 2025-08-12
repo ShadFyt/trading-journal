@@ -56,4 +56,11 @@ class LiveTradeRepo(BaseRepo[LiveTrade]):
         return fresh_result.first()
     
     async def delete_live_trade(self, id: str):
-        return await self.delete(id)
+        try:
+            db_live_trade = await self.get_live_trade_by_id(id)
+            if not db_live_trade:
+                raise HTTPException(status_code=404, detail="Live trade not found")
+            await self.session.delete(db_live_trade)
+            await self.session.commit()
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=str(e))
