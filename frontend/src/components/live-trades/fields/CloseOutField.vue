@@ -24,9 +24,6 @@ const LiveTradeDateField = typedDateField<LiveTradeUpdate>()
   <div class="col-span-3">
     <LiveTradeDateField name="exitDate" title="Exit Date" :setFieldValue="setFieldValue" />
   </div>
-  <div class="col-span-6">
-    <TargetPriceField :isFieldDirty="isFieldDirty" />
-  </div>
   <div class="col-span-2">
     <FormField v-slot="{ componentField }" name="outcome" :validate-on-blur="!isFieldDirty">
       <FormItem>
