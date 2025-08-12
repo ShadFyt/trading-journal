@@ -3,15 +3,22 @@ import { FormField, FormItem, FormLabel } from '../ui/form'
 import { useLiveTradeFormEdit } from '@/composables/useLiveTradeFormEdit'
 import type { LiveTrade, LiveTradeUpdate } from '@/interfaces/live-trade.type'
 import { typedDateField } from '@/utils/typed-component.util'
-const { trade, isOpen, close } = defineProps<{
+const { trade, isOpen, close, formType } = defineProps<{
   trade: LiveTrade
   isOpen: boolean
   close: (v: boolean) => void
+  formType: 'edit' | 'close'
 }>()
 
 const { isFieldDirty, onSubmit, setFieldValue, isSubmitting, schema } = useLiveTradeFormEdit(trade)
 
 const LiveTradeDateField = typedDateField<LiveTradeUpdate>()
+
+const isCloseForm = computed(() => {
+  if (formType === 'close') return true
+  if (trade.status === 'closed') return true
+  return false
+})
 </script>
 
 <template>
@@ -89,7 +96,7 @@ const LiveTradeDateField = typedDateField<LiveTradeUpdate>()
           <div class="col-span-6">
             <TargetPriceField :isFieldDirty="isFieldDirty" />
           </div>
-          <div class="col-span-3">
+          <div :class="isCloseForm ? 'col-span-3' : 'col-span-6'">
             <LiveTradeDateField
               name="enterDate"
               title="Entry Date"
@@ -97,13 +104,27 @@ const LiveTradeDateField = typedDateField<LiveTradeUpdate>()
             />
           </div>
           <CloseOutField
-            v-if="trade.status === 'closed'"
+            v-if="isCloseForm"
             :setFieldValue="setFieldValue"
             :isFieldDirty="isFieldDirty"
           />
         </section>
-        <SheetFooter class="flex justify-end">
-          <Button :disabled="isSubmitting" type="submit">Save</Button>
+        <SheetFooter class="flex flex-row justify-end">
+          <Button
+            :class="formType === 'close' ? 'w-1/2' : 'w-full'"
+            :disabled="isSubmitting"
+            type="submit"
+            >{{ formType === 'close' ? 'Close Trade' : 'Save' }}</Button
+          >
+          <Button
+            class="w-1/2"
+            variant="destructive"
+            v-if="formType === 'close'"
+            :disabled="isSubmitting"
+            type="button"
+            @click="close"
+            >Delete Trade</Button
+          >
         </SheetFooter>
       </form>
     </SheetContent>

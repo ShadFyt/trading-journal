@@ -9,6 +9,7 @@ const { liveTrades: activeTrades, refetchLiveTrades } = useLiveTradeFetchingServ
 
 const selectedTrade = ref<LiveTrade | null>(null)
 const isEditFormOpen = ref(false)
+const formType = ref<'edit' | 'close'>('edit')
 
 /**
  * Handle trade management actions
@@ -28,21 +29,22 @@ const handleAddPosition = (tradeId: string) => {
   // Implementation would go here
 }
 
-const handleCloseTrade = (tradeId: string) => {
-  console.log(`Closing trade ${tradeId}`)
-  // Implementation would go here
-}
-
 const handleFormClose = () => {
   isEditFormOpen.value = false
   selectedTrade.value = null
 }
 
-const handleEditTrade = (tradeId: string) => {
+const handleEditTrade = (tradeId: string, isClose: boolean = false) => {
   console.log(`Editing trade ${tradeId}`)
   if (!activeTrades.value) return
   selectedTrade.value = activeTrades.value?.find((trade) => trade.id === tradeId) ?? null
   isEditFormOpen.value = true
+  formType.value = isClose ? 'close' : 'edit'
+}
+
+const handleCloseTrade = (tradeId: string) => {
+  console.log(`Closing trade ${tradeId}`)
+  handleEditTrade(tradeId, true)
 }
 </script>
 
@@ -87,5 +89,6 @@ const handleEditTrade = (tradeId: string) => {
     :trade="selectedTrade"
     :isOpen="isEditFormOpen"
     :close="handleFormClose"
+    :formType="formType"
   />
 </template>
