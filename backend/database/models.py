@@ -1,15 +1,14 @@
-from typing import List, Optional, Literal
+from typing import List, Optional
 from uuid import uuid4
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlmodel import Field, Relationship, SQLModel, Column, Enum as SAEnum
 from sqlalchemy import JSON, ForeignKey
-from pydantic import field_validator
 from enum import Enum
 from database.mixins import RrRatioMixin
 
 class BaseTrade(SQLModel):
     id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True, nullable=False)
-    symbol: str = Field(nullable=False)
+    symbol: str = Field(nullable=False, index=True)
     setup: str = Field(nullable=False)
     rating: float = Field(nullable=False)
     stop: float = Field(nullable=True)
@@ -71,6 +70,15 @@ class TradeIdeaStatus(str, Enum):
     INVALIDATED = "Invalidated"
     LIVE = "Live"
     
+class AnnotationType(str, Enum):
+    note = "note"
+    catalyst = "catalyst"
+
+class LiveTradeStatus(str, Enum):
+    OPEN = "open"
+    CLOSED = "closed"
+
+
 
 class TradeIdea(BaseTrade, RrRatioMixin, table=True):
     __tablename__ = "trade_idea"
@@ -78,39 +86,62 @@ class TradeIdea(BaseTrade, RrRatioMixin, table=True):
     entry_min: float = Field(nullable=True)
     entry_max: Optional[float] = Field(nullable=True)
     catalysts: str = Field(nullable=True, default="")
-    idea_date: datetime = Field(default_factory=datetime.now)
+    idea_date: datetime = Field(default_factory=datetime.now(timezone.utc))
     notes: str = Field(nullable=True, default="")
-    target_prices: Optional[List[float]] = Field(default=None, sa_column=Column(JSON))
-    live_trade: Optional["LiveTrade"] = Relationship(back_populates="trade_idea")
-
-    @property 
-    def rr_ratio(self) -> float:
+    target_prices: List[float] = Field(default_factory=list, sa_column=Column(JSON, nullable=False))
+    live_trade: Optional["LiveTrade"] = Relationship(
+        back_populates="trade_idea",
+        sa_relationship_kwargs={"uselist": False}
+    )
+    
+    @property
+    def rr_ratio(self) -> Optional[float]:
+        if not self.stop:
+            return None
+        # TradeIdea
+        if not self.entry_min or not self.target_prices:
+            return None
         return self.calculate_rr_ratio(self.entry_min, self.stop, self.target_prices)
 
 class Annotation(BaseNote, table=True):
     id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True, nullable=False)
     content: str = Field(nullable=False)
-    type: str = Field(nullable=False)  # "note" or "catalyst"
+    annotation_type: AnnotationType = Field(
+        sa_column=Column(SAEnum(AnnotationType), nullable=False)
+    )
     live_trade_id: str = Field(sa_column=Column(ForeignKey("live_trade.id", ondelete="CASCADE"), nullable=False))
     live_trade: "LiveTrade" = Relationship(back_populates="annotations")
 
 class LiveTrade(BaseTrade, RrRatioMixin, table=True):
     __tablename__ = "live_trade"
     trade_idea_id: str = Field(foreign_key="trade_idea.id", nullable=False, unique=True)
-    status: str = Field(default='open')
+    status: LiveTradeStatus = Field(default=LiveTradeStatus.OPEN, sa_column=Column(SAEnum(LiveTradeStatus), nullable=False))
     position_size: int = Field(nullable=False)
     entry_price_avg: float = Field(nullable=False)
     exit_price_avg: Optional[float] = Field(nullable=True)
     commissions: Optional[float] = Field(nullable=True)
-    enter_date: datetime = Field(default_factory=datetime.now)
+    date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    enter_date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     exit_date: Optional[datetime] = Field(nullable=True)
     net_gain_loss: Optional[float] = Field(nullable=True)
     outcome: Optional[str] = Field(nullable=True)
-    target_prices: List[float] = Field(sa_column=Column(JSON))
-    annotations: List[Annotation] = Relationship(back_populates="live_trade", sa_relationship_kwargs={"cascade": "all, delete-orphan"})
+    target_prices: List[float] = Field(default_factory=list, sa_column=Column(JSON, nullable=False))
+    annotations: List[Annotation] = Relationship(
+        back_populates="live_trade",
+        sa_relationship_kwargs={
+            "cascade": "all, delete-orphan",
+            "single_parent": True,
+            "passive_deletes": True,  # honor DB-side cascade
+        },
+    ) 
     trade_idea: TradeIdea = Relationship(back_populates="live_trade")
 
     @property
-    def rr_ratio(self) -> float:
+    def rr_ratio(self) -> Optional[float]:
+        if not self.stop:
+            return None
+        # LiveTrade
+        if not self.entry_price_avg or not self.target_prices:
+            return None
         return self.calculate_rr_ratio(self.entry_price_avg, self.stop, self.target_prices)
     
