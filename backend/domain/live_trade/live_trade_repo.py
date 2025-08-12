@@ -19,8 +19,12 @@ class LiveTradeRepo(BaseRepo[LiveTrade]):
         result = await self.session.exec(stmt)
         return result.all()    
     
-    async def get_live_trade_by_id(self, id: str):
-        return await self.get_by_id(id)
+    async def get_live_trade_by_id(self, id: str,
+    include_annotations: bool = True):
+        options = []
+        if include_annotations:
+            options.append(selectinload(LiveTrade.annotations))
+        return await self.session.get(LiveTrade, id, options=options)
     
     async def get_live_trade_by_trade_idea_id(self, trade_idea_id: str) -> LiveTrade | None:
         stmt = select(LiveTrade).where(LiveTrade.trade_idea_id == trade_idea_id)
