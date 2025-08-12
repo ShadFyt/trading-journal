@@ -120,7 +120,6 @@ class LiveTrade(BaseTrade, RrRatioMixin, table=True):
     entry_price_avg: float = Field(nullable=False)
     exit_price_avg: Optional[float] = Field(nullable=True)
     commissions: Optional[float] = Field(nullable=True)
-    date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     enter_date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     exit_date: Optional[datetime] = Field(nullable=True)
     net_gain_loss: Optional[float] = Field(nullable=True)

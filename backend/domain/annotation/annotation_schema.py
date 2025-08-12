@@ -5,7 +5,7 @@ from typing import Literal
 
 class AnnotationBase(BaseSchema):
     content: str
-    type: Literal['catalyst', 'note', 'managementNote']
+    annotation_type: Literal['catalyst', 'note', 'managementNote']
 
 class AnnotationCreate(AnnotationBase):
     live_trade_id: str
