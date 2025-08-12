@@ -86,7 +86,7 @@ class TradeIdea(BaseTrade, RrRatioMixin, table=True):
     entry_min: float = Field(nullable=True)
     entry_max: Optional[float] = Field(nullable=True)
     catalysts: str = Field(nullable=True, default="")
-    idea_date: datetime = Field(default_factory=datetime.now(timezone.utc))
+    idea_date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     notes: str = Field(nullable=True, default="")
     target_prices: List[float] = Field(default_factory=list, sa_column=Column(JSON, nullable=False))
     live_trade: Optional["LiveTrade"] = Relationship(
