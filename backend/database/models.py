@@ -2,7 +2,7 @@ from typing import List, Optional
 from uuid import uuid4
 from datetime import datetime, timezone
 from sqlmodel import Field, Relationship, SQLModel, Column, Enum as SAEnum
-from sqlalchemy import JSON, ForeignKey
+from sqlalchemy import JSON, ForeignKey, CheckConstraint
 from enum import Enum
 from database.mixins import RrRatioMixin
 
@@ -16,7 +16,7 @@ class BaseTrade(SQLModel):
 
 class BaseNote(SQLModel):
     content: str = Field(nullable=False)
-    date: datetime = Field(default_factory=datetime.now)
+    date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class Account(SQLModel, table=True):
     __tablename__ = "account"
@@ -78,7 +78,30 @@ class LiveTradeStatus(str, Enum):
     OPEN = "open"
     CLOSED = "closed"
 
+class ScalePlanStatus(str, Enum):
+    PLANNED = "planned"
+    CANCELED = "canceled"
+    TRIGGERED = "triggered"
+    FILLED_PARTIAL = "filled_partial"
+    FILLED = "filled"
 
+class ScalePlanKind(str, Enum):
+    SHARES = "shares"
+    PERCENT = "percent"
+
+class OrderType(str, Enum):
+    MARKET = "market"
+    LIMIT = "limit"
+    STOP_LIMIT = "stop_limit"
+
+class Side(str, Enum):
+    BUY = "buy"
+    SELL = "sell"
+
+class ExecSource(str, Enum):
+    MANUAL = "MANUAL"
+    IMPORT = "IMPORT"
+    AUTOMATED = "AUTOMATED"
 
 class TradeIdea(BaseTrade, RrRatioMixin, table=True):
     __tablename__ = "trade_idea"
@@ -112,6 +135,52 @@ class Annotation(BaseNote, table=True):
     live_trade_id: str = Field(sa_column=Column(ForeignKey("live_trade.id", ondelete="CASCADE"), nullable=False))
     live_trade: "LiveTrade" = Relationship(back_populates="annotations")
 
+
+class ScalePlan(SQLModel, table=True):
+    __tablename__ = "scale_plan"
+    __table_args__ = (
+        CheckConstraint("value > 0", name="ck_scale_plan_value_positive"),
+        CheckConstraint("(kind != 'percent') OR (value <= 100)", name="ck_scale_plan_percent_range"),
+    )
+    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True, nullable=False)
+    live_trade_id: str = Field(sa_column=Column(ForeignKey("live_trade.id", ondelete="CASCADE"), nullable=False), index=True)
+    status: ScalePlanStatus = Field(default=ScalePlanStatus.PLANNED, sa_column=Column(SAEnum(ScalePlanStatus), nullable=False), index=True)
+    kind: ScalePlanKind = Field(default=ScalePlanKind.PERCENT, sa_column=Column(SAEnum(ScalePlanKind), nullable=False))
+    order_type: OrderType = Field(default=OrderType.LIMIT, sa_column=Column(SAEnum(OrderType), nullable=False))
+    label: str = Field(default="T1", nullable=False)
+    value: float = Field(nullable=False)
+    target_price: Optional[float] = Field(nullable=True)
+    notes: str = Field(default="")
+    good_till: Optional[datetime] = Field(default=None, nullable=True)   
+    stop_price: Optional[float] = Field(default=None, nullable=True)
+    limit_price: Optional[float] = Field(default=None, nullable=True)   
+    live_trade: "LiveTrade" = Relationship(back_populates="scale_plans")
+    executions: List["TradeExecution"] = Relationship(back_populates="scale_plan")
+    
+
+class TradeExecution(SQLModel, table=True):
+    __tablename__ = "trade_execution"
+    __table_args__ = (
+        CheckConstraint("qty > 0", name="ck_trade_execution_qty_positive"),
+        CheckConstraint("price > 0", name="ck_trade_execution_price_positive"),
+        CheckConstraint("commission >= 0", name="ck_trade_execution_commission_nonneg"),
+    )
+    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True, nullable=False)
+    live_trade_id: str = Field(sa_column=Column(ForeignKey("live_trade.id", ondelete="CASCADE"), nullable=False), index=True)
+    scale_plan_id: Optional[str] = Field(
+        sa_column=Column(ForeignKey("scale_plan.id", ondelete="SET NULL"), nullable=True),
+    )
+    side: Side = Field(default=Side.SELL, sa_column=Column(SAEnum(Side), nullable=False))
+    source: ExecSource = Field(default=ExecSource.MANUAL, sa_column=Column(SAEnum(ExecSource), nullable=False))
+    commission: float = Field(default=0.0)
+    executed_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), index=True)
+    qty: int = Field(nullable=False)
+    price: float = Field(nullable=False)
+    notes: str = Field(default="")
+    live_trade: "LiveTrade" = Relationship(back_populates="executions")
+    scale_plan: Optional["ScalePlan"] = Relationship(back_populates="executions")
+
+
 class LiveTrade(BaseTrade, RrRatioMixin, table=True):
     __tablename__ = "live_trade"
     trade_idea_id: str = Field(foreign_key="trade_idea.id", nullable=False, unique=True)
@@ -129,11 +198,26 @@ class LiveTrade(BaseTrade, RrRatioMixin, table=True):
         back_populates="live_trade",
         sa_relationship_kwargs={
             "cascade": "all, delete-orphan",
-            "single_parent": True,
             "passive_deletes": True,  # honor DB-side cascade
         },
     ) 
     trade_idea: TradeIdea = Relationship(back_populates="live_trade")
+    scale_plans: List[ScalePlan] = Relationship(
+        back_populates="live_trade",
+        sa_relationship_kwargs={
+            "cascade": "all, delete-orphan",
+            "single_parent": True,
+            "passive_deletes": True,
+        }
+    )
+    executions: List[TradeExecution] = Relationship(
+        back_populates="live_trade",
+        sa_relationship_kwargs={
+            "cascade": "all, delete-orphan",
+            "single_parent": True,
+            "passive_deletes": True,
+        }
+    )
 
     @property
     def rr_ratio(self) -> Optional[float]:
@@ -144,3 +228,48 @@ class LiveTrade(BaseTrade, RrRatioMixin, table=True):
             return None
         return self.calculate_rr_ratio(self.entry_price_avg, self.stop, self.target_prices)
     
+    @property
+    def remaining_shares(self) -> int:
+        sold = sum(e.qty for e in self.executions if e.side == Side.SELL)
+        bought = sum(e.qty for e in self.executions if e.side == Side.BUY)
+        return max(self.position_size - sold + bought, 0)
+
+    @property
+    def realized_pnl(self) -> float:
+        # Long only for MVP; handle shorts later by flipping sign.
+        gross = sum(
+            (e.price - self.entry_price_avg) * e.qty
+            for e in self.executions if e.side == Side.SELL
+        )
+        commissions = sum(e.commission for e in self.executions)
+        return round(gross - commissions, 2)
+
+    @property
+    def risk_per_share(self) -> Optional[float]:
+        if not self.stop or not self.entry_price_avg:
+            return None
+        return abs(self.entry_price_avg - self.stop)
+
+    @property
+    def realized_R(self) -> Optional[float]:
+        r = self.risk_per_share
+        if not r or r == 0:
+            return None
+        # weight each leg by fraction of initial size
+        total = 0.0
+        for e in self.executions:
+            if e.side != Side.SELL: 
+                continue
+            leg_R = (e.price - self.entry_price_avg) / r
+            total += (e.qty / self.position_size) * leg_R
+        return round(total, 2)
+
+    @property
+    def weighted_exit_avg_if_closed(self) -> Optional[float]:
+        if self.remaining_shares != 0:
+            return None
+        sold_qty = sum(e.qty for e in self.executions if e.side == Side.SELL)
+        if sold_qty == 0:
+            return None
+        total_px = sum(e.qty * e.price for e in self.executions if e.side == Side.SELL)
+        return round(total_px / sold_qty, 4)
