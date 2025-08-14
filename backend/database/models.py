@@ -143,8 +143,8 @@ class ScalePlan(SQLModel, table=True):
         CheckConstraint("(kind != 'percent') OR (value <= 100)", name="ck_scale_plan_percent_range"),
     )
     id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True, nullable=False)
-    live_trade_id: str = Field(sa_column=Column(ForeignKey("live_trade.id", ondelete="CASCADE"), nullable=False), index=True)
-    status: ScalePlanStatus = Field(default=ScalePlanStatus.PLANNED, sa_column=Column(SAEnum(ScalePlanStatus), nullable=False), index=True)
+    live_trade_id: str = Field(sa_column=Column(ForeignKey("live_trade.id", ondelete="CASCADE"), nullable=False, index=True))
+    status: ScalePlanStatus = Field(default=ScalePlanStatus.PLANNED, sa_column=Column(SAEnum(ScalePlanStatus), nullable=False, index=True))
     kind: ScalePlanKind = Field(default=ScalePlanKind.PERCENT, sa_column=Column(SAEnum(ScalePlanKind), nullable=False))
     order_type: OrderType = Field(default=OrderType.LIMIT, sa_column=Column(SAEnum(OrderType), nullable=False))
     label: str = Field(default="T1", nullable=False)
@@ -166,7 +166,7 @@ class TradeExecution(SQLModel, table=True):
         CheckConstraint("commission >= 0", name="ck_trade_execution_commission_nonneg"),
     )
     id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True, nullable=False)
-    live_trade_id: str = Field(sa_column=Column(ForeignKey("live_trade.id", ondelete="CASCADE"), nullable=False), index=True)
+    live_trade_id: str = Field(sa_column=Column(ForeignKey("live_trade.id", ondelete="CASCADE"), nullable=False, index=True))
     scale_plan_id: Optional[str] = Field(
         sa_column=Column(ForeignKey("scale_plan.id", ondelete="SET NULL"), nullable=True),
     )
