@@ -10,7 +10,8 @@ const { trade, isOpen, close, formType } = defineProps<{
   formType: 'edit' | 'close'
 }>()
 
-const { isFieldDirty, onSubmit, setFieldValue, isSubmitting, schema } = useLiveTradeFormEdit(trade)
+const { isFieldDirty, onSubmit, setFieldValue, isSubmitting, schema, onDelete } =
+  useLiveTradeFormEdit(trade, formType, close)
 
 const LiveTradeDateField = typedDateField<LiveTradeUpdate>()
 
@@ -122,7 +123,7 @@ const isCloseForm = computed(() => {
             v-if="formType === 'close'"
             :disabled="isSubmitting"
             type="button"
-            @click="close"
+            @click="onDelete"
             >Delete Trade</Button
           >
         </SheetFooter>

@@ -5,9 +5,13 @@ import type { LiveTrade, LiveTradeUpdate } from '@/interfaces/live-trade.type'
 import { LiveTradeUpdateSchema } from '@/schemas'
 import { useFormatters } from './useFormatters'
 
-export const useLiveTradeFormEdit = (trade: LiveTrade) => {
+export const useLiveTradeFormEdit = (
+  trade: LiveTrade,
+  formType: 'edit' | 'close',
+  close?: (v: boolean) => void,
+) => {
   const { convertStringToDate } = useFormatters()
-  const { updateMutation } = useLiveTradeMutationService()
+  const { updateMutation, deleteMutation } = useLiveTradeMutationService()
   const liveTradeFormSchema = toTypedSchema(LiveTradeUpdateSchema)
 
   const getInitialValues = () => {
@@ -29,12 +33,24 @@ export const useLiveTradeFormEdit = (trade: LiveTrade) => {
 
   const onSubmit = handleSubmit(async (values) => {
     try {
-      await updateMutation.mutateAsync({ id: trade.id, data: values })
+      const message = formType === 'close' ? 'successfully closed trade' : undefined
+      await updateMutation.mutateAsync({ id: trade.id, data: values, message })
+      close?.(false)
     } catch (error) {
       console.error('Form submission error:', error)
       throw error
     }
   })
+
+  const onDelete = () => {
+    try {
+      deleteMutation.mutate(trade.id)
+      close?.(false)
+    } catch (error) {
+      console.error('Delete error:', error)
+      throw error
+    }
+  }
 
   return {
     isFieldDirty,
@@ -43,5 +59,6 @@ export const useLiveTradeFormEdit = (trade: LiveTrade) => {
     isSubmitting,
     meta,
     schema: liveTradeFormSchema,
+    onDelete,
   }
 }

@@ -1,4 +1,9 @@
-import { createLiveTrade, getLiveTrades, updateLiveTrade } from '@/api/live-trade.api'
+import {
+  createLiveTrade,
+  deleteLiveTrade,
+  getLiveTrades,
+  updateLiveTrade,
+} from '@/api/live-trade.api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue-sonner'
 import { AxiosError } from 'axios'
@@ -43,23 +48,44 @@ export const useLiveTradeMutationService = () => {
     },
   })
 
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: LiveTradeUpdate }) => updateLiveTrade(id, data),
-    onSuccess: () => {
+  const updateMutation = useMutation<
+    Awaited<ReturnType<typeof updateLiveTrade>>,
+    AxiosError,
+    { id: string; data: LiveTradeUpdate; message?: string }
+  >({
+    mutationFn: ({ id, data }) => updateLiveTrade(id, data),
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: liveTradeKeys.list() })
       queryClient.invalidateQueries({ queryKey: tradeIdeaKeys.list() })
 
-      toast.success('Live trade updated successfully')
+      toast.success(variables?.message ?? 'Live trade updated successfully')
     },
     onError: (e) => {
       if (e instanceof AxiosError) {
-        const errorMessage = e.response?.data?.message || e.message || 'An error occurred'
+        const errorMessage = e.response?.data || e.message || 'An error occurred'
         toast.error(`Failed to update live trade: ${errorMessage}`)
       } else {
         toast.error('Failed to update live trade')
       }
     },
   })
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteLiveTrade(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: liveTradeKeys.list() })
+      queryClient.invalidateQueries({ queryKey: tradeIdeaKeys.list() })
 
-  return { createMutation, updateMutation }
+      toast.success('Live trade deleted successfully')
+    },
+    onError: (e) => {
+      if (e instanceof AxiosError) {
+        const errorMessage = e.response?.data || e.message || 'An error occurred'
+        toast.error(`Failed to delete live trade: ${errorMessage}`)
+      } else {
+        toast.error('Failed to delete live trade')
+      }
+    },
+  })
+
+  return { createMutation, updateMutation, deleteMutation }
 }

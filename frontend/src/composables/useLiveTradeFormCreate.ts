@@ -4,7 +4,7 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
 import type { TradeIdea } from '@/interfaces/trade-idea.type'
 
-export const useLiveTradeFormCreate = (tradeIdea: TradeIdea) => {
+export const useLiveTradeFormCreate = (tradeIdea: TradeIdea, close?: (v: boolean) => void) => {
   const { createMutation } = useLiveTradeMutationService()
   const liveTradeFormSchema = toTypedSchema(liveTradeCreateSchema)
 
@@ -27,6 +27,7 @@ export const useLiveTradeFormCreate = (tradeIdea: TradeIdea) => {
   const onSubmit = handleSubmit(async (values) => {
     try {
       await createMutation.mutateAsync(values)
+      close?.(false)
     } catch (error) {
       console.error('Form submission error:', error)
       throw error

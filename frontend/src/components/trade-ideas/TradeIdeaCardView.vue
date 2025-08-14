@@ -138,7 +138,7 @@ const handleFormClose = () => {
     :isOpen="isTradeIdeaFormOpen"
     :close="handleFormClose"
   />
-  <LiveTradeForm
+  <LiveTradeFormCreate
     v-if="selectedTrade"
     :tradeIdea="selectedTrade"
     :isOpen="isLiveTradeFormOpen"

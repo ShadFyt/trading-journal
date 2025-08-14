@@ -9,8 +9,10 @@ const { tradeIdea, isOpen, close } = defineProps<{
   close: (v: boolean) => void
 }>()
 
-const { isFieldDirty, onSubmit, setFieldValue, isSubmitting, schema } =
-  useLiveTradeFormCreate(tradeIdea)
+const { isFieldDirty, onSubmit, setFieldValue, isSubmitting, schema } = useLiveTradeFormCreate(
+  tradeIdea,
+  close,
+)
 </script>
 
 <template>
@@ -130,7 +132,7 @@ const { isFieldDirty, onSubmit, setFieldValue, isSubmitting, schema } =
           </div>
         </section>
         <SheetFooter class="flex justify-end">
-          <Button :disabled="isSubmitting" type="submit">Save</Button>
+          <Button :disabled="isSubmitting" type="submit">Convert to Live Trade</Button>
         </SheetFooter>
       </form>
     </SheetContent>
