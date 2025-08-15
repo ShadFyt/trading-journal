@@ -78,6 +78,17 @@ class LiveTradeService:
         data["commissions"] = 2
         data["annotations"] = []
 
+        if data["notes"]:
+            note = Annotation(content=data["notes"][0], type="note")
+            data["annotations"].append(note)
+
+        if data["catalysts"]:
+            catalyst = Annotation(
+                content=data["catalysts"][0],
+                type="catalyst",
+            )
+            data["annotations"].append(catalyst)
+
         # Create LiveTrade instance
         live_trade_instance = LiveTrade(**data)
 
@@ -90,22 +101,6 @@ class LiveTradeService:
 
             await self.trade_idea_service.update_trade_idea(
                 live_trade.trade_idea_id, TradeIdeaUpdate(status=TradeIdeaStatus.LIVE)
-            )
-
-        if data["notes"] and result.id:
-            await self.annotation_repo.create_annotation(
-                Annotation(
-                    content=data["notes"][0], type="note", live_trade_id=result.id
-                )
-            )
-
-        if data["catalysts"] and result.id:
-            await self.annotation_repo.create_annotation(
-                Annotation(
-                    content=data["catalysts"][0],
-                    type="catalyst",
-                    live_trade_id=result.id,
-                )
             )
 
         return result
