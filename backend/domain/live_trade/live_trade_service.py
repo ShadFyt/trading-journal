@@ -5,9 +5,16 @@ from domain.live_trade.live_trade_schema import (
     LiveTradeUpdate,
     LiveTradeResponse,
 )
+from domain.trade_idea.trade_idea_schema import TradeIdeaUpdate
 from domain.trade_idea.trade_idea_service import TradeIdeaService
 from domain.annotation.annotation_repo import AnnotationRepo
-from database.models import Annotation, LiveTrade, TradeIdeaStatus
+from database.models import (
+    Annotation,
+    LiveTrade,
+    TradeIdeaStatus,
+    AnnotationType,
+    LiveTradeStatus,
+)
 from datetime import datetime
 from fastapi import HTTPException, status
 from core.stock_price.stock_price_service import StockPriceService
@@ -64,44 +71,23 @@ class LiveTradeService:
         return await self.repo.get_live_trade_by_id(live_trade_id)
 
     async def create_live_trade(self, live_trade: LiveTradeCreate) -> LiveTradeResponse:
-        data = live_trade.model_dump()
-        existing = await self.repo.get_live_trade_by_trade_idea_id(
-            live_trade.trade_idea_id
-        )
-        if existing:
+        if await self.repo.get_live_trade_by_trade_idea_id(live_trade.trade_idea_id):
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail="Live trade already exists for this trade idea",
             )
 
-        data["status"] = "open"
-        data["commissions"] = 2
-        data["annotations"] = []
-
-        if data["notes"]:
-            note = Annotation(content=data["notes"][0], type="note")
-            data["annotations"].append(note)
-
-        if data["catalysts"]:
-            catalyst = Annotation(
-                content=data["catalysts"][0],
-                type="catalyst",
-            )
-            data["annotations"].append(catalyst)
-
+        payload = self._build_payload(live_trade)
         # Create LiveTrade instance
-        live_trade_instance = LiveTrade(**data)
+        live_trade_instance = LiveTrade(**payload)
 
         # Create the live trade
         result = await self.repo.create_live_trade(live_trade_instance)
 
         # Update the associated TradeIdea status to Live
-        if live_trade.trade_idea_id:
-            from domain.trade_idea.trade_idea_schema import TradeIdeaUpdate
-
-            await self.trade_idea_service.update_trade_idea(
-                live_trade.trade_idea_id, TradeIdeaUpdate(status=TradeIdeaStatus.LIVE)
-            )
+        await self.trade_idea_service.update_trade_idea(
+            live_trade.trade_idea_id, TradeIdeaUpdate(status=TradeIdeaStatus.LIVE)
+        )
 
         return result
 
@@ -112,3 +98,33 @@ class LiveTradeService:
 
     async def delete_live_trade(self, live_trade_id: str) -> None:
         return await self.repo.delete_live_trade(live_trade_id)
+
+    def _build_payload(self, live_trade: LiveTradeCreate):
+        annotations = self._build_annotations(live_trade)
+        payload = live_trade.model_dump(
+            exclude={"notes", "catalysts"}, exclude_none=True
+        )
+        payload.update(
+            {
+                "status": LiveTradeStatus.OPEN,
+                "commissions": payload.get("commissions", 2),
+                "annotations": annotations,
+            }
+        )
+        return payload
+
+    @staticmethod
+    def _build_annotations(dto: LiveTradeCreate):
+        annotations: list[Annotation] = []
+        if dto.notes:
+            annotations.extend(
+                Annotation(content=n, type=AnnotationType.note) for n in dto.notes
+            )
+
+        if dto.catalysts:
+            annotations.extend(
+                Annotation(content=c, type=AnnotationType.catalyst)
+                for c in dto.catalysts
+            )
+
+        return annotations
