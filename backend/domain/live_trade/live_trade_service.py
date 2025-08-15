@@ -15,6 +15,7 @@ from database.models import (
     AnnotationType,
     LiveTradeStatus,
     ScalePlan,
+    ScalePlanKind,
 )
 from fastapi import HTTPException, status
 from core.stock_price.stock_price_service import StockPriceService
@@ -103,7 +104,9 @@ class LiveTradeService:
 
     def _build_payload(self, live_trade: LiveTradeCreate):
         annotations = self._build_annotations(live_trade)
-        scale_plans = self._build_scale_plans(live_trade.scale_plans)
+        scale_plans = self._build_scale_plans(
+            live_trade.scale_plans, live_trade.position_size
+        )
         payload = live_trade.model_dump(
             exclude={"notes", "catalysts"}, exclude_none=True
         )
@@ -134,7 +137,35 @@ class LiveTradeService:
         return annotations
 
     @staticmethod
-    def _build_scale_plans(plans: list[ScalePlanCreate]):
-        scale_plans: list[ScalePlan] = []
-        scale_plans.extend(ScalePlan(**p.model_dump()) for p in plans)
-        return scale_plans
+    def _build_scale_plans(plans: list[ScalePlanCreate], position_size: int):
+        # Empty plans are allowed
+        if not plans:
+            return []
+
+        # Ensure all plans use the same kind
+        kinds = {p.kind for p in plans}
+        if len(kinds) > 1:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="All scale plans must use the same kind.",
+            )
+
+        kind = next(iter(kinds))
+        total_value = sum(p.value for p in plans)
+
+        if kind == ScalePlanKind.PERCENT:
+            # Combined percent cannot exceed 100
+            if total_value > 100:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Total percent for scale plans cannot exceed 100.",
+                )
+        else:
+            # Assume shares; combined shares cannot exceed position size
+            if total_value > position_size:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Total shares for scale plans cannot exceed position size.",
+                )
+
+        return [ScalePlan(**p.model_dump()) for p in plans]

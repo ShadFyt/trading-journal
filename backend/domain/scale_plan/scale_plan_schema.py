@@ -7,12 +7,11 @@ from database.models import ScalePlanStatus, ScalePlanKind, OrderType
 
 class ScalePlanBase(BaseSchema):
     live_trade_id: str
-    status: ScalePlanStatus
     kind: ScalePlanKind
     order_type: OrderType
     label: str
     value: float
-    target_price: Optional[float] = None
+    target_price: float
     notes: str
     good_till: Optional[datetime] = None
     stop_price: Optional[float] = None
@@ -25,3 +24,4 @@ class ScalePlanCreate(ScalePlanBase):
 
 class ScalePlanRead(ScalePlanBase):
     id: str
+    status: ScalePlanStatus
