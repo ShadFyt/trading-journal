@@ -4,6 +4,7 @@ from domain.live_trade.live_trade_schema import (
     LiveTradeUpdate,
     LiveTradeResponse,
 )
+from domain.scale_plan.scale_plan_schema import ScalePlanCreate
 from domain.trade_idea.trade_idea_schema import TradeIdeaUpdate
 from domain.trade_idea.trade_idea_service import TradeIdeaService
 from domain.annotation.annotation_repo import AnnotationRepo
@@ -13,6 +14,7 @@ from database.models import (
     TradeIdeaStatus,
     AnnotationType,
     LiveTradeStatus,
+    ScalePlan,
 )
 from fastapi import HTTPException, status
 from core.stock_price.stock_price_service import StockPriceService
@@ -41,15 +43,13 @@ class LiveTradeService:
         ]
 
         # Extract unique symbols from live trades
-        symbols = list(set(trade.symbol for trade in live_trades))
+        symbols = list(dict.fromkeys(t.symbol for t in live_trades if t.symbol))
+        if not symbols:
+            return live_trades
 
         # Fetch current prices for all symbols
         try:
-            current_prices = self.stock_price_service.get_stock_price_batch(symbols)
-
-            # Create a mapping of symbol to current price data
-            price_map = {quote.symbol: quote for quote in current_prices}
-
+            price_map = self._get_price_map(symbols)
             # Merge current price data with live trades
             for trade in live_trades:
                 if trade.symbol in price_map:
@@ -97,8 +97,13 @@ class LiveTradeService:
     async def delete_live_trade(self, live_trade_id: str) -> None:
         return await self.repo.delete_live_trade(live_trade_id)
 
+    def _get_price_map(self, symbols: list[str]):
+        quotes = self.stock_price_service.get_stock_price_batch(symbols)
+        return {quote.symbol: quote for quote in quotes}
+
     def _build_payload(self, live_trade: LiveTradeCreate):
         annotations = self._build_annotations(live_trade)
+        scale_plans = self._build_scale_plans(live_trade.scale_plans)
         payload = live_trade.model_dump(
             exclude={"notes", "catalysts"}, exclude_none=True
         )
@@ -107,6 +112,7 @@ class LiveTradeService:
                 "status": LiveTradeStatus.OPEN,
                 "commissions": payload.get("commissions", 2),
                 "annotations": annotations,
+                "scale_plans": scale_plans,
             }
         )
         return payload
@@ -126,3 +132,9 @@ class LiveTradeService:
             )
 
         return annotations
+
+    @staticmethod
+    def _build_scale_plans(plans: list[ScalePlanCreate]):
+        scale_plans: list[ScalePlan] = []
+        scale_plans.extend(ScalePlan(**p.model_dump()) for p in plans)
+        return scale_plans
