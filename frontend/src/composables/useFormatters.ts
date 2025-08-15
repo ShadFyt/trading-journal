@@ -1,12 +1,30 @@
 export const useFormatters = () => {
-  const formatTradeDate = (dateString: string) => {
-    const date = new Date(dateString)
+  const formatTradeDate = (dateInput: string | Date) => {
+    const date = convertStringToDate(dateInput)
     const now = new Date()
-    const diffInDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24))
 
-    if (diffInDays === 0) return 'Today'
-    if (diffInDays === 1) return 'Yesterday'
-    if (diffInDays < 7) return `${diffInDays} days ago`
+    const toStartOfDay = (d: Date) => {
+      const sd = new Date(d)
+      sd.setHours(0, 0, 0, 0)
+      return sd
+    }
+
+    const isSameDay = (a: Date, b: Date) =>
+      a.getFullYear() === b.getFullYear() &&
+      a.getMonth() === b.getMonth() &&
+      a.getDate() === b.getDate()
+
+    if (isSameDay(date, now)) return 'Today'
+
+    const yesterday = new Date(now)
+    yesterday.setDate(now.getDate() - 1)
+    if (isSameDay(date, yesterday)) return 'Yesterday'
+
+    const diffInDays = Math.floor(
+      (toStartOfDay(now).getTime() - toStartOfDay(date).getTime()) / (1000 * 60 * 60 * 24),
+    )
+
+    if (diffInDays >= 0 && diffInDays < 7) return `${diffInDays} days ago`
 
     return date.toLocaleDateString('en-US', {
       month: 'short',
