@@ -1,8 +1,8 @@
 """inital
 
-Revision ID: a367a86aa907
+Revision ID: fd8bcc453289
 Revises: 
-Create Date: 2025-08-13 21:23:25.446587
+Create Date: 2025-08-15 15:03:57.389597
 
 """
 from typing import Sequence, Union
@@ -14,7 +14,7 @@ import sqlmodel
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'a367a86aa907'
+revision: str = 'fd8bcc453289'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -64,7 +64,6 @@ def upgrade() -> None:
     sa.Column('exit_date', sa.DateTime(), nullable=True),
     sa.Column('net_gain_loss', sa.Float(), nullable=True),
     sa.Column('outcome', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
-    sa.Column('target_prices', sa.JSON(), nullable=False),
     sa.ForeignKeyConstraint(['trade_idea_id'], ['trade_idea.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('trade_idea_id')

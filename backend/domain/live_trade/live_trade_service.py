@@ -151,6 +151,14 @@ class LiveTradeService:
             )
 
         kind = next(iter(kinds))
+
+        # Allow at most one 'remainder' plan with no explicit target price
+        none_target_count = sum(1 for p in plans if getattr(p, "target_price", None) is None)
+        if none_target_count > 1:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="At most one scale plan may have a null target_price (remainder).",
+            )
         total_value = sum(p.value for p in plans)
 
         if kind == ScalePlanKind.PERCENT:

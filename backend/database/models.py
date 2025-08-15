@@ -251,9 +251,6 @@ class LiveTrade(BaseTrade, RrRatioMixin, table=True):
     exit_date: Optional[datetime] = Field(nullable=True)
     net_gain_loss: Optional[float] = Field(nullable=True)
     outcome: Optional[str] = Field(nullable=True)
-    target_prices: List[float] = Field(
-        default_factory=list, sa_column=Column(JSON, nullable=False)
-    )
     annotations: List[Annotation] = Relationship(
         back_populates="live_trade",
         sa_relationship_kwargs={
@@ -281,14 +278,18 @@ class LiveTrade(BaseTrade, RrRatioMixin, table=True):
 
     @property
     def rr_ratio(self) -> Optional[float]:
-        if not self.stop:
+        # Must have a stop and an entry to compute RR
+        if not self.stop or not self.entry_price_avg:
             return None
-        # LiveTrade
-        if not self.entry_price_avg or not self.target_prices:
+
+        # Derive target prices from scale plans; ignore plans without a target price
+        targets = [p.target_price for p in self.scale_plans if p.target_price is not None]
+
+        # If there are no explicit targets, RR cannot be computed
+        if not targets:
             return None
-        return self.calculate_rr_ratio(
-            self.entry_price_avg, self.stop, self.target_prices
-        )
+
+        return self.calculate_rr_ratio(self.entry_price_avg, self.stop, targets)
 
     @property
     def remaining_shares(self) -> Optional[int]:

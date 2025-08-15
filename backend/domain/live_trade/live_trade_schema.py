@@ -12,7 +12,6 @@ class LiveTradeBase(BaseSchema):
     entry_price_avg: float
     exit_price_avg: Optional[float] = None
     stop: float
-    target_prices: List[float]
     position_size: int
     exit_date: Optional[datetime] = None
     status: str = "open"
@@ -51,7 +50,6 @@ class LiveTradeUpdate(LiveTradeBase):
     rating: Optional[float] = None
     entry_price_avg: Optional[float] = None
     stop: Optional[float] = None
-    target_prices: Optional[List[float]] = None
     position_size: Optional[int] = None
     enter_date: Optional[datetime] = None
     status: Optional[str] = None
