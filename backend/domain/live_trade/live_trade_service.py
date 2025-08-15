@@ -1,4 +1,3 @@
-import re
 from domain.live_trade.live_trade_repo import LiveTradeRepo
 from domain.live_trade.live_trade_schema import (
     LiveTradeCreate,
@@ -15,7 +14,6 @@ from database.models import (
     AnnotationType,
     LiveTradeStatus,
 )
-from datetime import datetime
 from fastapi import HTTPException, status
 from core.stock_price.stock_price_service import StockPriceService
 
