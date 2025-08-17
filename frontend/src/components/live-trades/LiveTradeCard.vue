@@ -98,7 +98,14 @@ const isExpanded = ref(false)
     <CardHeader>
       <DropdownMenu>
         <DropdownMenuTrigger class="absolute top-2 right-2">
-          <Button variant="ghost" size="sm">⋯</Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            aria-label="Open trade menu"
+            class="h-11 w-11 min-w-[44px] min-h-[44px] p-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+          >
+            ⋯
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent side="bottom" align="end" :avoidCollisions="false">
           <DropdownMenuItem @click="emit('editTrade', trade.id)"> Edit Trade </DropdownMenuItem>
@@ -122,8 +129,8 @@ const isExpanded = ref(false)
       <!-- Header Section -->
       <header class="flex justify-between items-center mb-3">
         <div class="flex items-center gap-2">
-          <span class="text-2xl">📈</span>
-          <h2 class="text-2xl font-bold text-blue-700 tracking-wide">
+          <span class="text-base md:text-2xl">📈</span>
+          <h2 class="text-lg md:text-2xl font-bold text-blue-700 tracking-wide">
             {{ trade.symbol.toUpperCase() }}
           </h2>
         </div>
@@ -132,24 +139,26 @@ const isExpanded = ref(false)
 
       <!-- P&L Display -->
       <div
-        class="flex justify-between items-center p-3 rounded-lg mb-3 border"
+        class="grid grid-cols-1 gap-2 md:grid-cols-3 md:items-center p-3 rounded-lg mb-3 border"
         :class="[pnlStyling.bgColor, pnlStyling.borderColor]"
       >
         <div>
           <p class="text-xs text-gray-600 uppercase tracking-wide">Current Price</p>
           <span
-            class="text-xl font-bold"
+            class="text-lg md:text-xl font-bold"
             :class="trade.currentPrice >= trade.entryPriceAvg ? 'text-green-600' : 'text-red-600'"
             >{{ formatCurrency(trade.currentPrice) }}</span
           >
         </div>
         <div>
           <p class="text-xs text-gray-600 uppercase tracking-wide">Profit/Loss</p>
-          <span class="text-2xl font-bold" :class="pnl >= 0 ? 'text-green-600' : 'text-red-600'">{{
-            formatCurrency(pnl)
-          }}</span>
+          <span
+            class="text-xl md:text-2xl font-bold"
+            :class="pnl >= 0 ? 'text-green-600' : 'text-red-600'">
+            >{{ formatCurrency(pnl) }}
+          </span>
         </div>
-        <div class="text-right">
+        <div class="md:text-right">
           <p class="text-xs text-gray-600 uppercase tracking-wide">Percentage</p>
           <span class="text-sm" :class="pnl >= 0 ? 'text-green-600' : 'text-red-600'">{{
             formatPercentage(
@@ -162,7 +171,7 @@ const isExpanded = ref(false)
       <transition name="fade">
         <div v-if="isExpanded">
           <!-- Price Information -->
-          <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm mb-3">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2 text-sm mb-3">
             <div>
               <span class="font-semibold text-gray-600">Entry:</span>
               <span class="ml-1">{{ formatCurrency(trade.entryPriceAvg) }}</span>
@@ -177,7 +186,6 @@ const isExpanded = ref(false)
             </div>
           </div>
 
-          <!-- Target Prices -->
           <div class="mb-3">
             <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">Targets</p>
             <div class="flex flex-wrap gap-1">
@@ -218,7 +226,7 @@ const isExpanded = ref(false)
           </div>
 
           <!-- Trade Metrics -->
-          <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-sm mb-3">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-sm mb-3">
             <div>
               <span class="font-semibold text-gray-600">R:R Ratio:</span>
               <span class="ml-1">1:{{ trade.rrRatio }}</span>
@@ -239,9 +247,16 @@ const isExpanded = ref(false)
       </transition>
 
       <!-- Footer -->
-      <footer class="mt-3 pt-2 border-t border-gray-100 flex justify-between text-xs text-gray-400">
+      <footer
+        class="mt-3 pt-2 border-t border-gray-100 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between flex-wrap text-xs text-gray-400"
+      >
         <span>Entered {{ convertStringToDate(trade.enterDate).toLocaleDateString() }}</span>
-        <button @click="isExpanded = !isExpanded" class="text-blue-500">
+        <button
+          type="button"
+          :aria-expanded="isExpanded"
+          @click="isExpanded = !isExpanded"
+          class="text-blue-600 inline-flex items-center h-11 px-3 min-w-[44px] rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+        >
           {{ isExpanded ? 'Collapse' : 'Expand' }}
         </button>
         <span>ID: {{ trade.id.slice(-6) }}</span>
