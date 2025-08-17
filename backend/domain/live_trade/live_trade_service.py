@@ -125,12 +125,12 @@ class LiveTradeService:
         annotations: list[Annotation] = []
         if dto.notes:
             annotations.extend(
-                Annotation(content=n, type=AnnotationType.note) for n in dto.notes
+                Annotation(content=n, annotation_type=AnnotationType.note) for n in dto.notes
             )
 
         if dto.catalysts:
             annotations.extend(
-                Annotation(content=c, type=AnnotationType.catalyst)
+                Annotation(content=c, annotation_type=AnnotationType.catalyst)
                 for c in dto.catalysts
             )
 

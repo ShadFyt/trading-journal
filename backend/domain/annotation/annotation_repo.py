@@ -12,7 +12,7 @@ class AnnotationRepo(BaseRepo[Annotation]):
     async def get_all_annotations(self, type_filter: Literal['catalyst', 'note', 'managementNote'] | None = None):
         stmt = select(self.model)
         if type_filter:
-            stmt = stmt.where(self.model.type == type_filter)
+            stmt = stmt.where(self.model.annotation_type == type_filter)
         results = await self.session.exec(stmt)
         return results.all()
     

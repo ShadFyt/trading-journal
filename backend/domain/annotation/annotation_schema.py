@@ -16,6 +16,6 @@ class AnnotationRead(AnnotationCreate):
 
 
 class AnnotationUpdate(AnnotationBase):
-    type: Optional[Literal['catalyst', 'note', 'managementNote']] = None
+    annotation_type: Optional[Literal['catalyst', 'note', 'managementNote']] = None
     content: Optional[str] = None
     date: Optional[datetime] = None
