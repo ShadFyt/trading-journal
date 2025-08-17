@@ -102,6 +102,7 @@ const isExpanded = ref(false)
             variant="ghost"
             size="sm"
             aria-label="Open trade menu"
+            aria-haspopup="menu"
             class="h-11 w-11 min-w-[44px] min-h-[44px] p-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
           >
             ⋯
@@ -147,29 +148,44 @@ const isExpanded = ref(false)
           <span
             class="text-lg md:text-xl font-bold"
             :class="trade.currentPrice >= trade.entryPriceAvg ? 'text-green-600' : 'text-red-600'"
-            >{{ formatCurrency(trade.currentPrice) }}</span
+            aria-live="polite"
+            aria-atomic="true"
           >
+            {{ formatCurrency(trade.currentPrice) }}
+            <span class="sr-only">
+              {{ trade.currentPrice >= trade.entryPriceAvg ? 'above entry' : 'below entry' }}
+            </span>
+          </span>
         </div>
         <div>
           <p class="text-xs text-gray-600 uppercase tracking-wide">Profit/Loss</p>
           <span
             class="text-xl md:text-2xl font-bold"
-            :class="pnl >= 0 ? 'text-green-600' : 'text-red-600'">
-            >{{ formatCurrency(pnl) }}
+            :class="pnl >= 0 ? 'text-green-600' : 'text-red-600'"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            {{ (pnl >= 0 ? '+' : '') + formatCurrency(pnl) }}
           </span>
         </div>
         <div class="md:text-right">
           <p class="text-xs text-gray-600 uppercase tracking-wide">Percentage</p>
-          <span class="text-sm" :class="pnl >= 0 ? 'text-green-600' : 'text-red-600'">{{
-            formatPercentage(
-              ((trade.currentPrice - trade.entryPriceAvg) / trade.entryPriceAvg) * 100,
-            )
-          }}</span>
+          <span
+            class="text-sm"
+            :class="pnl >= 0 ? 'text-green-600' : 'text-red-600'"
+            aria-live="polite"
+            aria-atomic="true"
+            >{{
+              formatPercentage(
+                ((trade.currentPrice - trade.entryPriceAvg) / trade.entryPriceAvg) * 100,
+              )
+            }}</span
+          >
         </div>
       </div>
 
       <transition name="fade">
-        <div v-if="isExpanded">
+        <div v-if="isExpanded" :id="'trade-details-' + trade.id">
           <!-- Price Information -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2 text-sm mb-3">
             <div>
@@ -202,6 +218,9 @@ const isExpanded = ref(false)
               >
                 T{{ idx + 1 }}: {{ formatCurrency(target) }}
                 <span v-if="trade.currentPrice >= target" class="ml-1">✓</span>
+                <span class="sr-only">
+                  {{ trade.currentPrice >= target ? '(reached)' : '(not reached)' }}
+                </span>
               </Badge>
             </div>
           </div>
@@ -215,10 +234,15 @@ const isExpanded = ref(false)
             </div>
             <ProgressRoot
               v-model="priceProgress"
-              class="rounded-full relative h-3 overflow-hidden bg-white dark:bg-stone-950 border border-muted"
+              class="rounded-full relative h-3 overflow-hidden bg-white dark:bg-stone-950 border border-muted motion-reduce:transition-none"
+              role="progressbar"
+              aria-label="Price progress toward target"
+              :aria-valuemin="0"
+              :aria-valuemax="100"
+              :aria-valuenow="Math.round(priceProgress)"
             >
               <ProgressIndicator
-                class="indicator rounded-full block relative w-full h-full bg-grass9 transition-transform overflow-hidden duration-[660ms] ease-[cubic-bezier(0.65, 0, 0.35, 1)] after:animate-progress after:content-[''] after:absolute after:inset-0 after:bg-[linear-gradient(-45deg,_rgba(255,255,255,0.2)_25%,_transparent_25%,_transparent_50%,_rgba(255,255,255,0.2)_50%,_rgba(255,255,255,0.2)_75%,_transparent_75%,_transparent)] after:bg-[length:30px_30px]"
+                class="indicator rounded-full block relative w-full h-full bg-grass9 transition-transform overflow-hidden duration-[660ms] ease-[cubic-bezier(0.65, 0, 0.35, 1)] after:animate-progress after:content-[''] after:absolute after:inset-0 after:bg-[linear-gradient(-45deg,_rgba(255,255,255,0.2)_25%,_transparent_25%,_transparent_50%,_rgba(255,255,255,0.2)_50%,_rgba(255,255,255,0.2)_75%,_transparent_75%,_transparent)] after:bg-[length:30px_30px] motion-reduce:after:animate-none motion-reduce:transition-none"
                 :style="`transform: translateX(-${100 - priceProgress}%)`"
                 :class="pnl >= 0 ? 'bg-green-500' : 'bg-red-500'"
               />
@@ -254,6 +278,7 @@ const isExpanded = ref(false)
         <button
           type="button"
           :aria-expanded="isExpanded"
+          :aria-controls="'trade-details-' + trade.id"
           @click="isExpanded = !isExpanded"
           class="text-blue-600 inline-flex items-center h-11 px-3 min-w-[44px] rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
         >
