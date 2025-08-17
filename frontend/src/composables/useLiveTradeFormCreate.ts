@@ -16,6 +16,7 @@ export const useLiveTradeFormCreate = (tradeIdea: TradeIdea, close?: (v: boolean
       notes: notes ? [notes] : [],
       catalysts: catalysts ? [catalysts] : [],
       tradeIdeaId: id,
+      scalePlans: [],
     }
   }
 

@@ -1,6 +1,5 @@
 import { z } from 'zod'
-import { baseTradeSchema } from './base-trade.schema'
-import { AnnotationSchema } from './annotation.schema'
+import { ScalePlanCreateSchema, AnnotationSchema, baseTradeSchema } from '@/schemas'
 
 export const liveTradeCreateSchema = baseTradeSchema.extend({
   entryPriceAvg: z.number().min(1, 'Entry price is required'),
@@ -9,6 +8,7 @@ export const liveTradeCreateSchema = baseTradeSchema.extend({
   notes: z.array(z.string()).optional(),
   catalysts: z.array(z.string()).optional(),
   tradeIdeaId: z.string().uuid(),
+  scalePlans: z.array(ScalePlanCreateSchema),
 })
 
 export const LiveTradeSchema = liveTradeCreateSchema
