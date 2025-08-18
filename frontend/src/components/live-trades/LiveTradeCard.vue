@@ -53,8 +53,6 @@ const statusBadgeClass = computed(() => {
   }
 })
 
-const targets = computed(() => trade.scalePlans.map(({ targetPrice }) => targetPrice))
-
 /**
  * Calculate progress percentage between stop loss and highest target
  */
@@ -215,25 +213,7 @@ const isExpanded = ref(false)
 
           <div class="mb-3">
             <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">Targets</p>
-            <div class="flex flex-wrap gap-1">
-              <Badge
-                v-for="(target, idx) in targets"
-                :key="idx"
-                variant="outline"
-                class="text-xs"
-                :class="
-                  trade.currentPrice >= (target ?? 0)
-                    ? 'bg-green-50 text-green-700 border-green-200'
-                    : 'bg-gray-50'
-                "
-              >
-                T{{ idx + 1 }}: {{ formatCurrency(target ?? 0) }}
-                <span v-if="trade.currentPrice >= (target ?? 0)" class="ml-1">✓</span>
-                <span class="sr-only">
-                  {{ trade.currentPrice >= (target ?? 0) ? '(reached)' : '(not reached)' }}
-                </span>
-              </Badge>
-            </div>
+            <ScalePlanHoverCard :trade="trade" />
           </div>
 
           <!-- Price Progress Bar -->
