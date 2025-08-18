@@ -22,3 +22,6 @@ class ScalePlanRepo(BaseRepo[ScalePlan]):
 
     async def create_scale_plan(self, scale_plan: ScalePlan) -> ScalePlan:
         return await self.create(scale_plan)
+
+    async def delete_by_id(self, scale_plan_id: str) -> None:
+        await self.delete(scale_plan_id)
