@@ -53,15 +53,26 @@ const statusBadgeClass = computed(() => {
   }
 })
 
+const targets = computed(() => trade.scalePlans.map(({ targetPrice }) => targetPrice))
+
 /**
  * Calculate progress percentage between stop loss and highest target
  */
 const priceProgress = computed(() => {
-  const { currentPrice, stop, targetPrices } = trade
-  const highestTarget = Math.max(...targetPrices)
-  const range = highestTarget - stop
-  const progress = ((currentPrice - stop) / range) * 100
-  return Math.max(0, Math.min(100, progress))
+  const highest = trade.scalePlans.reduce<number | null>((max, { targetPrice }) => {
+    return typeof targetPrice === 'number' && Number.isFinite(targetPrice)
+      ? max === null
+        ? targetPrice
+        : Math.max(max, targetPrice)
+      : max
+  }, null)
+
+  if (highest == null) return 100
+  const range = highest - trade.stop
+  if (range <= 0) return 100
+
+  const clamp = (v: number, min = 0, max = 100) => Math.max(min, Math.min(max, v))
+  return clamp(((trade.currentPrice - trade.stop) / range) * 100)
 })
 
 const positionValue = computed(() => {
@@ -206,20 +217,20 @@ const isExpanded = ref(false)
             <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">Targets</p>
             <div class="flex flex-wrap gap-1">
               <Badge
-                v-for="(target, idx) in trade.targetPrices"
+                v-for="(target, idx) in targets"
                 :key="idx"
                 variant="outline"
                 class="text-xs"
                 :class="
-                  trade.currentPrice >= target
+                  trade.currentPrice >= (target ?? 0)
                     ? 'bg-green-50 text-green-700 border-green-200'
                     : 'bg-gray-50'
                 "
               >
-                T{{ idx + 1 }}: {{ formatCurrency(target) }}
-                <span v-if="trade.currentPrice >= target" class="ml-1">✓</span>
+                T{{ idx + 1 }}: {{ formatCurrency(target ?? 0) }}
+                <span v-if="trade.currentPrice >= (target ?? 0)" class="ml-1">✓</span>
                 <span class="sr-only">
-                  {{ trade.currentPrice >= target ? '(reached)' : '(not reached)' }}
+                  {{ trade.currentPrice >= (target ?? 0) ? '(reached)' : '(not reached)' }}
                 </span>
               </Badge>
             </div>

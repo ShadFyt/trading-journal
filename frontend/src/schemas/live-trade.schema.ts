@@ -3,15 +3,17 @@ import { baseTradeSchema } from './base-trade.schema'
 import { AnnotationSchema } from './annotation.schema'
 import { ScalePlanCreateSchema } from './scale-plan.schema'
 
-export const liveTradeCreateSchema = baseTradeSchema.extend({
-  entryPriceAvg: z.number().min(1, 'Entry price is required'),
-  exitPriceAvg: z.number().optional(),
-  positionSize: z.number().min(1, 'Position size is required'),
-  notes: z.string().optional(),
-  catalysts: z.string().optional(),
-  tradeIdeaId: z.string().uuid(),
-  scalePlans: ScalePlanCreateSchema.array(),
-})
+export const liveTradeCreateSchema = baseTradeSchema
+  .extend({
+    entryPriceAvg: z.number().min(1, 'Entry price is required'),
+    exitPriceAvg: z.number().optional(),
+    positionSize: z.number().min(1, 'Position size is required'),
+    notes: z.string().optional(),
+    catalysts: z.string().optional(),
+    tradeIdeaId: z.string().uuid(),
+    scalePlans: ScalePlanCreateSchema.array(),
+  })
+  .omit({ targetPrices: true })
 
 export const LiveTradeSchema = liveTradeCreateSchema
   .extend({
@@ -28,6 +30,7 @@ export const LiveTradeSchema = liveTradeCreateSchema
     currentPrice: z.number(),
     priceChange: z.number().optional(),
     percentChange: z.number().optional(),
+    scalePlans: ScalePlanCreateSchema.array(),
   })
   .omit({ notes: true, catalysts: true })
 
