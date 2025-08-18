@@ -55,7 +55,11 @@ class LiveTradeRepo(BaseRepo[LiveTrade]):
 
         stmt = (
             select(LiveTrade)
-            .options(selectinload(LiveTrade.annotations))
+            .options(
+                selectinload(LiveTrade.annotations),
+                selectinload(LiveTrade.scale_plans),
+                selectinload(LiveTrade.executions),
+            )
             .where(LiveTrade.id == result.id)
         )
         fresh_result = await self.session.exec(stmt)
