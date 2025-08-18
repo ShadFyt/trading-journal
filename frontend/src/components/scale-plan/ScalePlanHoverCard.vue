@@ -1,7 +1,14 @@
 <script setup lang="ts">
 import type { LiveTrade } from '@/interfaces'
 import { useFormatters } from '@/composables'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
 
 const { trade } = defineProps<{
   trade: LiveTrade
@@ -15,6 +22,10 @@ const formatValue = (kind: string, value?: number) =>
 
 const isReached = (current: number, target?: number | null) =>
   typeof target === 'number' && Number.isFinite(target) && current >= target
+
+// Keep hover card open while the portaled dropdown menu is open
+const openIdx = ref<number | null>(null)
+const menuOpenIdx = ref<number | null>(null)
 </script>
 
 <template>
@@ -24,6 +35,12 @@ const isReached = (current: number, target?: number | null) =>
       :key="plan.id ?? idx"
       :open-delay="150"
       :close-delay="100"
+      :open="openIdx === idx || menuOpenIdx === idx"
+      @update:open="
+        (v: boolean) => {
+          openIdx = v ? idx : openIdx === idx ? null : openIdx
+        }
+      "
     >
       <HoverCardTrigger as-child>
         <Badge
@@ -45,36 +62,70 @@ const isReached = (current: number, target?: number | null) =>
         </Badge>
       </HoverCardTrigger>
 
-      <HoverCardContent class="w-80 max-w-[90vw]">
-        <div class="space-y-2">
-          <div class="flex items-center justify-between">
+      <HoverCardContent class="relative w-80 max-w-[90vw] p-2.5" align="start">
+        <DropdownMenu
+          as-child
+          :open="menuOpenIdx === idx"
+          @update:open="
+            (v: boolean) => {
+              menuOpenIdx = v ? idx : menuOpenIdx === idx ? null : menuOpenIdx
+            }
+          "
+        >
+          <DropdownMenuTrigger class="absolute top-1 right-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              aria-label="Open trade menu"
+              aria-haspopup="menu"
+              class="h-11 w-11 p-0 rounded-full min-w-[44px] min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+            >
+              ⋯
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="bottom" align="end" :avoidCollisions="false">
+            <DropdownMenuItem> Execute Plan </DropdownMenuItem>
+            <DropdownMenuItem> Edit Plan </DropdownMenuItem>
+            <DropdownMenuItem class="text-red-600"> Delete Plan </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <div>
+          <div class="flex items-center justify-between mb-1 pr-12">
             <h4 :id="`sp-${idx}-title`" class="text-sm font-semibold">
               {{ plan.label?.trim() || `Plan ${idx + 1}` }}
             </h4>
+            <Badge
+              class="rounded-full bg-gray-100 text-gray-700 px-2 py-0.5 text-[11px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+            >
+              {{ plan.status }}
+            </Badge>
           </div>
 
-          <div class="flex flex-wrap gap-2 text-xs">
-            <span class="rounded bg-gray-100 px-2 py-0.5">Order: {{ plan.orderType }}</span>
-            <span class="rounded bg-gray-100 px-2 py-0.5">Kind: {{ plan.kind }}</span>
-            <span class="rounded bg-gray-100 px-2 py-0.5">
+          <div class="my-2 border-t border-gray-200"></div>
+
+          <div class="flex flex-wrap gap-1.5 text-[11px] mb-3">
+            <span class="rounded-full bg-gray-100 px-2 py-0.5">Order: {{ plan.orderType }}</span>
+            <span class="rounded-full bg-gray-100 px-2 py-0.5">Kind: {{ plan.kind }}</span>
+            <span class="rounded-full bg-gray-100 px-2 py-0.5">
               Value: {{ formatValue(plan.kind as string, plan.value) }}
             </span>
           </div>
 
-          <div class="grid grid-cols-2 gap-2 text-sm">
-            <div v-if="plan.entryPrice != null" class="rounded border p-2">
+          <div class="grid grid-cols-2 gap-2 text-sm mt-2">
+            <div v-if="plan.entryPrice != null" class="rounded bg-gray-50 p-2">
               <p class="text-xs text-gray-600">Entry</p>
               <p class="font-medium">{{ formatCurrency(plan.entryPrice) }}</p>
             </div>
-            <div v-if="plan.targetPrice != null" class="rounded border p-2">
+            <div v-if="plan.targetPrice != null" class="rounded bg-gray-50 p-2">
               <p class="text-xs text-gray-600">Target</p>
               <p class="font-medium">{{ formatCurrency(plan.targetPrice) }}</p>
             </div>
-            <div v-if="plan.stopPrice != null" class="rounded border p-2">
+            <div v-if="plan.stopPrice != null" class="rounded bg-gray-50 p-2">
               <p class="text-xs text-gray-600">Stop</p>
               <p class="font-medium">{{ formatCurrency(plan.stopPrice) }}</p>
             </div>
-            <div v-if="plan.limitPrice != null" class="rounded border p-2">
+            <div v-if="plan.limitPrice != null" class="rounded bg-gray-50 p-2">
               <p class="text-xs text-gray-600">Limit</p>
               <p class="font-medium">{{ formatCurrency(plan.limitPrice) }}</p>
             </div>
