@@ -115,6 +115,7 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     S: typeof import('./src/components/live-trades/LiveTradeForm.vue')['default']
+    ScalePlansEditor: typeof import('./src/components/scale-plan/ScalePlansEditor.vue')['default']
     Select: typeof import('./src/components/ui/select/Select.vue')['default']
     SelectContent: typeof import('./src/components/ui/select/SelectContent.vue')['default']
     SelectGroup: typeof import('./src/components/ui/select/SelectGroup.vue')['default']

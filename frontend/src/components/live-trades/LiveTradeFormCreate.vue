@@ -32,8 +32,8 @@ const { isFieldDirty, onSubmit, setFieldValue, isSubmitting, schema } = useLiveT
         </div>
 
         <!-- Scrollable form body -->
-        <div class="flex-1 overflow-y-scroll">
-          <section class="w-full grid grid-cols-6 p-2 gap-3 md:gap-4">
+        <div class="flex-1 overflow-y-auto overflow-x-hidden">
+          <section class="w-full min-w-0 grid grid-cols-6 p-2 gap-3 md:gap-4">
             <SheetHeader class="col-span-6">
               <SheetTitle class="text-lg">Convert Trade Idea to Live Trade</SheetTitle>
               <SheetDescription> Click save when you're done. </SheetDescription>
