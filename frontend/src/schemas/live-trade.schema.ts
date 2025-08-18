@@ -7,8 +7,8 @@ export const liveTradeCreateSchema = baseTradeSchema.extend({
   entryPriceAvg: z.number().min(1, 'Entry price is required'),
   exitPriceAvg: z.number().optional(),
   positionSize: z.number().min(1, 'Position size is required'),
-  notes: z.array(z.string()).optional(),
-  catalysts: z.array(z.string()).optional(),
+  notes: z.string().optional(),
+  catalysts: z.string().optional(),
   tradeIdeaId: z.string().uuid(),
   scalePlans: ScalePlanCreateSchema.array(),
 })

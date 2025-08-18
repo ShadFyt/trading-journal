@@ -13,8 +13,8 @@ export const useLiveTradeFormCreate = (tradeIdea: TradeIdea, close?: (v: boolean
     return {
       ...rest,
       entryPriceAvg: entryMin,
-      notes: notes ? [notes] : [],
-      catalysts: catalysts ? [catalysts] : [],
+      notes: '',
+      catalysts: '',
       tradeIdeaId: id,
       scalePlans: [],
     }

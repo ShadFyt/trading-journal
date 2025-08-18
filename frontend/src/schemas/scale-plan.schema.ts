@@ -21,4 +21,5 @@ export const ScalePlanSchema = z.object({
 export const ScalePlanCreateSchema = ScalePlanSchema.omit({
   id: true,
   status: true,
+  liveTradeId: true,
 })

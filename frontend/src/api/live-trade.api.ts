@@ -8,7 +8,13 @@ export const getLiveTrades = () => {
 }
 
 export const createLiveTrade = (data: LiveTradeCreate) => {
-  return apiClient.post<LiveTrade>(LIVE_TRADE_API_URL, data)
+  const { notes, catalysts, ...rest } = data
+
+  return apiClient.post<LiveTrade>(LIVE_TRADE_API_URL, {
+    ...rest,
+    notes: notes ? [notes] : [],
+    catalysts: catalysts ? [catalysts] : [],
+  })
 }
 
 export const updateLiveTrade = (id: string, data: LiveTradeUpdate) => {
