@@ -1,103 +1,75 @@
 # 📈 Personal Trading Journal App
 
-A minimal yet visually appealing trading journal and watchlist management app built for serious swing traders. Designed for **tracking trade ideas**, **managing live trades**, and **viewing live market prices** via [Finnhub](https://finnhub.io/).
-
-> 🚀 Built using **Vue 3 + TailwindCSS + shadcn/vue** for the frontend and **FastAPI + Python** for the backend.
-
----
+A full-stack application for capturing swing-trading ideas and managing live trades.
 
 ## 📌 Purpose
 
-This app is a **personal trading journal and watchlist manager** to:
+Provide a focused workspace to plan, execute and review trades without distraction.
 
-- Log and organize **trade ideas** with detailed trade plans
-- Monitor and manage **live trades**
-- Display **live market prices** using the **Finnhub API**
-- Build a focused, distraction-free interface that is trader-centric
+## ✨ Features
 
----
+### Watchlist & Trade Ideas
+- Log setups with entry range, stop, targets, rating, catalysts and notes.
+- Search, filter by status and convert ideas into live trades when a setup triggers.
 
-## ✨ Features (MVP)
+### Live Trade Management
+- Track open positions with current price, remaining shares and realized P&L.
+- Attach annotations for catalysts, trade notes and management notes.
+- Plan partial exits or adds with per-target scale plans.
+- Record trade executions and automatically compute R/R metrics.
 
-### ✅ Core Features
-
-- **Watchlist Management**: Add trade ideas with full trading plans (entry, stop, targets, rating, catalyst)
-- **Live Trade Tracker**: View and update currently open trades
-- **Live Market Prices**: Integrate real-time prices via **Finnhub API**
-- **Clean, Professional UI**: Using **Vue 3**, **TailwindCSS**, and **shadcn/vue** components
-
----
+### Real-Time Market Data
+- Display live prices via the [Finnhub](https://finnhub.io/) API.
 
 ## 🏗️ Tech Stack
 
-| Layer         | Technology                  |
-|---------------|-----------------------------|
-| Frontend      | Vue 3, TailwindCSS, shadcn/vue |
-| Backend       | FastAPI (Python)            |
-| Live Data API | [Finnhub API](https://finnhub.io/) |
-| State Mgmt    | Pinia (or Vue Composition API) |
-| Styling       | TailwindCSS + shadcn        |
-| Persistence   | SQLite (MVP) or PostgreSQL (scalable) |
-| Auth (Optional MVP) | Token-based (local storage or JWT) |
+| Layer | Technology |
+|-------|------------|
+| Frontend | Vue 3, Vite, TailwindCSS, shadcn/vue, TypeScript |
+| State Mgmt | Pinia / Composition API |
+| Backend | FastAPI, SQLModel, Alembic |
+| Database | SQLite (dev) |
+| Live Data API | Finnhub |
 
----
-## 🗂️ Suggested Folder Structure
-```
-├── frontend/
-│ ├── src/
-│ │ ├── components/
-│ │ ├── pages/
-│ │ ├── stores/
-│ │ ├── api/
-│ │ └── App.vue
-├── backend/
-│ ├── app/
-│ │ ├── models/
-│ │ ├── routes/
-│ │ ├── services/
-│ │ └── main.py
-├── README.md
-├── requirements.txt
-├── .env (API Keys)
-```
+## 🗂️ Project Structure
 
-## 🔮 Future Features (Roadmap)
-| Feature                                                    | Status     |
-| ---------------------------------------------------------- | ---------- |
-| ✅ Basic Watchlist                                          | ✅ MVP      |
-| ✅ Live Trade Tracker                                       | ✅ MVP      |
-| 🔄 Price Alerts (Email/SMS)                                | 🔜 Planned |
-| 🔄 Trade Review Dashboard (metrics, win rate, R-multiples) | 🔜 Planned |
-| 🔄 Custom Scanner (Breakouts, Retests)                     | 🔜 Planned |
-| 🔄 Tagging & Filtering                                     | 🔜 Planned |
-| 🔄 Export to CSV / PDF                                     | 🔜 Planned |
+```
+.
+├── backend        # FastAPI application
+│   ├── core       # configuration and dependencies
+│   ├── database   # SQLModel models and session
+│   └── domain     # trade_idea, live_trade, scale_plan, annotation modules
+└── frontend       # Vue 3 SPA
+    └── src
+        ├── components
+        ├── pages
+        └── composables
+```
 
 ## 🧪 Development Setup
-```bash
-# Backend
-# Install Poetry if you haven't already
-pip install poetry
 
-# Install dependencies
+### Backend
+
+```bash
 cd backend
 poetry install
-
-# Activate shell (optional, for Poetry-managed venv)
-poetry shell
-
-# Run the backend
-poetry run uvicorn app.main:app --reload
+# optional: poetry shell
+alembic upgrade head  # run database migrations
+poetry run uvicorn main:app --reload
 ```
 
+### Frontend
+
 ```bash
-# Frontend
+cd frontend
 npm install
 npm run dev
 ```
 
-## 🎯 Goals
-- Build a consistent routine around planning and reviewing trades
+## 🔮 Roadmap
 
-- Eliminate emotion by pre-defining trade logic
+- Price alerts (email/SMS)
+- Trade review dashboard with statistics
+- Tagging & filtering
+- Export to CSV / PDF
 
-- Streamline workflow to spend less time tracking and more time executing high-quality setups
