@@ -22,6 +22,6 @@ import { Tooltip } from '@/components/ui/tooltip'
         </Tooltip>
       </TooltipProvider>
     </PopoverTrigger>
-    <PopoverContent> Scale Plan Form</PopoverContent>
+    <PopoverContent> <ScalePlansEditor /></PopoverContent>
   </Popover>
 </template>

@@ -118,6 +118,7 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     S: typeof import('./src/components/live-trades/LiveTradeForm.vue')['default']
+    ScalePlanForm: typeof import('./src/components/scale-plan/ScalePlanForm.vue')['default']
     ScalePlanHoverCard: typeof import('./src/components/scale-plan/ScalePlanHoverCard.vue')['default']
     ScalePlanHoverCardItem: typeof import('./src/components/scale-plan/ScalePlanHoverCardItem.vue')['default']
     ScalePlanQuickAdd: typeof import('./src/components/scale-plan/ScalePlanQuickAdd.vue')['default']

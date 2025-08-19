@@ -1,6 +1,6 @@
 import { toTypedSchema } from '@vee-validate/zod'
 import { tradeIdeaCreateSchema, tradeIdeaUpdateSchema } from '@/schemas'
-import type { TradeIdea } from '@/interfaces/trade-idea.type'
+import type { TradeIdea } from '@/interfaces/trade-idea.type.ts'
 import { useTradeIdeaMutationService } from '@/composables'
 import { useForm } from 'vee-validate'
 

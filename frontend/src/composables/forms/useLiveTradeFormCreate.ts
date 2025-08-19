@@ -1,8 +1,8 @@
-import { useLiveTradeMutationService } from './useLiveTradeService'
+import { useLiveTradeMutationService } from '../useLiveTradeService.ts'
 import { liveTradeCreateSchema } from '@/schemas'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
-import type { TradeIdea } from '@/interfaces/trade-idea.type'
+import type { TradeIdea } from '@/interfaces/trade-idea.type.ts'
 
 export const useLiveTradeFormCreate = (tradeIdea: TradeIdea, close?: (v: boolean) => void) => {
   const { createMutation } = useLiveTradeMutationService()
