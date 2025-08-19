@@ -10,9 +10,9 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { SCALE_PLAN_KINDS } from '@/enums/scale-plan.enum'
-import type { ScalePlanCreateType } from '@/interfaces'
+import type { ScalePlanCreate } from '@/interfaces'
 
-const { fields, push, remove } = useFieldArray<ScalePlanCreateType>('scalePlans')
+const { fields, push, remove } = useFieldArray<ScalePlanCreate>('scalePlans')
 
 function addPlan() {
   push({
