@@ -212,7 +212,12 @@ const isExpanded = ref(false)
           </div>
 
           <div class="mb-3">
-            <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">Targets</p>
+            <div class="flex justify-between">
+              <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">
+                Targets
+              </p>
+              <ScalePlanQuickAdd />
+            </div>
             <ScalePlanHoverCard :trade="trade" />
           </div>
 
