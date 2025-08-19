@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useFormatters } from '@/composables'
+import { useFormatters, useScalePlanMutationService } from '@/composables'
 import type { LiveTrade, ScalePlan } from '@/interfaces'
 
 const { formatCurrency, formatTradeDate } = useFormatters()
-
+const { deleteMutation } = useScalePlanMutationService()
 const props = defineProps<{
   trade: LiveTrade
   plan: ScalePlan
@@ -27,14 +27,18 @@ const onUpdateHover = (v: boolean) => {
   hoverOpen.value = v
 }
 
-const onConfirmDelete = (planId?: string | number) => {
+const onConfirmDelete = async (planId: string) => {
   console.log('Delete scale plan', {
     tradeId: props.trade?.id,
     planId,
     idx: props.idx,
   })
-  menuOpen.value = false
-  confirmOpen.value = false
+  await deleteMutation.mutateAsync(planId, {
+    onSettled() {
+      menuOpen.value = false
+      confirmOpen.value = false
+    },
+  })
 }
 </script>
 
