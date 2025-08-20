@@ -2,7 +2,7 @@ from fastapi import HTTPException, status
 
 from database.models import ScalePlan, ScalePlanStatus
 from domain.scale_plan.scale_plan_repo import ScalePlanRepo
-from domain.scale_plan.scale_plan_schema import ScalePlanCreate
+from domain.scale_plan.scale_plan_schema import ScalePlanCreate, ScalePlanUpdate
 
 
 class ScalePlanService:
@@ -18,7 +18,10 @@ class ScalePlanService:
     async def create_scale_plan(self, dto: ScalePlanCreate):
         data = dto.model_dump()
         scale_plan = ScalePlan(**data)
-        return await self.repo.create_scale_plan(scale_plan)
+        return await self.repo.create(scale_plan)
+
+    async def update_scale_plan(self, scale_plan_id: str, dto: ScalePlanUpdate):
+        return await self.repo.update_by_id(scale_plan_id, dto)
 
     async def delete_scale_plan(self, scale_plan_id: str) -> None:
         db_scale_plan = await self.repo.get_scale_plan_by_id(scale_plan_id)
