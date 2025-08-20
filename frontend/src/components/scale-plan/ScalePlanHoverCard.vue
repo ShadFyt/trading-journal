@@ -18,6 +18,7 @@ const plans = computed(() => trade.scalePlans ?? [])
       :trade="trade"
       :plan="plan"
       :idx="idx"
+      @edit="$emit('edit', plan)"
     />
   </div>
 </template>

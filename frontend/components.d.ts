@@ -108,6 +108,7 @@ declare module 'vue' {
     ScalePlanHoverCardItem: typeof import('./src/components/scale-plan/ScalePlanHoverCardItem.vue')['default']
     ScalePlanQuickAdd: typeof import('./src/components/scale-plan/ScalePlanQuickAdd.vue')['default']
     ScalePlanQuickEdit: typeof import('./src/components/scale-plan/ScalePlanQuickEdit.vue')['default']
+    ScalePlans: typeof import('./src/components/scale-plan/ScalePlans.vue')['default']
     ScalePlansEditor: typeof import('./src/components/scale-plan/ScalePlansEditor.vue')['default']
     Select: typeof import('./src/components/ui/select/Select.vue')['default']
     SelectContent: typeof import('./src/components/ui/select/SelectContent.vue')['default']
