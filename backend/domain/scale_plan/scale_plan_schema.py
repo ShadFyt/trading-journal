@@ -21,6 +21,10 @@ class ScalePlanCreate(ScalePlanBase):
     pass
 
 
+class ScalePlanCreateWithTradeId(ScalePlanBase):
+    live_trade_id: str
+
+
 class ScalePlanRead(ScalePlanBase):
     id: str
     live_trade_id: str
