@@ -1,4 +1,4 @@
-import { useLiveTradeMutationService } from '../useLiveTradeService.ts'
+import { useLiveTradeMutationService } from '@/composables'
 import { liveTradeCreateSchema } from '@/schemas'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
