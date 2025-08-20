@@ -216,7 +216,7 @@ const isExpanded = ref(false)
               <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">
                 Targets
               </p>
-              <ScalePlanQuickAdd />
+              <ScalePlanQuickAdd :trade="trade" />
             </div>
             <ScalePlanHoverCard :trade="trade" />
           </div>

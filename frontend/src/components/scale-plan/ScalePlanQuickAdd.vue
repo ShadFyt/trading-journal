@@ -4,15 +4,46 @@ import { Tooltip } from '@/components/ui/tooltip'
 import { toTypedSchema } from '@vee-validate/zod'
 import { ScalePlanCreateSchema } from '@/schemas'
 import { useForm } from 'vee-validate'
+import { useScalePlanMutationService } from '@/composables'
+import type { LiveTrade } from '@/interfaces'
+import { OrderTypeEnum, ScalePlanKindEnum } from '@/enums'
+
+const props = defineProps<{
+  trade: LiveTrade
+}>()
+const open = ref(false)
 
 const formSchema = toTypedSchema(ScalePlanCreateSchema)
-const { isFieldDirty, isSubmitting } = useForm({
+const { createMutation } = useScalePlanMutationService()
+const { isFieldDirty, isSubmitting, handleSubmit } = useForm({
   validationSchema: formSchema,
+  initialValues: {
+    orderType: OrderTypeEnum.enum.LIMIT,
+    kind: ScalePlanKindEnum.enum.SHARES,
+  },
+})
+
+const onSubmit = handleSubmit(async (values) => {
+  try {
+    createMutation.mutate(
+      {
+        data: values,
+        liveTradeId: props.trade.id,
+      },
+      {
+        onSuccess() {
+          open.value = false
+        },
+      },
+    )
+  } catch (error) {
+    console.error(error)
+  }
 })
 </script>
 
 <template>
-  <Popover>
+  <Popover v-model:open="open">
     <PopoverTrigger>
       <TooltipProvider>
         <Tooltip>
@@ -32,7 +63,11 @@ const { isFieldDirty, isSubmitting } = useForm({
     </PopoverTrigger>
     <PopoverContent>
       <p class="text-xs font-semibold text-center mb-3">Scale Out Plan</p>
-      <form class="flex flex-col h-full relative" :validation-schema="formSchema">
+      <form
+        class="flex flex-col h-full relative"
+        :validation-schema="formSchema"
+        @submit="onSubmit"
+      >
         <!-- Loading spinner -->
 
         <div v-if="isSubmitting" class="absolute inset-0 flex items-center justify-center z-50">
