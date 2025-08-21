@@ -101,7 +101,6 @@ declare module 'vue' {
     Progress: typeof import('./src/components/ui/progress/Progress.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    ScalePlanForm: typeof import('./src/components/scale-plan/ScalePlanForm.vue')['default']
     ScalePlanFormFields: typeof import('./src/components/scale-plan/ScalePlanFormFields.vue')['default']
     ScalePlanHoverCard: typeof import('./src/components/scale-plan/ScalePlanHoverCard.vue')['default']
     ScalePlanHoverCardItem: typeof import('./src/components/scale-plan/ScalePlanHoverCardItem.vue')['default']
