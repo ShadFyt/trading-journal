@@ -33,7 +33,12 @@ const closeEditForm = () => {
       </div>
     </PopoverAnchor>
     <PopoverContent side="bottom" align="start">
-      <ScalePlanQuickEdit v-if="selectedPlan" :scalePlan="selectedPlan" @close="closeEditForm" />
+      <ScalePlanQuickEdit
+        v-if="selectedPlan"
+        :scalePlan="selectedPlan"
+        :trade="trade"
+        @close="closeEditForm"
+      />
     </PopoverContent>
   </Popover>
 </template>
