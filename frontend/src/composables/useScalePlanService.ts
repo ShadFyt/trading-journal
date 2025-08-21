@@ -2,8 +2,8 @@ import { toast } from 'vue-sonner'
 import { AxiosError } from 'axios'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { liveTradeKeys } from '@/composables/useLiveTradeService.ts'
-import { createScalePlan, deleteScalePlan } from '@/api/scale-plan.api.ts'
-import type { ScalePlanCreate } from '@/interfaces'
+import { createScalePlan, deleteScalePlan, updateScalePlan } from '@/api/scale-plan.api.ts'
+import type { ScalePlanCreate, ScalePlanUpdate } from '@/interfaces'
 
 export const scalePlanKeys = {
   all: ['scalePlan'] as const,
@@ -15,43 +15,45 @@ export const scalePlanKeys = {
 export const useScalePlanMutationService = () => {
   const queryClient = useQueryClient()
 
+  const handleEerror = (e: unknown, type: 'create' | 'update' | 'delete') => {
+    if (e instanceof AxiosError) {
+      toast.error(
+        `Failed to ${type} scale plan: ${e.response?.data?.message || e.message || 'An error occurred'}`,
+      )
+    } else {
+      toast.error(`Failed to ${type} scale plan`)
+    }
+  }
+
+  const handleSuccess = (type: 'create' | 'update' | 'delete') => {
+    queryClient.invalidateQueries({ queryKey: liveTradeKeys.all })
+    toast.success(`Scale plan ${type}d successfully`)
+  }
+
   const createMutation = useMutation({
     mutationFn: ({ data, liveTradeId }: { data: ScalePlanCreate; liveTradeId: string }) =>
       createScalePlan(liveTradeId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: liveTradeKeys.all })
-      toast.success('Scale plan created successfully')
-    },
-    onError: (e: unknown) => {
-      if (e instanceof AxiosError) {
-        toast.error(
-          `Failed to create scale plan: ${e.response?.data?.message || e.message || 'An error occurred'}`,
-        )
-      } else {
-        toast.error('Failed to create scale plan')
-      }
-    },
+    onSuccess: () => handleSuccess('create'),
+    onError: (e) => handleEerror(e, 'create'),
+  })
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: ScalePlanUpdate }) => updateScalePlan(id, data),
+    onSuccess: () => handleSuccess('update'),
+    onError: (e) => handleEerror(e, 'update'),
   })
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteScalePlan(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: liveTradeKeys.all })
-      toast.success('Scale plan deleted successfully')
-    },
-    onError: (e: unknown) => {
-      if (e instanceof AxiosError) {
-        toast.error(
-          `Failed to delete scale plan: ${e.response?.data?.message || e.message || 'An error occurred'}`,
-        )
-      } else {
-        toast.error('Failed to delete scale plan')
-      }
-    },
+    onSuccess: () => handleSuccess('delete'),
+    onError: (e) => handleEerror(e, 'delete'),
   })
 
   return {
     deleteMutation,
     createMutation,
+    updateMutation,
   }
 }
+
+export const useScalePlanValidationService = () => {}

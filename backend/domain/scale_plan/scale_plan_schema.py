@@ -29,3 +29,16 @@ class ScalePlanRead(ScalePlanBase):
     id: str
     live_trade_id: str
     status: ScalePlanStatus
+
+
+class ScalePlanUpdate(ScalePlanBase):
+    kind: Optional[ScalePlanKind] = None
+    order_type: Optional[OrderType] = None
+    label: Optional[str] = None
+    value: Optional[float] = None
+    target_price: Optional[float] = None
+    notes: Optional[str] = None
+    good_till: Optional[datetime] = None
+    stop_price: Optional[float] = None
+    limit_price: Optional[float] = None
+    status: Optional[ScalePlanStatus] = None

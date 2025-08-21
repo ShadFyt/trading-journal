@@ -23,3 +23,8 @@ export const ScalePlanCreateSchema = ScalePlanSchema.omit({
   status: true,
   liveTradeId: true,
 })
+
+export const ScalePlanUpdateSchema = ScalePlanSchema.omit({
+  id: true,
+  liveTradeId: true,
+}).partial()

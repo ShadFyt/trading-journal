@@ -211,15 +211,7 @@ const isExpanded = ref(false)
             </div>
           </div>
 
-          <div class="mb-3">
-            <div class="flex justify-between">
-              <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">
-                Targets
-              </p>
-              <ScalePlanQuickAdd :trade="trade" />
-            </div>
-            <ScalePlanHoverCard :trade="trade" />
-          </div>
+          <ScalePlans :trade="trade" />
 
           <!-- Price Progress Bar -->
           <div class="mb-3">
