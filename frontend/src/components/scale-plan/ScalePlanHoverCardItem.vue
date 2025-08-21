@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { Icon } from '@iconify/vue'
 import { useFormatters, useScalePlanMutationService } from '@/composables'
 import type { LiveTrade, ScalePlan } from '@/interfaces'
 
@@ -92,8 +93,12 @@ const onConfirmDelete = async (planId: string) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent side="bottom" align="end" :avoidCollisions="false">
-          <DropdownMenuItem> Execute Plan </DropdownMenuItem>
-          <DropdownMenuItem @select="$emit('edit', props.plan)"> edit </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Icon icon="lucide:circle-fading-arrow-up" width="24" height="24" />Execute Plan
+          </DropdownMenuItem>
+          <DropdownMenuItem @select="$emit('edit', props.plan)">
+            <Icon icon="lucide:edit" width="24" height="24" />edit
+          </DropdownMenuItem>
           <AlertDialog
             :open="confirmOpen"
             @update:open="
@@ -107,7 +112,7 @@ const onConfirmDelete = async (planId: string) => {
                 :hidden="props.plan.status !== 'planned'"
                 class="text-red-600"
                 @click.stop="confirmOpen = true"
-              >
+                ><Icon icon="lucide:trash-2" width="24" height="24" />
                 Delete Plan
               </DropdownMenuItem>
             </AlertDialogTrigger>
