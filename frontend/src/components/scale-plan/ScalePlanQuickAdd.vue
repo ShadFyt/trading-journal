@@ -30,6 +30,7 @@ const { isFieldDirty, isSubmitting, handleSubmit } = useForm({
     orderType: OrderTypeEnum.enum.LIMIT,
     kind: ScalePlanKindEnum.enum.SHARES,
     targetPrice: trade.entryPriceAvg + 0.5,
+    label: `T${trade.scalePlans.length + 1}(Target ${trade.scalePlans.length + 1})`,
   },
 })
 
@@ -37,7 +38,7 @@ const onSubmit = handleSubmit(async (values) => {
   createMutation.mutate(
     {
       data: values,
-      liveTradeId: props.trade.id,
+      liveTradeId: trade.id,
     },
     {
       onSuccess() {
