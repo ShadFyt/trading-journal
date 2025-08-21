@@ -3,6 +3,8 @@ from database.models import TradeExecution
 from core.base_repo import BaseRepo
 from sqlmodel import select
 
+from domain.execution.execution_schema import ExecutionUpdate
+
 
 class ExecutionRepo(BaseRepo):
     def __init__(self, session: SessionDep):
@@ -26,7 +28,7 @@ class ExecutionRepo(BaseRepo):
     async def execute(self, execution: TradeExecution) -> TradeExecution:
         return await self.create(execution)
 
-    async def update_execution(self, execution_id: str, execution: TradeExecution):
+    async def update_execution(self, execution_id: str, execution: ExecutionUpdate):
         return await self.update(execution_id, execution)
 
     async def delete_execution(self, execution_id: str):
