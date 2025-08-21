@@ -3,8 +3,8 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { ScalePlanUpdateSchema } from '@/schemas'
 import { useForm } from 'vee-validate'
 import { useScalePlanMutationService } from '@/composables'
-import { z } from 'zod'
 import type { LiveTrade, ScalePlan } from '@/interfaces'
+import { addScalePlanLimitIssue, addScalePlanTargetPriceIssue } from '@/utils/scale-plan.util.ts'
 
 const { scalePlan, trade } = defineProps<{
   scalePlan: ScalePlan
@@ -24,24 +24,8 @@ const refinedSchema = ScalePlanUpdateSchema.superRefine((data, ctx) => {
     .reduce((total, plan) => total + plan.value, 0)
 
   const newTotal = otherTotal + (nextValue ?? 0)
-  if (newTotal > trade.positionSize) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ['value'],
-      message: `Total planned value (${newTotal.toFixed(2)}) exceeds position size (${trade.positionSize.toFixed(2)}).`,
-    })
-  }
-
-  //TODO: account for short positions
-  if (typeof nextTarget === 'number' && typeof trade.entryPriceAvg === 'number') {
-    if (nextTarget < trade.entryPriceAvg) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ['targetPrice'],
-        message: `Target price must be ≥ entry price (${trade.entryPriceAvg.toFixed(2)}).`,
-      })
-    }
-  }
+  addScalePlanLimitIssue(ctx, trade.positionSize, newTotal, scalePlan.kind)
+  addScalePlanTargetPriceIssue(ctx, nextTarget, trade.entryPriceAvg)
 })
 
 const formSchema = toTypedSchema(refinedSchema)

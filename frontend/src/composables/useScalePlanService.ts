@@ -55,3 +55,5 @@ export const useScalePlanMutationService = () => {
     updateMutation,
   }
 }
+
+export const useScalePlanValidationService = () => {}
