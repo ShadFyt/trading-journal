@@ -7,6 +7,7 @@ from domain.scale_plan.scale_plan_router import router as scale_plan_router
 from domain.trade_idea.trade_idea_router import router as trade_idea_router
 from domain.live_trade.live_trade_router import router as live_trade_router
 from domain.annotation.annotation_router import router as annotation_router
+from domain.execution.execution_router import router as execution_router
 
 
 @contextlib.asynccontextmanager
@@ -33,6 +34,9 @@ app.add_middleware(
 app.include_router(trade_idea_router, prefix="/api/trade-ideas", tags=["trade-ideas"])
 app.include_router(live_trade_router, prefix="/api/live-trades", tags=["live-trades"])
 app.include_router(scale_plan_router, prefix="/api/scale-plans", tags=["scale-plans"])
+app.include_router(
+    execution_router, prefix="/api/executions", tags=["trade-executions"]
+)
 app.include_router(annotation_router, prefix="/api/annotations", tags=["annotations"])
 
 if __name__ == "__main__":
