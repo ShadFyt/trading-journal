@@ -1,13 +1,20 @@
 <script setup lang="ts">
 import type { LiveTrade } from '@/interfaces'
-import { computed } from 'vue'
 import ScalePlanHoverCardItem from '@/components/scale-plan/ScalePlanHoverCardItem.vue'
+import { useSorted } from '@vueuse/core'
 
 const { trade } = defineProps<{
   trade: LiveTrade
 }>()
 
-const plans = computed(() => trade.scalePlans ?? [])
+const plans = useSorted(
+  () => trade.scalePlans ?? [],
+  (a, b) => {
+    const at = a.targetPrice ?? Infinity
+    const bt = b.targetPrice ?? Infinity
+    return at - bt
+  },
+)
 </script>
 
 <template>
