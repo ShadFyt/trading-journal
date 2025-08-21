@@ -2,6 +2,7 @@ from core.base_schema import BaseSchema
 from typing import List, Optional
 from datetime import datetime
 from domain.annotation.annotation_schema import AnnotationRead
+from domain.execution.execution_schema import ExecutionRead
 from domain.scale_plan.scale_plan_schema import ScalePlanCreate, ScalePlanRead
 
 
@@ -25,6 +26,7 @@ class LiveTradeResponse(LiveTradeBase):
     id: str
     annotations: List[AnnotationRead]
     scale_plans: List[ScalePlanRead]
+    executions: List[ExecutionRead]
     rr_ratio: Optional[float] = None
     enter_date: datetime
 
