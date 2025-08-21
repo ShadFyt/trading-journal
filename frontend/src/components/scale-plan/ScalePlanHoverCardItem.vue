@@ -93,7 +93,7 @@ const onConfirmDelete = async (planId: string) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent side="bottom" align="end" :avoidCollisions="false">
           <DropdownMenuItem> Execute Plan </DropdownMenuItem>
-          <DropdownMenuItem> Edit Plan </DropdownMenuItem>
+          <DropdownMenuItem @select="$emit('edit', props.plan)"> edit </DropdownMenuItem>
           <AlertDialog
             :open="confirmOpen"
             @update:open="

@@ -7,38 +7,45 @@ import { useForm } from 'vee-validate'
 import { useScalePlanMutationService } from '@/composables'
 import type { LiveTrade } from '@/interfaces'
 import { OrderTypeEnum, ScalePlanKindEnum } from '@/enums'
+import { addScalePlanLimitIssue, addScalePlanTargetPriceIssue } from '@/utils/scale-plan.util.ts'
 
-const props = defineProps<{
+const { trade } = defineProps<{
   trade: LiveTrade
 }>()
 const open = ref(false)
 
-const formSchema = toTypedSchema(ScalePlanCreateSchema)
+const refinedSchema = ScalePlanCreateSchema.superRefine((data, ctx) => {
+  // 1) Total value cap: sum(existing) + new.value <= positionSize
+  const existingTotal = trade.scalePlans.reduce((sum, p) => sum + (p.value ?? 0), 0)
+  const newTotal = existingTotal + (data.value ?? 0)
+  addScalePlanLimitIssue(ctx, trade.positionSize, newTotal, data.kind)
+  addScalePlanTargetPriceIssue(ctx, data.targetPrice, trade.entryPriceAvg)
+})
+
+const formSchema = toTypedSchema(refinedSchema)
 const { createMutation } = useScalePlanMutationService()
 const { isFieldDirty, isSubmitting, handleSubmit } = useForm({
   validationSchema: formSchema,
   initialValues: {
     orderType: OrderTypeEnum.enum.LIMIT,
     kind: ScalePlanKindEnum.enum.SHARES,
+    targetPrice: trade.entryPriceAvg + 0.5,
+    label: `T${trade.scalePlans.length + 1}(Target ${trade.scalePlans.length + 1})`,
   },
 })
 
 const onSubmit = handleSubmit(async (values) => {
-  try {
-    createMutation.mutate(
-      {
-        data: values,
-        liveTradeId: props.trade.id,
+  createMutation.mutate(
+    {
+      data: values,
+      liveTradeId: trade.id,
+    },
+    {
+      onSuccess() {
+        open.value = false
       },
-      {
-        onSuccess() {
-          open.value = false
-        },
-      },
-    )
-  } catch (error) {
-    console.error(error)
-  }
+    },
+  )
 })
 </script>
 
@@ -68,11 +75,7 @@ const onSubmit = handleSubmit(async (values) => {
         :validation-schema="formSchema"
         @submit="onSubmit"
       >
-        <!-- Loading spinner -->
-
-        <div v-if="isSubmitting" class="absolute inset-0 flex items-center justify-center z-50">
-          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-        </div>
+        <FormLoadingSpinner :isSubmitting="isSubmitting" />
 
         <div class="grid grid-cols-1 gap-3 md:grid-cols-12">
           <ScalePlanFormFields />

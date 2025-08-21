@@ -51,6 +51,37 @@ class BaseRepo(Generic[T]):
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
+    async def update(self, id: str, payload) -> T:
+        """Generic partial update by id.
+        Accepts a Pydantic/SQLModel object or a plain dict. Only provided fields are updated.
+        """
+        try:
+            instance = await self.get_by_id(id)
+            # Normalize payload to a dict of changes (exclude fields not set)
+            if isinstance(payload, SQLModel):
+                data = payload.model_dump(exclude_unset=True)
+            elif hasattr(payload, "model_dump"):
+                data = payload.model_dump(exclude_unset=True)  # Pydantic v2 models
+            elif isinstance(payload, dict):
+                data = payload
+            else:
+                # Best effort: try SQLModel/Pydantic validation to the target model then dump
+                tmp = self.model.model_validate(payload)
+                data = tmp.model_dump(exclude_unset=True)
+
+            # Prevent updating primary key
+            data.pop("id", None)
+
+            for key, value in data.items():
+                if hasattr(instance, key):
+                    setattr(instance, key, value)
+
+            await asyncio.shield(self.session.commit())
+            await asyncio.shield(self.session.refresh(instance))
+            return instance
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
     async def _save(self, instance: T) -> T:
         """Save instance to database and refresh."""
         self.session.add(instance)
