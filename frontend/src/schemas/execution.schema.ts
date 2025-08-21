@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { ExecutionSideEnum, ExecutionStatusEnum } from '@/enums'
+import { ExecutionSideEnum, ExecutionSourceEnum } from '@/enums'
 
 export const ExecutionSchema = z.object({
   id: z.string().uuid(),
@@ -11,7 +11,7 @@ export const ExecutionSchema = z.object({
   notes: z.string().optional(),
   executed_at: z.date(),
   side: ExecutionSideEnum,
-  source: ExecutionStatusEnum,
+  source: ExecutionSourceEnum,
 })
 
 export const ExecutionCreateSchema = ExecutionSchema.omit({

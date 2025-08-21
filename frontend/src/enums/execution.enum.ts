@@ -11,4 +11,4 @@ export const EXECUTION_SOURCE = {
   AUTO: 'auto',
   IMPORT: 'import',
 } as const
-export const ExecutionStatusEnum = z.nativeEnum(EXECUTION_SOURCE)
+export const ExecutionSourceEnum = z.nativeEnum(EXECUTION_SOURCE)
