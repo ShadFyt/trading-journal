@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { AxiosInstance, AxiosRequestConfig } from 'axios'
+import type { AxiosInstance, AxiosRequestConfig, AxiosError } from 'axios'
 import axios from 'axios'
+import { parseApiError } from './api-error.util'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
@@ -13,6 +14,15 @@ const axiosInstance: AxiosInstance = axios.create({
   },
 })
 
+// Add response interceptor for error handling
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError) => {
+    // Parse and rethrow the error using our utility
+    throw parseApiError(error)
+  },
+)
+
 // Helper methods for common HTTP operations
 export const apiClient = {
   get: <T>(url: string, config?: AxiosRequestConfig) =>
@@ -24,11 +34,11 @@ export const apiClient = {
   put: <T>(url: string, data?: any, config?: AxiosRequestConfig) =>
     axiosInstance.put<T>(url, data, config).then((response) => response.data),
 
-  delete: <T>(url: string, config?: AxiosRequestConfig) =>
-    axiosInstance.delete<T>(url, config).then((response) => response.data),
-
   patch: <T>(url: string, data?: any, config?: AxiosRequestConfig) =>
     axiosInstance.patch<T>(url, data, config).then((response) => response.data),
+
+  delete: <T>(url: string, config?: AxiosRequestConfig) =>
+    axiosInstance.delete<T>(url, config).then((response) => response.data),
 }
 
 export default axiosInstance

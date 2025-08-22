@@ -74,6 +74,7 @@ declare module 'vue' {
     FormDescription: typeof import('./src/components/ui/form/FormDescription.vue')['default']
     FormItem: typeof import('./src/components/ui/form/FormItem.vue')['default']
     FormLabel: typeof import('./src/components/ui/form/FormLabel.vue')['default']
+    FormLoadingSpinner: typeof import('./src/components/shared/FormLoadingSpinner.vue')['default']
     FormMessage: typeof import('./src/components/ui/form/FormMessage.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     HoverCard: typeof import('./src/components/ui/hover-card/HoverCard.vue')['default']
