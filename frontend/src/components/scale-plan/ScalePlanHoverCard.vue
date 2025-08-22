@@ -25,7 +25,7 @@ const plans = useSorted(
       :trade="trade"
       :plan="plan"
       :idx="idx"
-      @edit="$emit('edit', plan)"
+      @openForm="$emit('open-form', plan, 'edit')"
     />
   </div>
 </template>

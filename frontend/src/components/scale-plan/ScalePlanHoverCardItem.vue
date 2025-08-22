@@ -93,10 +93,10 @@ const onConfirmDelete = async (planId: string) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent side="bottom" align="end" :avoidCollisions="false">
-          <DropdownMenuItem>
+          <DropdownMenuItem @select="$emit('execute', props.plan)">
             <Icon icon="lucide:circle-fading-arrow-up" width="24" height="24" />Execute Plan
           </DropdownMenuItem>
-          <DropdownMenuItem @select="$emit('edit', props.plan)">
+          <DropdownMenuItem @select="$emit('openForm')">
             <Icon icon="lucide:edit" width="24" height="24" />edit
           </DropdownMenuItem>
           <AlertDialog
