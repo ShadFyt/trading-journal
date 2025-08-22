@@ -1,7 +1,7 @@
 import type { ScalePlanCreate, ScalePlanUpdate } from '@/interfaces'
+import { apiClient } from './client'
 
 const SCALE_PLAN_API_URL = '/scale-plans'
-import { apiClient } from './client'
 
 export const createScalePlan = (liveTradeId: string, data: ScalePlanCreate) =>
   apiClient.post(SCALE_PLAN_API_URL, { ...data, liveTradeId })
