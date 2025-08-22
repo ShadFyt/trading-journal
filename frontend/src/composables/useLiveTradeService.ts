@@ -7,8 +7,9 @@ import {
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue-sonner'
 import { AxiosError } from 'axios'
-import type { LiveTradeCreate, LiveTradeUpdate } from '@/interfaces'
+import type { crudType, LiveTradeCreate, LiveTradeUpdate } from '@/interfaces'
 import { tradeIdeaKeys } from '@/composables/useTradeIdeaService'
+import { handleErrorDisplay } from '@/api/api-error.util.ts'
 
 export const liveTradeKeys = {
   all: ['live-trades'] as const,
@@ -30,22 +31,19 @@ export const useLiveTradeFetchingService = () => {
 
 export const useLiveTradeMutationService = () => {
   const queryClient = useQueryClient()
+  const domain = 'live trade'
+
+  const handleSuccess = (type: crudType, message?: string) => {
+    queryClient.invalidateQueries({ queryKey: liveTradeKeys.list() })
+    queryClient.invalidateQueries({ queryKey: tradeIdeaKeys.list() })
+
+    toast.success(message ?? `Live trade ${type}d successfully`)
+  }
+
   const createMutation = useMutation({
     mutationFn: (data: LiveTradeCreate) => createLiveTrade(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: liveTradeKeys.list() })
-      queryClient.invalidateQueries({ queryKey: tradeIdeaKeys.list() })
-
-      toast.success('Live trade created successfully')
-    },
-    onError: (e) => {
-      if (e instanceof AxiosError) {
-        const errorMessage = e.response?.data?.message || e.message || 'An error occurred'
-        toast.error(`Failed to create live trade: ${errorMessage}`)
-      } else {
-        toast.error('Failed to create live trade')
-      }
-    },
+    onSuccess: () => handleSuccess('create'),
+    onError: (e) => handleErrorDisplay(e, 'create', domain),
   })
 
   const updateMutation = useMutation<
@@ -54,37 +52,13 @@ export const useLiveTradeMutationService = () => {
     { id: string; data: LiveTradeUpdate; message?: string }
   >({
     mutationFn: ({ id, data }) => updateLiveTrade(id, data),
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: liveTradeKeys.list() })
-      queryClient.invalidateQueries({ queryKey: tradeIdeaKeys.list() })
-
-      toast.success(variables?.message ?? 'Live trade updated successfully')
-    },
-    onError: (e) => {
-      if (e instanceof AxiosError) {
-        const errorMessage = e.response?.data || e.message || 'An error occurred'
-        toast.error(`Failed to update live trade: ${errorMessage}`)
-      } else {
-        toast.error('Failed to update live trade')
-      }
-    },
+    onSuccess: (_data, variables) => handleSuccess('update', variables?.message),
+    onError: (e) => handleErrorDisplay(e, 'update', domain),
   })
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteLiveTrade(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: liveTradeKeys.list() })
-      queryClient.invalidateQueries({ queryKey: tradeIdeaKeys.list() })
-
-      toast.success('Live trade deleted successfully')
-    },
-    onError: (e) => {
-      if (e instanceof AxiosError) {
-        const errorMessage = e.response?.data || e.message || 'An error occurred'
-        toast.error(`Failed to delete live trade: ${errorMessage}`)
-      } else {
-        toast.error('Failed to delete live trade')
-      }
-    },
+    onSuccess: () => handleSuccess('delete'),
+    onError: (e) => handleErrorDisplay(e, 'delete', domain),
   })
 
   return { createMutation, updateMutation, deleteMutation }

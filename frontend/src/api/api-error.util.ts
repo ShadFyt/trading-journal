@@ -1,5 +1,7 @@
 import { z } from 'zod'
-import type { AxiosError } from 'axios'
+import { AxiosError } from 'axios'
+import type { crudType } from '@/interfaces'
+import { toast } from 'vue-sonner'
 
 export const NormalizedErrorSchema = z.object({
   type: z.string(),
@@ -166,5 +168,26 @@ export const parseApiError = (
     type: 'server',
     message: `HTTP error occurred: ${status}`,
     status,
+  }
+}
+
+export const handleErrorDisplay = (e: unknown, type: crudType, domain: string) => {
+  const parsed = NormalizedErrorSchema.safeParse(e)
+  if (parsed.success && parsed.data.type === 'validation') {
+    const fieldErrors = parsed.data.fieldErrors
+    const summary =
+      fieldErrors &&
+      Object.entries(fieldErrors)
+        .map(([field, msgs]) => `${field}: ${msgs.join(', ')}`)
+        .join('; ')
+    toast.error(`Failed to ${type} ${domain}`, { description: summary })
+    return
+  }
+  if (e instanceof AxiosError) {
+    toast.error(`Failed to ${type} ${domain}`, {
+      description: e.response?.data?.message || e.message || 'An error occurred',
+    })
+  } else {
+    toast.error(`Failed to ${type} ${domain}`)
   }
 }
