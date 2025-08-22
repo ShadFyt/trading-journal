@@ -6,6 +6,7 @@ import { useSorted } from '@vueuse/core'
 const { trade } = defineProps<{
   trade: LiveTrade
 }>()
+defineOptions({ inheritAttrs: false })
 
 const plans = useSorted(
   () => trade.scalePlans ?? [],
@@ -22,10 +23,10 @@ const plans = useSorted(
     <ScalePlanHoverCardItem
       v-for="(plan, idx) in plans"
       :key="plan.id ?? idx"
+      v-bind="$attrs"
       :trade="trade"
       :plan="plan"
       :idx="idx"
-      @openForm="$emit('open-form', plan, 'edit')"
     />
   </div>
 </template>
