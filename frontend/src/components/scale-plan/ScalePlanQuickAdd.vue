@@ -4,7 +4,7 @@ import { Tooltip } from '@/components/ui/tooltip'
 import { toTypedSchema } from '@vee-validate/zod'
 import { ScalePlanCreateSchema } from '@/schemas'
 import { useForm } from 'vee-validate'
-import { useScalePlanMutationService } from '@/composables'
+import { useScalePlanMutations } from '@/composables'
 import type { LiveTrade } from '@/interfaces'
 import { OrderTypeEnum, ScalePlanKindEnum } from '@/enums'
 import { addScalePlanLimitIssue, addScalePlanTargetPriceIssue } from '@/utils/scale-plan.util.ts'
@@ -23,7 +23,7 @@ const refinedSchema = ScalePlanCreateSchema.superRefine((data, ctx) => {
 })
 
 const formSchema = toTypedSchema(refinedSchema)
-const { createMutation } = useScalePlanMutationService()
+const { createPlanMutation } = useScalePlanMutations()
 const { isFieldDirty, isSubmitting, handleSubmit } = useForm({
   validationSchema: formSchema,
   initialValues: {
@@ -35,7 +35,7 @@ const { isFieldDirty, isSubmitting, handleSubmit } = useForm({
 })
 
 const onSubmit = handleSubmit(async (values) => {
-  createMutation.mutate(
+  createPlanMutation.mutate(
     {
       data: values,
       liveTradeId: trade.id,

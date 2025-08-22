@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { Icon } from '@iconify/vue'
-import { useFormatters, useScalePlanMutationService } from '@/composables'
+import { useFormatters, useScalePlanMutations } from '@/composables'
 import type { LiveTrade, ScalePlan } from '@/interfaces'
 
 const { formatCurrency, formatTradeDate } = useFormatters()
-const { deleteMutation } = useScalePlanMutationService()
+const { deletePlanMutation } = useScalePlanMutations()
 const props = defineProps<{
   trade: LiveTrade
   plan: ScalePlan
@@ -34,7 +34,7 @@ const onConfirmDelete = async (planId: string) => {
     planId,
     idx: props.idx,
   })
-  await deleteMutation.mutateAsync(planId, {
+  await deletePlanMutation.mutateAsync(planId, {
     onSettled() {
       menuOpen.value = false
       confirmOpen.value = false

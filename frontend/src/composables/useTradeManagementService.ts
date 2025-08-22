@@ -12,7 +12,7 @@ export const scalePlanKeys = {
   detail: (id: string) => [...scalePlanKeys.all, 'detail', id] as const,
 }
 
-export const useScalePlanMutationService = () => {
+export const useScalePlanMutations = () => {
   const queryClient = useQueryClient()
 
   const domain = 'scale plan'
@@ -22,29 +22,29 @@ export const useScalePlanMutationService = () => {
     toast.success(`Scale plan ${type}d successfully`)
   }
 
-  const createMutation = useMutation({
+  const createPlanMutation = useMutation({
     mutationFn: ({ data, liveTradeId }: { data: ScalePlanCreate; liveTradeId: string }) =>
       createScalePlan(liveTradeId, data),
     onSuccess: () => handleSuccess('create'),
     onError: (e) => handleErrorDisplay(e, 'create', domain),
   })
 
-  const updateMutation = useMutation({
+  const updatePlanMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: ScalePlanUpdate }) => updateScalePlan(id, data),
     onSuccess: () => handleSuccess('update'),
     onError: (e) => handleErrorDisplay(e, 'update', domain),
   })
 
-  const deleteMutation = useMutation({
+  const deletePlanMutation = useMutation({
     mutationFn: (id: string) => deleteScalePlan(id),
     onSuccess: () => handleSuccess('delete'),
     onError: (e) => handleErrorDisplay(e, 'delete', domain),
   })
 
   return {
-    deleteMutation,
-    createMutation,
-    updateMutation,
+    deletePlanMutation,
+    createPlanMutation,
+    updatePlanMutation,
   }
 }
 
