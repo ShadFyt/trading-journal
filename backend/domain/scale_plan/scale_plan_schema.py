@@ -3,6 +3,7 @@ from typing import Optional
 
 from core.base_schema import BaseSchema
 from database.models import ScalePlanStatus, ScalePlanKind, OrderType
+from domain.execution.execution_schema import ExecutionRead
 
 
 class ScalePlanBase(BaseSchema):
@@ -29,6 +30,7 @@ class ScalePlanRead(ScalePlanBase):
     id: str
     live_trade_id: str
     status: ScalePlanStatus
+    executions: list[ExecutionRead]
 
 
 class ScalePlanUpdate(ScalePlanBase):

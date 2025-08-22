@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 import { ScalePlanKindEnum, OrderTypeEnum, ScalePlanStatusEnum } from '@/enums/scale-plan.enum'
+import { ExecutionSchema } from '@/schemas/execution.schema.ts'
 
 export const ScalePlanSchema = z.object({
   id: z.string().uuid(),
@@ -16,15 +17,18 @@ export const ScalePlanSchema = z.object({
   goodTillDate: z.date().optional(),
   stopPrice: z.number().optional(),
   limitPrice: z.number().optional(),
+  executions: z.array(ExecutionSchema),
 })
 
 export const ScalePlanCreateSchema = ScalePlanSchema.omit({
   id: true,
   status: true,
   liveTradeId: true,
+  executions: true,
 })
 
 export const ScalePlanUpdateSchema = ScalePlanSchema.omit({
   id: true,
   liveTradeId: true,
+  executions: true,
 }).partial()

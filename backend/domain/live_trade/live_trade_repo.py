@@ -1,5 +1,5 @@
 from database.session import SessionDep
-from database.models import LiveTrade
+from database.models import LiveTrade, ScalePlan
 from core.base_repo import BaseRepo
 from domain.live_trade.live_trade_schema import LiveTradeUpdate
 from fastapi import HTTPException
@@ -15,9 +15,9 @@ class LiveTradeRepo(BaseRepo[LiveTrade]):
         stmt = (
             select(LiveTrade)
             .options(
-                selectinload(LiveTrade.annotations),
-                selectinload(LiveTrade.scale_plans),
                 selectinload(LiveTrade.executions),
+                selectinload(LiveTrade.annotations),
+                selectinload(LiveTrade.scale_plans).selectinload(ScalePlan.executions),
             )
             .order_by(LiveTrade.enter_date.desc())
         )

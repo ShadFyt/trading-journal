@@ -26,7 +26,6 @@ class LiveTradeResponse(LiveTradeBase):
     id: str
     annotations: List[AnnotationRead]
     scale_plans: List[ScalePlanRead]
-    executions: List[ExecutionRead]
     rr_ratio: Optional[float] = None
     enter_date: datetime
 
