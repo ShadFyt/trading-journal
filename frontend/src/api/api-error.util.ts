@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import type { AxiosError } from 'axios'
 
-export const ParseError = z.object({
+export const NormalizedErrorSchema = z.object({
   type: z.string(),
   message: z.string(),
   status: z.number(),
@@ -9,7 +9,7 @@ export const ParseError = z.object({
   fieldErrors: z.record(z.string(), z.array(z.string())).optional(),
 })
 
-export type ParseError = z.infer<typeof ParseError>
+export type NormalizedError = z.infer<typeof NormalizedErrorSchema>
 
 /**
  * Schema for individual validation error detail
@@ -93,7 +93,7 @@ export const getFieldErrors = (errors: ValidationErrorResponse, fieldName: strin
  */
 export const parseApiError = (
   error: AxiosError<{ detail?: ValidationErrorResponse }, any>,
-): ParseError => {
+): NormalizedError => {
   // Network error (no response received)
   if (!error.response) {
     if (error.code === 'ECONNABORTED') {
