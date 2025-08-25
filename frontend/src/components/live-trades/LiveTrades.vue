@@ -42,10 +42,7 @@ const handleCloseTrade = (tradeId: string) => {
       <LiveTradeCard
         v-for="trade in activeTrades"
         :key="trade.id"
-        :trade="trade"
-        @adjust-stop="handleAdjustStop"
-        @partial-exit="handlePartialExit"
-        @add-position="handleAddPosition"
+        :trade
         @close-trade="handleCloseTrade"
         @edit-trade="handleEditTrade"
       />
