@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useMockLiveTrades } from '@/composables/useMockLiveTrades'
+import { useMockLiveTrades } from '@/composables/useMockLiveTrades.ts'
 import { useFormatters } from '@/composables'
 
 const { getTotalPnL, getTotalPortfolioValue } = useMockLiveTrades()

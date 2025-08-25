@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
+import type { RefetchOptions } from '@tanstack/vue-query'
 
-const { refetchLiveTrades } = defineProps<{ refetchLiveTrades: () => void }>()
+const emit = defineEmits<{
+  (e: 'refetch-live-trades', options?: RefetchOptions): void
+}>()
 
 let interval: ReturnType<typeof setInterval> | null = null
 const refetchProgress = ref(0)
 
 const handleRefresh = () => {
-  refetchLiveTrades()
+  emit('refetch-live-trades')
   refetchProgress.value = 0
 }
 

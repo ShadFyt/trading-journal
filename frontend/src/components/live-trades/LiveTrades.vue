@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import LiveTradeCard from './LiveTradeCard.vue'
 import { useLiveTradeFetchingService } from '@/composables'
-import PortfolioSummary from './PortfolioSummary.vue'
-import DataRefreshTimer from './DataRefreshTimer.vue'
+
 import type { LiveTrade } from '@/interfaces/live-trade.type'
 
 const { liveTrades: activeTrades, refetchLiveTrades } = useLiveTradeFetchingService()
@@ -50,16 +49,7 @@ const handleCloseTrade = (tradeId: string) => {
 
 <template>
   <main class="p-4 max-w-7xl mx-auto">
-    <!-- Header -->
-    <header class="mb-">
-      <div class="flex justify-between items-center mb-2">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">Live Trades</h1>
-        <DataRefreshTimer :refetchLiveTrades="refetchLiveTrades" />
-      </div>
-
-      <!-- Portfolio Summary -->
-      <PortfolioSummary />
-    </header>
+    <PortfolioHeader @refetch-live-trades="refetchLiveTrades" />
 
     <!-- Live Trades Grid -->
     <main v-if="activeTrades?.values" class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
