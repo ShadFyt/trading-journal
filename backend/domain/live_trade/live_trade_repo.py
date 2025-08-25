@@ -25,14 +25,20 @@ class LiveTradeRepo(BaseRepo[LiveTrade]):
         return result.all()
 
     async def get_live_trade_by_id(self, id: str, include_annotations: bool = True):
-        options = []
+        options = [
+            selectinload(LiveTrade.executions),
+            selectinload(LiveTrade.scale_plans).selectinload(ScalePlan.executions),
+        ]
         if include_annotations:
             options.append(selectinload(LiveTrade.annotations))
+
+        print("test-id", options)
         return await self.session.get(LiveTrade, id, options=options)
 
     async def get_live_trade_by_trade_idea_id(
         self, trade_idea_id: str
     ) -> LiveTrade | None:
+
         stmt = select(LiveTrade).where(LiveTrade.trade_idea_id == trade_idea_id)
         result = await self.session.exec(stmt)
         return result.first()
@@ -56,9 +62,9 @@ class LiveTradeRepo(BaseRepo[LiveTrade]):
         stmt = (
             select(LiveTrade)
             .options(
-                selectinload(LiveTrade.annotations),
-                selectinload(LiveTrade.scale_plans),
                 selectinload(LiveTrade.executions),
+                selectinload(LiveTrade.annotations),
+                selectinload(LiveTrade.scale_plans).selectinload(ScalePlan.executions),
             )
             .where(LiveTrade.id == result.id)
         )
