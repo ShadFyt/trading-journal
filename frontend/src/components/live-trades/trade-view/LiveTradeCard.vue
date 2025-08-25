@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { ProgressIndicator, ProgressRoot } from 'reka-ui'
+import { useToggle } from '@vueuse/core'
 
 import { useFormatters } from '@/composables'
 import type { LiveTrade } from '@/interfaces/live-trade.type.ts'
@@ -19,7 +20,9 @@ const emit = defineEmits<{
   'edit-trade': [tradeId: string]
 }>()
 
-const { formatCurrency, formatTradeDuration, convertStringToDate } = useFormatters()
+const { formatCurrency, formatTradeDuration } = useFormatters()
+
+const [isExpanded, toggleExpanded] = useToggle(false)
 
 /**
  * Calculate progress percentage between stop loss and highest target
@@ -53,7 +56,7 @@ const pnl = computed(() => {
   return (trade.currentPrice - trade.entryPriceAvg) * trade.positionSize
 })
 
-const isExpanded = ref(false)
+const detailsId = computed(() => `trade-details-${trade.id}`)
 </script>
 
 <template>
@@ -74,7 +77,7 @@ const isExpanded = ref(false)
       <ProfitLossDisplay :trade :pnl />
 
       <Transition name="fade">
-        <div v-if="isExpanded" :id="'trade-details-' + trade.id">
+        <div v-if="isExpanded" :id="detailsId">
           <!-- Price Information -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2 text-sm mb-3">
             <div>
@@ -139,21 +142,12 @@ const isExpanded = ref(false)
       </Transition>
 
       <!-- Footer -->
-      <footer
-        class="mt-3 pt-2 border-t border-gray-100 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between flex-wrap text-xs text-gray-400"
-      >
-        <span>Entered {{ convertStringToDate(trade.enterDate).toLocaleDateString() }}</span>
-        <button
-          type="button"
-          :aria-expanded="isExpanded"
-          :aria-controls="'trade-details-' + trade.id"
-          @click="isExpanded = !isExpanded"
-          class="text-blue-600 inline-flex items-center h-11 px-3 min-w-[44px] rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
-        >
-          {{ isExpanded ? 'Collapse' : 'Expand' }}
-        </button>
-        <span>ID: {{ trade.id.slice(-6) }}</span>
-      </footer>
+      <TradeFooter
+        :trade
+        :is-expanded="isExpanded"
+        :details-id="detailsId"
+        @toggle="toggleExpanded()"
+      />
     </CardContent>
   </Card>
 </template>
