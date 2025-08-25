@@ -17,8 +17,7 @@ const LiveTradeDateField = typedDateField<LiveTradeUpdate>()
 
 const isCloseForm = computed(() => {
   if (formType === 'close') return true
-  if (trade.status === 'closed') return true
-  return false
+  return trade.status === 'closed'
 })
 </script>
 
@@ -93,9 +92,6 @@ const isCloseForm = computed(() => {
                 />
               </FormItem>
             </FormField>
-          </div>
-          <div class="col-span-6">
-            <TargetPriceField :isFieldDirty="isFieldDirty" />
           </div>
           <div :class="isCloseForm ? 'col-span-3' : 'col-span-6'">
             <LiveTradeDateField

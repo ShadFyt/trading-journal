@@ -43,4 +43,5 @@ export const LiveTradeUpdateSchema = LiveTradeSchema.omit({
   rrRatio: true,
   tradeIdeaId: true,
   status: true,
+  scalePlans: true,
 }).partial()
