@@ -101,6 +101,7 @@ declare module 'vue' {
     PortfolioHeader: typeof import('./src/components/live-trades/portfolio/PortfolioHeader.vue')['default']
     PortfolioSummary: typeof import('./src/components/live-trades/portfolio/PortfolioSummary.vue')['default']
     PriceFields: typeof import('./src/components/trade-ideas/fields/PriceFields.vue')['default']
+    ProfitLossDisplay: typeof import('./src/components/live-trades/trade-view/ProfitLossDisplay.vue')['default']
     Progress: typeof import('./src/components/ui/progress/Progress.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
