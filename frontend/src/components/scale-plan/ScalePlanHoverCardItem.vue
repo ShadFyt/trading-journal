@@ -31,11 +31,6 @@ const onUpdateHover = (v: boolean) => {
 }
 
 const onConfirmDelete = async (planId: string) => {
-  console.log('Delete scale plan', {
-    tradeId: trade?.id,
-    planId,
-    idx: idx,
-  })
   await deletePlanMutation.mutateAsync(planId, {
     onSettled() {
       menuOpen.value = false
@@ -57,7 +52,7 @@ const onConfirmDelete = async (planId: string) => {
             ? 'bg-green-50 text-green-700 border-green-200'
             : 'bg-gray-50 text-gray-700 border-gray-200'
         "
-        :aria-describedby="`sp-${idx}-title`"
+        :aria-describedby="`sp-${trade.id}-title`"
       >
         T{{ idx + 1 }}: {{ formatCurrency(plan.targetPrice ?? 0) }}
         <span v-if="isReached" class="ml-1">✓</span>
@@ -138,7 +133,7 @@ const onConfirmDelete = async (planId: string) => {
 
       <div>
         <div class="flex items-center justify-between mb-1 pr-12">
-          <h4 :id="`sp-${idx}-title`" class="text-sm font-semibold">
+          <h4 :id="`sp-${trade.id}-title`" class="text-sm font-semibold">
             {{ plan.label?.trim() || `Plan ${idx + 1}` }}
           </h4>
           <Badge

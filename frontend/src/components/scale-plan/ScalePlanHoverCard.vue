@@ -22,7 +22,7 @@ const plans = useSorted(
   <div class="flex flex-wrap gap-1">
     <ScalePlanHoverCardItem
       v-for="(plan, idx) in plans"
-      :key="plan.id ?? idx"
+      :key="plan.id"
       v-bind="$attrs"
       :trade="trade"
       :plan="plan"
