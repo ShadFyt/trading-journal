@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { FormField, FormItem, FormLabel } from '@/components/ui/form'
 import type { FormActions, GenericObject } from 'vee-validate'
-import { typedDateField } from '@/utils/typed-component.util'
+import { typedDateField } from '@/utils/typed-component.util.ts'
 import type { LiveTradeUpdate } from '@/interfaces'
 
 defineProps<{

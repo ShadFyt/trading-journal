@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { FormField, FormItem, FormLabel } from '../ui/form'
+import { FormField, FormItem, FormLabel } from '../../ui/form'
 import { useLiveTradeFormCreate } from '@/composables/forms/useLiveTradeFormCreate.ts'
-import type { TradeIdea } from '@/interfaces/trade-idea.type'
+import type { TradeIdea } from '@/interfaces/trade-idea.type.ts'
 import ScalePlansEditor from '@/components/scale-plan/ScalePlansEditor.vue'
 
 const { tradeIdea, isOpen, close } = defineProps<{
