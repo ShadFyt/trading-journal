@@ -2,8 +2,9 @@ import { toast } from 'vue-sonner'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { liveTradeKeys } from '@/composables/useLiveTradeService.ts'
 import { createScalePlan, deleteScalePlan, updateScalePlan } from '@/api/scale-plan.api.ts'
-import type { ScalePlanCreate, ScalePlanUpdate } from '@/interfaces'
+import type { ExecutionCreateDto, ScalePlanCreate, ScalePlanUpdate } from '@/interfaces'
 import { handleErrorDisplay } from '@/api/api-error.util.ts'
+import { executePlan } from '@/api'
 
 export const scalePlanKeys = {
   all: ['scalePlan'] as const,
@@ -48,4 +49,22 @@ export const useScalePlanMutations = () => {
   }
 }
 
-export const useScalePlanValidationService = () => {}
+export const useTradeExecutionMutations = () => {
+  const queryClient = useQueryClient()
+  const domain = 'trade execution'
+
+  const handleSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: liveTradeKeys.all })
+    toast.success(`Executed plan successfully`)
+  }
+
+  const executePlanMutation = useMutation({
+    mutationFn: (payload: ExecutionCreateDto) => executePlan(payload),
+    onSuccess: () => handleSuccess(),
+    onError: (e) => handleErrorDisplay(e, 'create', domain),
+  })
+
+  return {
+    executePlanMutation,
+  }
+}

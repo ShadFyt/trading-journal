@@ -12,11 +12,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useTradeExecutionMutations } from '@/composables'
 
 const { scalePlan } = defineProps<{ scalePlan: ScalePlan }>()
 const $emit = defineEmits<{
   (e: 'close'): void
 }>()
+
+const { executePlanMutation } = useTradeExecutionMutations()
 
 const formSchema = toTypedSchema(ExecutionCreateSchema)
 const { isSubmitting, handleSubmit, meta } = useForm({
@@ -34,8 +37,11 @@ const { isSubmitting, handleSubmit, meta } = useForm({
 })
 
 const onSubmit = handleSubmit(async (values) => {
-  console.log(values)
-  $emit('close')
+  executePlanMutation.mutate(values, {
+    onSuccess() {
+      $emit('close')
+    },
+  })
 })
 </script>
 

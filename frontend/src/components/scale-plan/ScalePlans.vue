@@ -41,7 +41,11 @@ const closeEditForm = () => {
         :trade="trade"
         @close="closeEditForm"
       />
-      <TradeExecutionForm v-if="selectedPlan && formType === 'execute'" :scalePlan="selectedPlan" />
+      <TradeExecutionForm
+        v-if="selectedPlan && formType === 'execute'"
+        :scalePlan="selectedPlan"
+        @close="closeEditForm"
+      />
     </PopoverContent>
   </Popover>
 </template>
