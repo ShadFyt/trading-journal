@@ -5,6 +5,8 @@ from database.session import SessionDep
 from database.models import ScalePlan
 from core.base_repo import BaseRepo
 from sqlmodel import select
+from sqlalchemy.orm import selectinload
+
 
 from domain.scale_plan.scale_plan_schema import ScalePlanUpdate
 
@@ -23,11 +25,13 @@ class ScalePlanRepo(BaseRepo[ScalePlan]):
         return result.all()
 
     async def get_scale_plan_by_id(self, scale_plan_id: str) -> ScalePlan | None:
-        return await self.session.get(ScalePlan, scale_plan_id)
+        return await self.session.get(
+            ScalePlan, scale_plan_id, options=(selectinload(ScalePlan.executions),)
+        )
 
     async def update_by_id(self, scale_plan_id: str, payload: ScalePlanUpdate):
         # Manual update using the session to surface the root cause clearly
-        db_scale_plan = await self.session.get(ScalePlan, scale_plan_id)
+        db_scale_plan = await self.get_scale_plan_by_id(scale_plan_id)
         if not db_scale_plan:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Scale plan not found"
@@ -44,7 +48,8 @@ class ScalePlanRepo(BaseRepo[ScalePlan]):
         return db_scale_plan
 
     async def create_scale_plan(self, scale_plan: ScalePlan) -> ScalePlan:
-        return await self.create(scale_plan)
+        db_scale_plan = await self.create(scale_plan)
+        return await self.get_scale_plan_by_id(db_scale_plan.id)
 
     async def delete_by_id(self, scale_plan_id: str) -> None:
         await self.delete(scale_plan_id)
