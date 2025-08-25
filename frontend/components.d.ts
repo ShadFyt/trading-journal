@@ -42,6 +42,7 @@ declare module 'vue' {
     CardTitle: typeof import('./src/components/ui/card/CardTitle.vue')['default']
     CloseOutField: typeof import('./src/components/live-trades/forms/fields/CloseOutField.vue')['default']
     ConfirmationDialog: typeof import('./src/components/trade-ideas/ConfirmationDialog.vue')['default']
+    ContentHeader: typeof import('./src/components/live-trades/trade-view/ContentHeader.vue')['default']
     DataRefreshTimer: typeof import('./src/components/live-trades/portfolio/DataRefreshTimer.vue')['default']
     DateField: typeof import('./src/components/fields/DateField.vue')['default']
     Dialog: typeof import('./src/components/ui/dialog/Dialog.vue')['default']

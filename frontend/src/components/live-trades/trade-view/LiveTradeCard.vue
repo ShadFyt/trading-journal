@@ -2,9 +2,6 @@
 import { computed, ref } from 'vue'
 import { ProgressIndicator, ProgressRoot } from 'reka-ui'
 
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-
 import { useFormatters } from '@/composables'
 import type { LiveTrade } from '@/interfaces/live-trade.type.ts'
 
@@ -23,25 +20,6 @@ const emit = defineEmits<{
 }>()
 
 const { formatCurrency, formatTradeDuration, convertStringToDate } = useFormatters()
-
-/**
- * Status badge styling based on trade status
- */
-const statusBadgeClass = computed(() => {
-  const baseClasses =
-    'cursor-pointer hover:opacity-80 capitalize px-3 py-1 text-xs rounded-full border font-semibold'
-
-  switch (trade.status) {
-    case 'open':
-      return `${baseClasses} bg-blue-50 text-blue-700 border-blue-200`
-    case 'partial':
-      return `${baseClasses} bg-yellow-50 text-yellow-700 border-yellow-200`
-    case 'closed':
-      return `${baseClasses} bg-gray-50 text-gray-700 border-gray-200`
-    default:
-      return `${baseClasses} bg-gray-50 text-gray-700 border-gray-200`
-  }
-})
 
 /**
  * Calculate progress percentage between stop loss and highest target
@@ -91,20 +69,11 @@ const isExpanded = ref(false)
     </CardHeader>
 
     <CardContent class="pt-0">
-      <!-- Header Section -->
-      <header class="flex justify-between items-center mb-3">
-        <div class="flex items-center gap-2">
-          <span class="text-base md:text-2xl">📈</span>
-          <h2 class="text-lg md:text-2xl font-bold text-blue-700 tracking-wide">
-            {{ trade.symbol.toUpperCase() }}
-          </h2>
-        </div>
-        <Badge :class="statusBadgeClass">{{ trade.status }}</Badge>
-      </header>
+      <ContentHeader :trade />
 
       <ProfitLossDisplay :trade :pnl />
 
-      <transition name="fade">
+      <Transition name="fade">
         <div v-if="isExpanded" :id="'trade-details-' + trade.id">
           <!-- Price Information -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2 text-sm mb-3">
@@ -167,7 +136,7 @@ const isExpanded = ref(false)
           <!-- Setup & Notes -->
           <NotesDisplay :trade="trade" />
         </div>
-      </transition>
+      </Transition>
 
       <!-- Footer -->
       <footer
