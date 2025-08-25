@@ -1,9 +1,9 @@
-import { useLiveTradeMutationService } from '../useLiveTradeService.ts'
+import { useLiveTradeMutationService } from '@/composables'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
 import type { LiveTrade, LiveTradeUpdate } from '@/interfaces/live-trade.type.ts'
 import { LiveTradeUpdateSchema } from '@/schemas'
-import { useFormatters } from '../useFormatters.ts'
+import { useFormatters } from '@/composables'
 
 export const useLiveTradeFormEdit = (
   trade: LiveTrade,

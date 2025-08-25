@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import LiveTradeCard from './LiveTradeCard.vue'
+import LiveTradeCard from './trade-view/LiveTradeCard.vue'
 import { useLiveTradeFetchingService } from '@/composables'
 
 import type { LiveTrade } from '@/interfaces/live-trade.type'
@@ -13,20 +13,6 @@ const formType = ref<'edit' | 'close'>('edit')
 /**
  * Handle trade management actions
  */
-const handleAdjustStop = (tradeId: string, type: 'breakeven' | 'trailing') => {
-  console.log(`Adjusting stop for ${tradeId} to ${type}`)
-  // Implementation would go here
-}
-
-const handlePartialExit = (tradeId: string, percentage: number) => {
-  console.log(`Partial exit ${percentage}% for trade ${tradeId}`)
-  // Implementation would go here
-}
-
-const handleAddPosition = (tradeId: string) => {
-  console.log(`Adding to position ${tradeId}`)
-  // Implementation would go here
-}
 
 const handleFormClose = () => {
   isEditFormOpen.value = false

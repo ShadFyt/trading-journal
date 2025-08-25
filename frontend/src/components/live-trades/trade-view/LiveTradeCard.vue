@@ -4,15 +4,9 @@ import { ProgressIndicator, ProgressRoot } from 'reka-ui'
 
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+
 import { useFormatters } from '@/composables'
-import type { LiveTrade } from '@/interfaces/live-trade.type'
+import type { LiveTrade } from '@/interfaces/live-trade.type.ts'
 
 interface Props {
   trade: LiveTrade
@@ -24,11 +18,8 @@ const { trade } = defineProps<Props>()
  * Emitted events for trade management actions
  */
 const emit = defineEmits<{
-  adjustStop: [tradeId: string, type: 'breakeven' | 'trailing']
-  partialExit: [tradeId: string, percentage: number]
-  addPosition: [tradeId: string]
-  closeTrade: [tradeId: string]
-  editTrade: [tradeId: string]
+  'close-trade': [tradeId: string]
+  'edit-trade': [tradeId: string]
 }>()
 
 const { formatCurrency, formatPercentage, formatTradeDuration, convertStringToDate } =
@@ -105,34 +96,11 @@ const isExpanded = ref(false)
     class="relative transition-shadow hover:shadow-2xl border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden group animate-fadein"
   >
     <CardHeader>
-      <DropdownMenu>
-        <DropdownMenuTrigger class="absolute top-2 right-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            aria-label="Open trade menu"
-            aria-haspopup="menu"
-            class="h-11 w-11 min-w-[44px] min-h-[44px] p-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
-          >
-            ⋯
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent side="bottom" align="end" :avoidCollisions="false">
-          <DropdownMenuItem @click="emit('editTrade', trade.id)"> Edit Trade </DropdownMenuItem>
-          <DropdownMenuItem @click="emit('adjustStop', trade.id, 'breakeven')">
-            Move Stop to Breakeven
-          </DropdownMenuItem>
-          <DropdownMenuItem @click="emit('adjustStop', trade.id, 'trailing')">
-            Set Trailing Stop
-          </DropdownMenuItem>
-          <DropdownMenuItem @click="emit('addPosition', trade.id)">
-            Add to Position
-          </DropdownMenuItem>
-          <DropdownMenuItem class="text-red-600" @click="emit('closeTrade', trade.id)">
-            Close Trade
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <MenuHeader
+        :trade="trade"
+        @close-trade="emit('close-trade', trade.id)"
+        @edit-trade="emit('edit-trade', trade.id)"
+      />
     </CardHeader>
 
     <CardContent class="pt-0">
