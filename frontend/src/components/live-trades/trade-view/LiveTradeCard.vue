@@ -36,15 +36,6 @@ const pnl = computed(() => {
 })
 
 const detailsId = computed(() => `trade-details-${trade.id}`)
-
-const ratingBadgeClass = computed(() => {
-  const r = Math.max(0, Math.min(10, trade.rating ?? 0))
-  if (r <= 2) return 'bg-red-100 text-red-800'
-  if (r <= 4) return 'bg-orange-100 text-orange-800'
-  if (r <= 6) return 'bg-yellow-100 text-yellow-800'
-  if (r <= 8) return 'bg-green-100 text-green-800'
-  return 'bg-emerald-100 text-emerald-800'
-})
 </script>
 
 <template>
@@ -67,32 +58,9 @@ const ratingBadgeClass = computed(() => {
       <Transition name="fade">
         <div v-if="isExpanded" :id="detailsId">
           <!-- Price Information -->
-          <section class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2 text-sm mb-3">
-            <div>
-              <span class="font-semibold text-gray-600">Entry:</span>
-              <span class="ml-1">{{ formatCurrency(trade.entryPriceAvg) }}</span>
-            </div>
-            <div>
-              <span class="font-semibold text-gray-600">Stop Loss:</span>
-              <span class="ml-1">{{ formatCurrency(trade.stop) }}</span>
-            </div>
-            <div>
-              <span class="font-semibold text-gray-600">Position:</span>
-              <span class="ml-1">{{ trade.positionSize }} shares</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="font-semibold text-gray-600">Rating:</span>
-              <span
-                class="inline-flex items-center rounded-full px-2 py-0.5 text-sm font-medium"
-                :class="ratingBadgeClass"
-                :aria-label="`Trade quality rating ${trade.rating}/10`"
-              >
-                {{ trade.rating }}/10
-              </span>
-            </div>
-          </section>
+          <PriceInfo :trade />
 
-          <ScalePlans :trade="trade" />
+          <ScalePlans :trade />
 
           <!-- Price Progress Bar -->
           <TradeProgressBar :pnl :trade />
