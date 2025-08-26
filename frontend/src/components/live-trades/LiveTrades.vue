@@ -31,6 +31,10 @@ const handleCloseTrade = (tradeId: string) => {
   console.log(`Closing trade ${tradeId}`)
   handleEditTrade(tradeId, true)
 }
+
+// Split trades into two columns (stable stacks)
+const leftTrades = computed(() => activeTrades.value?.filter((_, i) => i % 2 === 0) ?? [])
+const rightTrades = computed(() => activeTrades.value?.filter((_, i) => i % 2 === 1) ?? [])
 </script>
 
 <template>
@@ -38,18 +42,29 @@ const handleCloseTrade = (tradeId: string) => {
     <PortfolioHeader @refetch-live-trades="refetchLiveTrades" />
 
     <!-- Live Trades Grid -->
-    <main v-if="activeTrades?.values" class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-      <LiveTradeCard
-        v-for="trade in activeTrades"
-        :key="trade.id"
-        :trade
-        @close-trade="handleCloseTrade"
-        @edit-trade="handleEditTrade"
-      />
-    </main>
+    <section v-if="activeTrades?.length" class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+      <div class="flex flex-col gap-6">
+        <LiveTradeCard
+          v-for="trade in leftTrades"
+          :key="trade.id"
+          :trade
+          @close-trade="handleCloseTrade"
+          @edit-trade="handleEditTrade"
+        />
+      </div>
+      <div class="flex flex-col gap-6">
+        <LiveTradeCard
+          v-for="trade in rightTrades"
+          :key="trade.id"
+          :trade
+          @close-trade="handleCloseTrade"
+          @edit-trade="handleEditTrade"
+        />
+      </div>
+    </section>
 
     <!-- Empty State -->
-    <div v-if="activeTrades?.length === 0" class="text-center py-12">
+    <div v-if="!activeTrades?.length" class="text-center py-12">
       <div class="text-6xl mb-4">📈</div>
       <h3 class="text-xl font-semibold text-gray-900 mb-2">No Active Trades</h3>
       <p class="text-gray-600">
