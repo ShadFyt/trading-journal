@@ -29,6 +29,38 @@ const onUpdateHover = (v: boolean) => {
 const onOpenForm = (type: 'execute' | 'edit') => {
   emit('open-form', plan, type)
 }
+
+const pills = computed(() => [
+  { label: 'Order', value: plan.orderType },
+  { label: 'Kind', value: plan.kind },
+  { label: 'Value', value: formatValue(plan.kind as string, plan.value) },
+])
+
+const projectedPnLAtTarget = computed(() => {
+  if (trade.entryPriceAvg == null || plan.targetPrice == null) return null
+  // TODO: account for percent kind
+  const shares = plan.kind === 'shares' && typeof plan.value === 'number' ? plan.value : null
+  if (!shares || shares <= 0) return null
+
+  const isLong = true // account for short trades later
+
+  const delta = isLong
+    ? plan.targetPrice - trade.entryPriceAvg
+    : trade.entryPriceAvg - plan.targetPrice
+
+  return delta * shares
+})
+
+const projectedReturnPct = computed(() => {
+  if (trade.entryPriceAvg == null || trade.entryPriceAvg === 0 || plan.targetPrice == null)
+    return null
+  const isLong = true
+
+  const delta = isLong
+    ? plan.targetPrice - trade.entryPriceAvg
+    : trade.entryPriceAvg - plan.targetPrice
+  return (delta / trade.entryPriceAvg) * 100
+})
 </script>
 
 <template>
@@ -51,7 +83,7 @@ const onOpenForm = (type: 'execute' | 'edit') => {
       />
 
       <div>
-        <div class="flex items-center justify-between mb-1 pr-12">
+        <div class="flex items-center justify-between mb-1 pr-10">
           <h4 :id="`sp-${trade.id}-title`" class="text-sm font-semibold">
             {{ plan.label?.trim() || `Plan ${idx + 1}` }}
           </h4>
@@ -64,30 +96,28 @@ const onOpenForm = (type: 'execute' | 'edit') => {
 
         <div class="my-2 border-t border-gray-200"></div>
 
-        <div class="flex flex-wrap gap-1.5 text-[11px] mb-3">
-          <span class="rounded-full bg-gray-100 px-2 py-0.5">Order: {{ plan.orderType }}</span>
-          <span class="rounded-full bg-gray-100 px-2 py-0.5">Kind: {{ plan.kind }}</span>
-          <span class="rounded-full bg-gray-100 px-2 py-0.5">
-            Value: {{ formatValue(plan.kind as string, plan.value) }}
-          </span>
-        </div>
+        <ul class="flex flex-wrap gap-2 justify-around" role="list">
+          <li v-for="p in pills" :key="p.label">
+            <span class="text-xs rounded-full bg-gray-100 px-2 py-0.5"
+              >{{ p.label }}: {{ p.value }}</span
+            >
+          </li>
+        </ul>
 
         <div class="grid grid-cols-2 gap-2 text-sm mt-2">
-          <div v-if="plan.entryPrice != null" class="rounded bg-gray-50 p-2">
-            <p class="text-xs text-gray-600">Entry</p>
-            <p class="font-medium">{{ formatCurrency(plan.entryPrice) }}</p>
-          </div>
           <div v-if="plan.targetPrice != null" class="rounded bg-gray-50 p-2">
             <p class="text-xs text-gray-600">Target</p>
             <p class="font-medium">{{ formatCurrency(plan.targetPrice) }}</p>
           </div>
-          <div v-if="plan.stopPrice != null" class="rounded bg-gray-50 p-2">
-            <p class="text-xs text-gray-600">Stop</p>
-            <p class="font-medium">{{ formatCurrency(plan.stopPrice) }}</p>
-          </div>
-          <div v-if="plan.limitPrice != null" class="rounded bg-gray-50 p-2">
-            <p class="text-xs text-gray-600">Limit</p>
-            <p class="font-medium">{{ formatCurrency(plan.limitPrice) }}</p>
+
+          <div v-if="projectedPnLAtTarget != null" class="rounded bg-gray-50 p-2">
+            <p class="text-xs text-gray-600">Projected P&amp;L (target)</p>
+            <p class="font-medium">
+              {{ formatCurrency(projectedPnLAtTarget) }}
+              <span v-if="projectedReturnPct != null" class="text-xs text-gray-600">
+                ({{ projectedReturnPct.toFixed(2) }}%)
+              </span>
+            </p>
           </div>
         </div>
 
