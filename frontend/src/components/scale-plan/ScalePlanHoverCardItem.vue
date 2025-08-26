@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
 import { Icon } from '@iconify/vue'
 import { useFormatters, useScalePlanMutations } from '@/composables'
 import type { LiveTrade, ScalePlan } from '@/interfaces'
@@ -14,11 +13,6 @@ const { plan, trade, idx } = defineProps<{
 
 const formatValue = (kind: string, value?: number) =>
   typeof value === 'number' ? (kind === 'percent' ? `${value}%` : `${value} shares`) : '—'
-
-const isReached = computed(() => {
-  const qty = plan.executions.reduce((total, exec) => total + exec.qty, 0)
-  return qty === trade.positionSize
-})
 
 // Local disclosure state
 const hoverOpen = ref(false)
@@ -42,25 +36,13 @@ const onConfirmDelete = async (planId: string) => {
 
 <template>
   <HoverCard :open="cardOpen" :open-delay="150" :close-delay="100" @update:open="onUpdateHover">
-    <HoverCardTrigger as-child>
-      <Badge
-        role="button"
-        tabindex="0"
-        class="text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-        :class="
-          isReached
-            ? 'bg-green-50 text-green-700 border-green-200'
-            : 'bg-gray-50 text-gray-700 border-gray-200'
-        "
-        :aria-describedby="`sp-${trade.id}-title`"
-      >
-        T{{ idx + 1 }}: {{ formatCurrency(plan.targetPrice ?? 0) }}
-        <span v-if="isReached" class="ml-1">✓</span>
-        <span class="sr-only">
-          {{ isReached ? '(reached)' : '(not reached)' }}
-        </span>
-      </Badge>
-    </HoverCardTrigger>
+    <ScalePlanTrigger
+      :targetPrice="plan.targetPrice"
+      :executions="plan.executions"
+      :positionSize="trade.positionSize"
+      :id="plan.id"
+      :idx="idx"
+    />
 
     <HoverCardContent class="relative w-80 max-w-[90vw] p-2.5" align="start">
       <DropdownMenu
