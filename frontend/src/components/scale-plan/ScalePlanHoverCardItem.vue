@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
-import { useFormatters, useScalePlanMutations } from '@/composables'
+import { useFormatters } from '@/composables'
 import type { LiveTrade, ScalePlan } from '@/interfaces'
 
 const { formatCurrency, formatTradeDate } = useFormatters()
-const { deletePlanMutation } = useScalePlanMutations()
 const { plan, trade, idx } = defineProps<{
   trade: LiveTrade
   plan: ScalePlan
   idx: number
+}>()
+
+const emit = defineEmits<{
+  (e: 'open-form', plan: ScalePlan, type: 'execute' | 'edit'): []
 }>()
 
 const formatValue = (kind: string, value?: number) =>
@@ -24,13 +26,8 @@ const onUpdateHover = (v: boolean) => {
   hoverOpen.value = v
 }
 
-const onConfirmDelete = async (planId: string) => {
-  await deletePlanMutation.mutateAsync(planId, {
-    onSettled() {
-      menuOpen.value = false
-      confirmOpen.value = false
-    },
-  })
+const onOpenForm = (type: 'execute' | 'edit') => {
+  emit('open-form', plan, type)
 }
 </script>
 
@@ -45,73 +42,13 @@ const onConfirmDelete = async (planId: string) => {
     />
 
     <HoverCardContent class="relative w-80 max-w-[90vw] p-2.5" align="start">
-      <DropdownMenu
-        as-child
-        :open="menuOpen || confirmOpen"
-        @update:open="
-          (v: boolean) => {
-            menuOpen = v
-          }
-        "
-      >
-        <DropdownMenuTrigger class="absolute top-1 right-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            aria-label="Open trade menu"
-            aria-haspopup="menu"
-            class="h-11 w-11 p-0 rounded-full min-w-[44px] min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
-          >
-            ⋯
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent side="bottom" align="end" :avoidCollisions="false">
-          <DropdownMenuItem @select="$emit('open-form', plan, 'execute')">
-            <Icon icon="lucide:circle-fading-arrow-up" width="24" height="24" />Execute Plan
-          </DropdownMenuItem>
-          <DropdownMenuItem @select="$emit('open-form', plan, 'edit')">
-            <Icon icon="lucide:edit" width="24" height="24" />edit
-          </DropdownMenuItem>
-          <AlertDialog
-            :open="confirmOpen"
-            @update:open="
-              (v: boolean) => {
-                confirmOpen = v
-              }
-            "
-          >
-            <AlertDialogTrigger as-child>
-              <DropdownMenuItem
-                :hidden="plan.status !== 'planned'"
-                class="text-red-600"
-                @click.stop="confirmOpen = true"
-                ><Icon icon="lucide:trash-2" width="24" height="24" />
-                Delete Plan
-              </DropdownMenuItem>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle
-                  >Delete {{ plan.label?.trim() || `Plan T${idx + 1}` }}?</AlertDialogTitle
-                >
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently remove this scale plan from
-                  the trade.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel @click="confirmOpen = false">Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  class="bg-red-600 hover:bg-red-700 text-white"
-                  @click="onConfirmDelete(plan.id)"
-                >
-                  Delete
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <ScalePlanMenu
+        :plan="plan"
+        :idx="idx"
+        v-model:menu-open="menuOpen"
+        v-model:confirm-open="confirmOpen"
+        @open-form="onOpenForm"
+      />
 
       <div>
         <div class="flex items-center justify-between mb-1 pr-12">

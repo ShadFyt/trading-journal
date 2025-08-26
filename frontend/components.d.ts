@@ -112,6 +112,7 @@ declare module 'vue' {
     ScalePlanFormFields: typeof import('./src/components/scale-plan/ScalePlanFormFields.vue')['default']
     ScalePlanHoverCard: typeof import('./src/components/scale-plan/scale-plan/ScalePlanHoverCard.vue')['default']
     ScalePlanHoverCardItem: typeof import('./src/components/scale-plan/ScalePlanHoverCardItem.vue')['default']
+    ScalePlanMenu: typeof import('./src/components/scale-plan/scale-plan/ScalePlanMenu.vue')['default']
     ScalePlanQuickAdd: typeof import('./src/components/scale-plan/ScalePlanQuickAdd.vue')['default']
     ScalePlanQuickEdit: typeof import('./src/components/scale-plan/ScalePlanQuickEdit.vue')['default']
     ScalePlans: typeof import('./src/components/scale-plan/ScalePlans.vue')['default']
