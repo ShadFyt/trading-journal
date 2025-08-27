@@ -29,7 +29,7 @@ const shares = computed(() => {
 })
 
 const formSchema = toTypedSchema(ExecutionCreateSchema)
-const { isSubmitting, handleSubmit, meta } = useForm({
+const { isSubmitting, handleSubmit } = useForm({
   validationSchema: formSchema,
   initialValues: {
     liveTradeId: scalePlan.liveTradeId,
@@ -148,7 +148,7 @@ const onSubmit = handleSubmit(async (values) => {
         </FormField>
       </div>
     </div>
-    <Button type="submit" class="mt-3" :disabled="isSubmitting || !meta.dirty">
+    <Button type="submit" class="mt-3" :disabled="isSubmitting">
       Execute {{ scalePlan.label }} Scale Plan
     </Button>
   </form>
