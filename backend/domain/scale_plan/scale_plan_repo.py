@@ -25,9 +25,13 @@ class ScalePlanRepo(BaseRepo[ScalePlan]):
         return result.all()
 
     async def get_scale_plan_by_id(self, scale_plan_id: str) -> ScalePlan | None:
-        return await self.session.get(
-            ScalePlan, scale_plan_id, options=(selectinload(ScalePlan.executions),)
+        stmt = (
+            select(ScalePlan)
+            .options(selectinload(ScalePlan.executions))
+            .where(ScalePlan.id == scale_plan_id)
         )
+        result = await self.session.exec(stmt)
+        return result.first()
 
     async def update_by_id(self, scale_plan_id: str, payload: ScalePlanUpdate):
         # Manual update using the session to surface the root cause clearly
@@ -49,7 +53,8 @@ class ScalePlanRepo(BaseRepo[ScalePlan]):
 
     async def create_scale_plan(self, scale_plan: ScalePlan) -> ScalePlan:
         db_scale_plan = await self.create(scale_plan)
-        return await self.get_scale_plan_by_id(db_scale_plan.id)
+        await self.session.refresh(db_scale_plan)
+        return db_scale_plan
 
     async def delete_by_id(self, scale_plan_id: str) -> None:
         await self.delete(scale_plan_id)

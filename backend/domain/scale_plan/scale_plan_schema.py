@@ -30,7 +30,13 @@ class ScalePlanRead(ScalePlanBase):
     id: str
     live_trade_id: str
     status: ScalePlanStatus
-    executions: list[ExecutionRead]
+    executions: list[ExecutionRead] = []
+
+
+class ScalePlanCreateResponse(ScalePlanBase):
+    id: str
+    live_trade_id: str
+    status: ScalePlanStatus
 
 
 class ScalePlanUpdate(ScalePlanBase):

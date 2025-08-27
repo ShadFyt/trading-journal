@@ -5,6 +5,7 @@ from domain.scale_plan.scale_plan_deps import ScalePlanServiceDep
 from domain.scale_plan.scale_plan_schema import (
     ScalePlanRead,
     ScalePlanCreateWithTradeId,
+    ScalePlanCreateResponse,
     ScalePlanUpdate,
 )
 
@@ -20,7 +21,7 @@ async def get_all_scale_plans_by_trade(
     return await service.get_all_scale_plans()
 
 
-@router.post("", response_model=ScalePlanRead)
+@router.post("", response_model=ScalePlanCreateResponse)
 async def create_scale_plan(
     service: ScalePlanServiceDep, scale_plan: ScalePlanCreateWithTradeId
 ):

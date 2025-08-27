@@ -18,7 +18,7 @@ class ScalePlanService:
     async def create_scale_plan(self, dto: ScalePlanCreate):
         data = dto.model_dump()
         scale_plan = ScalePlan(**data)
-        await self.repo.create_scale_plan(scale_plan)
+        return await self.repo.create_scale_plan(scale_plan)
 
     async def update_scale_plan(self, scale_plan_id: str, dto: ScalePlanUpdate):
         return await self.repo.update_by_id(scale_plan_id, dto)
