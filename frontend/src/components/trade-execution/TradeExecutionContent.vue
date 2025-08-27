@@ -35,6 +35,7 @@ const plannedShares = computed(() =>
       :executions
       :entry-price-avg="trade.entryPriceAvg"
       :target-price="plan.targetPrice"
+      :stop="trade.stop"
     />
 
     <div v-if="lastExecution?.notes" class="text-sm">

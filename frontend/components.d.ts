@@ -82,6 +82,7 @@ declare module 'vue' {
     HoverCard: typeof import('./src/components/ui/hover-card/HoverCard.vue')['default']
     HoverCardContent: typeof import('./src/components/ui/hover-card/HoverCardContent.vue')['default']
     HoverCardTrigger: typeof import('./src/components/ui/hover-card/HoverCardTrigger.vue')['default']
+    InfoWrapper: typeof import('./src/components/trade-execution/InfoWrapper.vue')['default']
     Input: typeof import('./src/components/ui/input/Input.vue')['default']
     KeyValueItem: typeof import('./src/components/live-trades/trade-view/price-info/KeyValueItem.vue')['default']
     Label: typeof import('./src/components/ui/label/Label.vue')['default']

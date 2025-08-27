@@ -1,12 +1,14 @@
 <script lang="ts" setup>
 import type { ExecutionDto } from '@/interfaces'
 import { useFormatters } from '@/composables'
+import InfoWrapper from '@/components/trade-execution/InfoWrapper.vue'
 const { formatCurrency, formatPercentage } = useFormatters()
 
-const { executions, entryPriceAvg, targetPrice } = defineProps<{
+const { executions, entryPriceAvg, targetPrice, stop } = defineProps<{
   executions: ExecutionDto[]
   entryPriceAvg: number
   targetPrice?: number
+  stop?: number
 }>()
 
 const avgFillPrice = computed(() => {
@@ -31,6 +33,14 @@ const realizedPct = computed(() =>
   soldQty.value > 0 ? (realizedPnL.value / (entryPriceAvg * soldQty.value)) * 100 : null,
 )
 
+const realizedR = computed(() => {
+  const hasQty = soldQty.value > 0
+  const riskPerShare = typeof stop === 'number' ? entryPriceAvg - stop : null
+  const validRisk = riskPerShare != null && riskPerShare > 0
+  if (!hasQty || !validRisk) return null
+  return realizedPnL.value / ((riskPerShare as number) * soldQty.value)
+})
+
 const slippageAbs = computed(() => {
   const has = avgFillPrice.value != null
   return has ? (avgFillPrice.value as number) - (targetPrice as number) : null
@@ -42,39 +52,36 @@ const slippagePct = computed(() => {
     ? (((avgFillPrice.value as number) - (targetPrice as number)) / (targetPrice as number)) * 100
     : null
 })
+
+const posNegClass = (v?: number | null, neutral = 'text-gray-700') =>
+  v == null ? neutral : v >= 0 ? 'text-emerald-700' : 'text-rose-700'
 </script>
 
 <template>
   <div class="grid grid-cols-2 gap-2 text-sm mt-2">
-    <div v-if="avgFillPrice != null" class="rounded bg-gray-50 p-2">
-      <p class="text-xs text-gray-600">Avg Fill Price</p>
-      <p class="font-medium">{{ formatCurrency(avgFillPrice) }}</p>
-    </div>
+    <InfoWrapper v-if="avgFillPrice != null" title="Avg Fill Price">
+      {{ (realizedR as number).toFixed(2) }}{{ formatCurrency(avgFillPrice) }}
+    </InfoWrapper>
 
-    <div v-if="soldQty > 0" class="rounded bg-gray-50 p-2">
-      <p class="text-xs text-gray-600">Realized PnL</p>
-      <p class="font-medium" :class="realizedPnL >= 0 ? 'text-emerald-700' : 'text-rose-700'">
-        {{ formatCurrency(realizedPnL) }}
-        <span class="ml-1 text-xs" :class="realizedPnL >= 0 ? 'text-emerald-700' : 'text-rose-700'">
-          ({{ realizedPct != null ? formatPercentage(realizedPct) : '' }})
-        </span>
-      </p>
-    </div>
+    <InfoWrapper title="Realized PnL" :extra-classes="posNegClass(realizedPnL)">
+      {{ formatCurrency(realizedPnL) }}
+      <span class="ml-1 text-xs" :class="realizedPnL >= 0 ? 'text-emerald-700' : 'text-rose-700'">
+        ({{ realizedPct != null ? formatPercentage(realizedPct) : '' }})
+      </span>
+    </InfoWrapper>
 
-    <div v-if="slippageAbs != null" class="rounded bg-gray-50 p-2">
-      <p class="text-xs text-gray-600">Slippage vs Target</p>
-      <p
-        class="font-medium"
+    <InfoWrapper title="Slippage vs Target" :extra-classes="posNegClass(slippageAbs)">
+      {{ formatCurrency(slippageAbs as number) }}
+      <span
+        class="ml-1 text-xs"
         :class="(slippageAbs as number) >= 0 ? 'text-emerald-700' : 'text-rose-700'"
       >
-        {{ formatCurrency(slippageAbs as number) }}
-        <span
-          class="ml-1 text-xs"
-          :class="(slippageAbs as number) >= 0 ? 'text-emerald-700' : 'text-rose-700'"
-        >
-          ({{ slippagePct != null ? formatPercentage(slippagePct as number) : '' }})
-        </span>
-      </p>
-    </div>
+        ({{ slippagePct != null ? formatPercentage(slippagePct as number) : '' }})
+      </span>
+    </InfoWrapper>
+
+    <InfoWrapper title="Realized R" :extra-classes="posNegClass(realizedPnL)">
+      {{ (realizedR as number).toFixed(2) }}R
+    </InfoWrapper>
   </div>
 </template>
