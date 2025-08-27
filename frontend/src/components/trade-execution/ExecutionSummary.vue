@@ -8,7 +8,7 @@ const { executions, entryPriceAvg, targetPrice, stop } = defineProps<{
   executions: ExecutionDto[]
   entryPriceAvg: number
   targetPrice?: number
-  stop?: number
+  stop: number
 }>()
 
 const avgFillPrice = computed(() => {
@@ -35,7 +35,7 @@ const realizedPct = computed(() =>
 
 const realizedR = computed(() => {
   const hasQty = soldQty.value > 0
-  const riskPerShare = typeof stop === 'number' ? entryPriceAvg - stop : null
+  const riskPerShare = entryPriceAvg - stop
   const validRisk = riskPerShare != null && riskPerShare > 0
   if (!hasQty || !validRisk) return null
   return realizedPnL.value / ((riskPerShare as number) * soldQty.value)
