@@ -48,7 +48,8 @@ const onOpenForm = (type: 'execute' | 'edit') => {
         @open-form="onOpenForm"
       />
 
-      <ScalePlanContent :trade :plan :idx />
+      <TradeExecutionContent v-if="isReached" :trade :plan :idx />
+      <ScalePlanContent v-else :trade :plan :idx />
     </HoverCardContent>
   </HoverCard>
 </template>
