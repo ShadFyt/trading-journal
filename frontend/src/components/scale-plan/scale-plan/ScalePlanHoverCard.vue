@@ -28,13 +28,7 @@ const onOpenForm = (type: 'execute' | 'edit') => {
 
 <template>
   <HoverCard :open="cardOpen" :open-delay="150" :close-delay="100" @update:open="onUpdateHover">
-    <ShowScalePlan
-      :targetPrice="plan.targetPrice"
-      :executions="plan.executions"
-      :positionSize="trade.positionSize"
-      :id="plan.id"
-      :idx="idx"
-    />
+    <ShowScalePlan :plan :idx="idx" :position-size="trade.positionSize" />
 
     <HoverCardContent class="relative w-80 max-w-[90vw] p-2.5" align="start">
       <ScalePlanMenu

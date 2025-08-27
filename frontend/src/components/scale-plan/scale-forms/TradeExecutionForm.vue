@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useTradeExecutionMutations } from '@/composables'
+import { sharesFromPercent } from '@/utils'
 
 const { scalePlan } = defineProps<{ scalePlan: ScalePlan }>()
 const $emit = defineEmits<{
@@ -20,6 +21,12 @@ const $emit = defineEmits<{
 }>()
 
 const { executePlanMutation } = useTradeExecutionMutations()
+
+const shares = computed(() => {
+  return scalePlan.kind === 'percent'
+    ? sharesFromPercent(scalePlan.value, scalePlan.value).shares
+    : scalePlan.value
+})
 
 const formSchema = toTypedSchema(ExecutionCreateSchema)
 const { isSubmitting, handleSubmit, meta } = useForm({
@@ -32,7 +39,7 @@ const { isSubmitting, handleSubmit, meta } = useForm({
     notes: '',
     commission: 1,
     price: scalePlan.targetPrice,
-    qty: scalePlan.value, // TODO: we need to account for when value is percentage not just shares,
+    qty: shares.value,
   },
 })
 

@@ -1,20 +1,21 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ExecutionDto } from '@/interfaces'
+import type { ScalePlan } from '@/interfaces'
 import { useFormatters } from '@/composables'
+import { sharesFromPercent } from '@/utils'
 const { formatCurrency } = useFormatters()
 
-const { targetPrice, executions, positionSize } = defineProps<{
-  targetPrice: number | undefined
-  executions: ExecutionDto[]
+const { plan, positionSize } = defineProps<{
+  plan: ScalePlan
   positionSize: number
-  id: string
   idx: number
 }>()
 
 const isReached = computed(() => {
-  const qty = executions.reduce((total, exec) => total + exec.qty, 0)
-  return qty === positionSize
+  const shares =
+    plan.kind === 'percent' ? sharesFromPercent(positionSize, plan.value).shares : plan.value
+  const qty = plan.executions.reduce((total, exec) => total + exec.qty, 0)
+  return qty === shares
 })
 
 const badgeClass = computed(() => {
@@ -31,9 +32,9 @@ const badgeClass = computed(() => {
       tabindex="0"
       class="text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
       :class="badgeClass"
-      :aria-describedby="`sp-${id}-title`"
+      :aria-describedby="`sp-${plan.id}-title`"
     >
-      T{{ idx + 1 }}: {{ formatCurrency(targetPrice ?? 0) }}
+      T{{ idx + 1 }}: {{ formatCurrency(plan.targetPrice ?? 0) }}
       <span v-if="isReached" class="ml-1">✓</span>
       <span class="sr-only">
         {{ isReached ? '(reached)' : '(not reached)' }}
