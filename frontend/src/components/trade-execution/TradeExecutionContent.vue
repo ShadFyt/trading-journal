@@ -2,7 +2,7 @@
 import type { LiveTrade, ScalePlan } from '@/interfaces'
 import { useFormatters } from '@/composables'
 import { sharesFromPercent } from '@/utils'
-const { convertStringToDate, formatCurrency } = useFormatters()
+const { convertStringToDate } = useFormatters()
 
 const { plan, trade } = defineProps<{
   trade: LiveTrade
@@ -21,12 +21,6 @@ const lastExecution = computed(() => executions.value[executions.value.length - 
 const plannedShares = computed(() =>
   plan.kind === 'percent' ? sharesFromPercent(trade.positionSize, plan.value).shares : plan.value,
 )
-
-const pills = computed(() => [
-  { label: 'shares', value: plannedShares.value },
-  { label: 'Filled', value: filledQty.value },
-  { label: 'Commissions', value: formatCurrency(commissions.value) },
-])
 </script>
 
 <template>
@@ -35,15 +29,7 @@ const pills = computed(() => [
 
     <div class="my-2 border-t border-gray-200"></div>
 
-    <ul class="grid grid-flow-col auto-cols-fr gap-2 items-center" role="list">
-      <li v-for="p in pills" :key="p.label" class="min-w-0">
-        <span
-          class="block w-full text-center text-xs rounded-full bg-gray-100 px-2 py-0.5 whitespace-nowrap truncate"
-          :title="`${p.label}: ${p.value}`"
-          >{{ p.label }}: {{ p.value }}</span
-        >
-      </li>
-    </ul>
+    <PlanProgressBar :planned-shares="plannedShares" :filled-qty="filledQty" :commissions />
 
     <ExecutionSummary
       :executions
