@@ -2,24 +2,16 @@
 import { computed } from 'vue'
 import type { ScalePlan } from '@/interfaces'
 import { useFormatters } from '@/composables'
-import { sharesFromPercent } from '@/utils'
 const { formatCurrency } = useFormatters()
 
-const { plan, positionSize } = defineProps<{
+const { plan, isReached } = defineProps<{
   plan: ScalePlan
-  positionSize: number
   idx: number
+  isReached: boolean
 }>()
 
-const isReached = computed(() => {
-  const shares =
-    plan.kind === 'percent' ? sharesFromPercent(positionSize, plan.value).shares : plan.value
-  const qty = plan.executions.reduce((total, exec) => total + exec.qty, 0)
-  return qty === shares
-})
-
 const badgeClass = computed(() => {
-  return isReached.value
+  return isReached
     ? 'bg-green-50 text-green-700 border-green-200'
     : 'bg-gray-50 text-gray-700 border-gray-200'
 })

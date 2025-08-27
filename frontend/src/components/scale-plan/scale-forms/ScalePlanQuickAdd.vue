@@ -27,6 +27,7 @@ const { createPlanMutation } = useScalePlanMutations()
 const { isFieldDirty, isSubmitting, handleSubmit } = useForm({
   validationSchema: formSchema,
   initialValues: {
+    notes: '',
     orderType: OrderTypeEnum.enum.LIMIT,
     kind: ScalePlanKindEnum.enum.SHARES,
     targetPrice: trade.entryPriceAvg + 0.5,
@@ -80,7 +81,7 @@ const onSubmit = handleSubmit(async (values) => {
         <div class="grid grid-cols-1 gap-3 md:grid-cols-12">
           <ScalePlanFormFields />
         </div>
-        <Button type="submit" class="mt-3" :disabled="!isFieldDirty('label') || isSubmitting">
+        <Button type="submit" class="mt-3" :disabled="!isFieldDirty('value') || isSubmitting">
           Add Scale Plan
         </Button>
       </form>

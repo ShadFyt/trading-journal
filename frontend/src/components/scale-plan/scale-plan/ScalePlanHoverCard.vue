@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { LiveTrade, ScalePlan } from '@/interfaces'
+import { computed } from 'vue'
+import { sharesFromPercent } from '@/utils'
 
 const { plan, trade, idx } = defineProps<{
   trade: LiveTrade
@@ -17,6 +19,13 @@ const menuOpen = ref(false)
 const confirmOpen = ref(false)
 const cardOpen = computed(() => hoverOpen.value || menuOpen.value || confirmOpen.value)
 
+const isReached = computed(() => {
+  const shares =
+    plan.kind === 'percent' ? sharesFromPercent(trade.positionSize, plan.value).shares : plan.value
+  const qty = plan.executions.reduce((total, exec) => total + exec.qty, 0)
+  return qty === shares
+})
+
 const onUpdateHover = (v: boolean) => {
   hoverOpen.value = v
 }
@@ -28,7 +37,7 @@ const onOpenForm = (type: 'execute' | 'edit') => {
 
 <template>
   <HoverCard :open="cardOpen" :open-delay="150" :close-delay="100" @update:open="onUpdateHover">
-    <ShowScalePlan :plan :idx="idx" :position-size="trade.positionSize" />
+    <ShowScalePlan :plan :idx="idx" :is-reached="isReached" />
 
     <HoverCardContent class="relative w-80 max-w-[90vw] p-2.5" align="start">
       <ScalePlanMenu
