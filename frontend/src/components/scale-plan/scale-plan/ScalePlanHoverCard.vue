@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { LiveTrade } from '@/interfaces'
-import ScalePlanHoverCardItem from '@/components/scale-plan/ScalePlanHoverCardItem.vue'
+import ScalePlanHoverCardItem from '@/components/scale-plan/scale-plan/ScalePlanHoverCardItem.vue'
 import { useSorted } from '@vueuse/core'
 
 const { trade } = defineProps<{

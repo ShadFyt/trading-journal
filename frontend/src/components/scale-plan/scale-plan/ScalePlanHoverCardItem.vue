@@ -2,7 +2,7 @@
 import { useFormatters } from '@/composables'
 import type { LiveTrade, ScalePlan } from '@/interfaces'
 
-const { formatCurrency, formatTradeDate } = useFormatters()
+const { formatTradeDate } = useFormatters()
 const { plan, trade, idx } = defineProps<{
   trade: LiveTrade
   plan: ScalePlan
