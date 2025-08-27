@@ -7,8 +7,8 @@ export const EXECUTION_SIDE = {
 export const ExecutionSideEnum = z.nativeEnum(EXECUTION_SIDE)
 
 export const EXECUTION_SOURCE = {
-  MANUAL: 'manual',
-  AUTO: 'auto',
-  IMPORT: 'import',
+  MANUAL: 'MANUAL',
+  AUTO: 'AUTOMATED',
+  IMPORT: 'IMPORT',
 } as const
 export const ExecutionSourceEnum = z.nativeEnum(EXECUTION_SOURCE)

@@ -11,7 +11,7 @@ export const fetchExecutions = (tradeId?: string) =>
   })
 
 export const executePlan = (payload: ExecutionCreateDto) =>
-  apiClient.post(`${EXECUTION_API_URL}/execute`, payload)
+  apiClient.post(`${EXECUTION_API_URL}`, payload)
 
 export const updateExecution = (id: string, payload: ExecutionUpdateDto) =>
   apiClient.patch(`${EXECUTION_API_URL}/${id}`, payload)
