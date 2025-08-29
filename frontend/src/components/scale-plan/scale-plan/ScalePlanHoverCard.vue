@@ -3,6 +3,7 @@ import type { LiveTrade, ScalePlan } from '@/interfaces'
 import { computed } from 'vue'
 import { sharesFromPercent } from '@/utils'
 import { useScalePlanMutations } from '@/composables'
+import { Icon } from '@iconify/vue'
 const { deletePlanMutation } = useScalePlanMutations()
 
 const { plan, trade, idx } = defineProps<{
@@ -46,19 +47,20 @@ const onConfirmDelete = async () => {
   })
 }
 
-const actionMenuBind = computed(() => ({
-  menuOpen: menuOpen.value,
-  confirmOpen: confirmOpen.value,
-  'onUpdate:menuOpen': (v: boolean) => (menuOpen.value = v),
-  'onUpdate:confirmOpen': (v: boolean) => (confirmOpen.value = v),
+const actionMenuBind = computed(() => {
+  return {
+    menuOpen: menuOpen.value,
+    confirmOpen: confirmOpen.value,
+    'onUpdate:menuOpen': (v: boolean) => (menuOpen.value = v),
+    'onUpdate:confirmOpen': (v: boolean) => (confirmOpen.value = v),
 
-  title: 'test',
-  alertTitle: plan.label.trim(),
-  domain: 'scale plan',
+    alertTitle: plan.label.trim(),
+    domain: isReached.value ? 'trade execution' : 'scale plan',
 
-  onDelete: onConfirmDelete,
-  onOpenForm: (type: 'execute' | 'edit') => onOpenForm(type),
-}))
+    onDelete: onConfirmDelete,
+    onOpenForm: (type: 'execute' | 'edit') => onOpenForm(type),
+  }
+})
 </script>
 
 <template>
@@ -66,7 +68,16 @@ const actionMenuBind = computed(() => ({
     <ShowScalePlan :plan :idx="idx" :is-reached="isReached" />
 
     <HoverCardContent class="relative w-80 max-w-[90vw] p-2.5" align="start">
-      <ActionMenu v-bind="actionMenuBind" />
+      <ActionMenu v-bind="actionMenuBind">
+        <template #extra-actions>
+          <DropdownMenuItem @select="emit('open-form', plan, 'execute')">
+            <Icon icon="lucide:circle-fading-arrow-up" width="24" height="24" />Execute Plan
+          </DropdownMenuItem>
+          <DropdownMenuItem @select="emit('open-form', plan, 'edit')">
+            <Icon icon="lucide:edit" width="24" height="24" />edit
+          </DropdownMenuItem>
+        </template>
+      </ActionMenu>
 
       <TradeExecutionContent v-if="isReached" :trade :plan :idx />
       <ScalePlanContent v-else :trade :plan :idx />

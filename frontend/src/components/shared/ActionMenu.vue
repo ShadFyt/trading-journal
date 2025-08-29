@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { Icon } from '@iconify/vue'
-defineProps<{ title: string; alertTitle: string; domain: string }>()
+defineProps<{ alertTitle: string; domain: string }>()
 const emit = defineEmits<{
   (e: 'open-form', type: 'execute' | 'edit'): []
   (e: 'delete'): []
@@ -31,12 +31,7 @@ const confirmOpen = defineModel<boolean>('confirm-open')
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent side="bottom" align="end" :avoidCollisions="false">
-      <DropdownMenuItem @select="emit('open-form', 'execute')">
-        <Icon icon="lucide:circle-fading-arrow-up" width="24" height="24" />Execute Plan
-      </DropdownMenuItem>
-      <DropdownMenuItem @select="emit('open-form', 'edit')">
-        <Icon icon="lucide:edit" width="24" height="24" />edit
-      </DropdownMenuItem>
+      <slot name="extra-actions" />
       <AlertDialog
         :open="confirmOpen"
         @update:open="
