@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { Icon } from '@iconify/vue'
-defineProps<{ alertTitle: string; domain: string }>()
+defineProps<{ alertTitle: string; alertDescription: string }>()
 const emit = defineEmits<{
   (e: 'open-form', type: 'execute' | 'edit'): []
   (e: 'delete'): []
@@ -48,10 +48,9 @@ const confirmOpen = defineModel<boolean>('confirm-open')
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete {{ alertTitle }}?</AlertDialogTitle>
+            <AlertDialogTitle>{{ alertTitle }}?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently remove this {{ domain }} from the
-              trade.
+              {{ alertDescription }}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -39,12 +39,14 @@ const onOpenForm = (type: 'execute' | 'edit') => {
 }
 
 const onConfirmDelete = async () => {
-  await deletePlanMutation.mutateAsync(plan.id, {
-    onSettled() {
-      menuOpen.value = false
-      confirmOpen.value = false
-    },
-  })
+  if (!isReached.value) {
+    await deletePlanMutation.mutateAsync(plan.id, {
+      onSettled() {
+        menuOpen.value = false
+        confirmOpen.value = false
+      },
+    })
+  }
 }
 
 const actionMenuBind = computed(() => {
@@ -55,7 +57,7 @@ const actionMenuBind = computed(() => {
     'onUpdate:confirmOpen': (v: boolean) => (confirmOpen.value = v),
 
     alertTitle: plan.label.trim(),
-    domain: isReached.value ? 'trade execution' : 'scale plan',
+    alertDescription: `This action cannot be undone. This will permanently remove this scale plan from the trade`,
 
     onDelete: onConfirmDelete,
     onOpenForm: (type: 'execute' | 'edit') => onOpenForm(type),
@@ -69,7 +71,7 @@ const actionMenuBind = computed(() => {
 
     <HoverCardContent class="relative w-80 max-w-[90vw] p-2.5" align="start">
       <ActionMenu v-bind="actionMenuBind">
-        <template #extra-actions>
+        <template v-if="!isReached" #extra-actions>
           <DropdownMenuItem @select="emit('open-form', plan, 'execute')">
             <Icon icon="lucide:circle-fading-arrow-up" width="24" height="24" />Execute Plan
           </DropdownMenuItem>
