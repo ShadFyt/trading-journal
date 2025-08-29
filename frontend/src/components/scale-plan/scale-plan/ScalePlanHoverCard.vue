@@ -2,6 +2,8 @@
 import type { LiveTrade, ScalePlan } from '@/interfaces'
 import { computed } from 'vue'
 import { sharesFromPercent } from '@/utils'
+import { useScalePlanMutations } from '@/composables'
+const { deletePlanMutation } = useScalePlanMutations()
 
 const { plan, trade, idx } = defineProps<{
   trade: LiveTrade
@@ -31,8 +33,32 @@ const onUpdateHover = (v: boolean) => {
 }
 
 const onOpenForm = (type: 'execute' | 'edit') => {
+  console.info('testing')
   emit('open-form', plan, type)
 }
+
+const onConfirmDelete = async () => {
+  await deletePlanMutation.mutateAsync(plan.id, {
+    onSettled() {
+      menuOpen.value = false
+      confirmOpen.value = false
+    },
+  })
+}
+
+const actionMenuBind = computed(() => ({
+  menuOpen: menuOpen.value,
+  confirmOpen: confirmOpen.value,
+  'onUpdate:menuOpen': (v: boolean) => (menuOpen.value = v),
+  'onUpdate:confirmOpen': (v: boolean) => (confirmOpen.value = v),
+
+  title: 'test',
+  alertTitle: plan.label.trim(),
+  domain: 'scale plan',
+
+  onDelete: onConfirmDelete,
+  onOpenForm: (type: 'execute' | 'edit') => onOpenForm(type),
+}))
 </script>
 
 <template>
@@ -40,13 +66,7 @@ const onOpenForm = (type: 'execute' | 'edit') => {
     <ShowScalePlan :plan :idx="idx" :is-reached="isReached" />
 
     <HoverCardContent class="relative w-80 max-w-[90vw] p-2.5" align="start">
-      <ScalePlanMenu
-        :plan
-        :idx
-        v-model:menu-open="menuOpen"
-        v-model:confirm-open="confirmOpen"
-        @open-form="onOpenForm"
-      />
+      <ActionMenu v-bind="actionMenuBind" />
 
       <TradeExecutionContent v-if="isReached" :trade :plan :idx />
       <ScalePlanContent v-else :trade :plan :idx />
