@@ -50,17 +50,23 @@ const onConfirmDelete = async () => {
 }
 
 const actionMenuBind = computed(() => {
+  const planBindings = {
+    alertDescription: `This action cannot be undone. This will permanently remove this scale plan from the trade`,
+    onOpenForm: (type: 'execute' | 'edit') => onOpenForm(type),
+    alertTitle: plan.label.trim(),
+  }
+  const executionBindings = {
+    alertDescription: `This action cannot be undone. This will permanently remove all executions from this scale plan`,
+    alertTitle: plan.label.trim() + ' Executions',
+  }
+
   return {
     menuOpen: menuOpen.value,
     confirmOpen: confirmOpen.value,
     'onUpdate:menuOpen': (v: boolean) => (menuOpen.value = v),
     'onUpdate:confirmOpen': (v: boolean) => (confirmOpen.value = v),
-
-    alertTitle: plan.label.trim(),
-    alertDescription: `This action cannot be undone. This will permanently remove this scale plan from the trade`,
-
     onDelete: onConfirmDelete,
-    onOpenForm: (type: 'execute' | 'edit') => onOpenForm(type),
+    ...(isReached.value ? executionBindings : planBindings),
   }
 })
 </script>

@@ -48,7 +48,7 @@ const confirmOpen = defineModel<boolean>('confirm-open')
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{{ alertTitle }}?</AlertDialogTitle>
+            <AlertDialogTitle>{{ alertTitle }}</AlertDialogTitle>
             <AlertDialogDescription>
               {{ alertDescription }}
             </AlertDialogDescription>
