@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
 from core.base_schema import BaseSchema
 from database.models import Side, ExecSource
@@ -27,3 +27,7 @@ class ExecutionRead(ExecutionCreate):
 class ExecutionUpdate(ExecutionBase):
     qty: Optional[int] = None
     price: Optional[float] = None
+
+
+class BatchDeleteRequest(BaseSchema):
+    execution_ids: List[str]

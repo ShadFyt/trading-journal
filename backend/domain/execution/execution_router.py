@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, status, HTTPException
 from typing import Optional
 
 from domain.execution.execution_deps import ExecutionServiceDep
@@ -6,6 +6,7 @@ from domain.execution.execution_schema import (
     ExecutionRead,
     ExecutionCreate,
     ExecutionUpdate,
+    BatchDeleteRequest,
 )
 
 router = APIRouter()
@@ -40,3 +41,19 @@ async def update_execution(
 @router.delete("/{execution_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_execution(service: ExecutionServiceDep, execution_id: str):
     return await service.delete_execution(execution_id)
+
+
+@router.delete("/executions/batch", status_code=status.HTTP_204_NO_CONTENT)
+async def batch_delete_executions(
+    service: ExecutionServiceDep,
+    request: BatchDeleteRequest,
+):
+    """Delete multiple trade executions by their IDs."""
+    try:
+        deleted_count = await service.batch_delete(request.execution_ids)
+        return {
+            "message": f"Successfully deleted {deleted_count} executions",
+            "deleted_ids": request.execution_ids,
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

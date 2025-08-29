@@ -1,7 +1,7 @@
 from database.session import SessionDep
 from database.models import TradeExecution
 from core.base_repo import BaseRepo
-from sqlmodel import select
+from sqlmodel import select, delete
 
 from domain.execution.execution_schema import ExecutionUpdate
 
@@ -33,3 +33,9 @@ class ExecutionRepo(BaseRepo):
 
     async def delete_execution(self, execution_id: str):
         return await self.delete(execution_id)
+
+    async def batch_delete(self, execution_ids: list[str]):
+        stmt = delete(TradeExecution).where(TradeExecution.id.in_(execution_ids))
+        result = await self.session.exec(stmt)
+        await self.session.commit()
+        return result.rowcount
