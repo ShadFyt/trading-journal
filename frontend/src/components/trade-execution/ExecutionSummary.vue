@@ -60,7 +60,7 @@ const posNegClass = (v?: number | null, neutral = 'text-gray-700') =>
 <template>
   <div class="grid grid-cols-2 gap-2 text-sm mt-2">
     <InfoWrapper v-if="avgFillPrice != null" title="Avg Fill Price">
-      {{ (realizedR as number).toFixed(2) }}{{ formatCurrency(avgFillPrice) }}
+      {{ formatCurrency(avgFillPrice) }}
     </InfoWrapper>
 
     <InfoWrapper title="Realized PnL" :extra-classes="posNegClass(realizedPnL)">
