@@ -35,7 +35,22 @@ class ExecutionRepo(BaseRepo):
         return await self.delete(execution_id)
 
     async def batch_delete(self, execution_ids: list[str]):
+        stmt = select(TradeExecution).where(TradeExecution.id.in_(execution_ids))
+        result = await self.session.exec(stmt)
+        executions_to_delete = result.all()
+
+        # Collect unique scale plan IDs that will be affected
+        affected_scale_plan_ids = [
+            exec.scale_plan_id
+            for exec in executions_to_delete
+            if exec.scale_plan_id is not None
+        ]
+
         stmt = delete(TradeExecution).where(TradeExecution.id.in_(execution_ids))
         result = await self.session.exec(stmt)
         await self.session.commit()
-        return result.rowcount
+        payload = {
+            "deleted_count": result.rowcount,
+            "scale_plan_ids": affected_scale_plan_ids,
+        }
+        return payload

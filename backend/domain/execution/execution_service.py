@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 
-from database.models import TradeExecution, ScalePlan, ScalePlanStatus
+from database.models import TradeExecution, ScalePlan, ScalePlanStatus, ScalePlanKind
 from domain.execution.execution_repo import ExecutionRepo
 from domain.scale_plan.scale_plan_repo import ScalePlanRepo
 from domain.execution.execution_schema import (
@@ -91,4 +91,36 @@ class ExecutionService:
         return await self.repo.delete_execution(execution_id)
 
     async def batch_delete(self, execution_ids: list[str]) -> int:
-        return await self.repo.batch_delete(execution_ids)
+        result = await self.repo.batch_delete(execution_ids)
+        if result["scale_plan_ids"]:
+            for scale_plan_id in result["scale_plan_ids"]:
+                await self._update_scale_plan_status_after_delete(scale_plan_id)
+
+        return result["deleted_count"]
+
+    async def _update_scale_plan_status_after_delete(self, scale_plan_id: str) -> None:
+        """Update scale plan status after executions are deleted."""
+        scale_plan = await self.scale_plan_repo.get_scale_plan_by_id(scale_plan_id)
+        if not scale_plan:
+            return
+
+        remaining_executions = scale_plan.executions
+        total_executed_qty = sum(exec.qty for exec in remaining_executions)
+
+        # Determine new status
+        if total_executed_qty == 0:
+            new_status = ScalePlanStatus.PLANNED
+        else:
+            new_status = ScalePlanStatus.FILLED_PARTIAL
+
+        await self._update_scale_plan_status_if_changed(scale_plan, new_status)
+
+    async def _update_scale_plan_status_if_changed(
+        self, scale_plan: ScalePlan, new_status: ScalePlanStatus
+    ) -> None:
+        """Update scale plan status only if it has changed."""
+        if new_status != scale_plan.status:
+            from domain.scale_plan.scale_plan_schema import ScalePlanUpdate
+
+            update_payload = ScalePlanUpdate(status=new_status)
+            await self.scale_plan_repo.update_by_id(scale_plan.id, update_payload)
