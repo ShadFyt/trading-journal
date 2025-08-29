@@ -4,7 +4,7 @@ import { liveTradeKeys } from '@/composables/useLiveTradeService.ts'
 import { createScalePlan, deleteScalePlan, updateScalePlan } from '@/api/scale-plan.api.ts'
 import type { ExecutionCreateDto, ScalePlanCreate, ScalePlanUpdate } from '@/interfaces'
 import { handleErrorDisplay } from '@/api/api-error.util.ts'
-import { deleteExecution, executePlan } from '@/api'
+import { deleteExecution, deleteExecutions, executePlan } from '@/api'
 
 export const scalePlanKeys = {
   all: ['scalePlan'] as const,
@@ -65,9 +65,7 @@ export const useTradeExecutionMutations = () => {
   })
 
   const deleteExecutionMutation = useMutation({
-    mutationFn: (payload: { ids: string[] }) => {
-      return Promise.all(payload.ids.map((id) => deleteExecution(id)))
-    },
+    mutationFn: (payload: { ids: string[] }) => deleteExecutions(payload.ids),
     onSuccess: handleSuccess,
     onError: (e) => handleErrorDisplay(e, 'delete', domain),
   })

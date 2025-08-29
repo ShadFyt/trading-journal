@@ -17,3 +17,6 @@ export const updateExecution = (id: string, payload: ExecutionUpdateDto) =>
   apiClient.patch(`${EXECUTION_API_URL}/${id}`, payload)
 
 export const deleteExecution = (id: string) => apiClient.delete(`${EXECUTION_API_URL}/${id}`)
+
+export const deleteExecutions = (ids: string[]) =>
+  apiClient.delete(`${EXECUTION_API_URL}/batch`, { data: { execution_ids: ids } })

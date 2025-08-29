@@ -38,12 +38,7 @@ async def update_execution(
     return await service.update_execution(execution_id, payload)
 
 
-@router.delete("/{execution_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_execution(service: ExecutionServiceDep, execution_id: str):
-    return await service.delete_execution(execution_id)
-
-
-@router.delete("/executions/batch", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/batch", status_code=status.HTTP_204_NO_CONTENT)
 async def batch_delete_executions(
     service: ExecutionServiceDep,
     request: BatchDeleteRequest,
@@ -57,3 +52,8 @@ async def batch_delete_executions(
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/{execution_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_execution(service: ExecutionServiceDep, execution_id: str):
+    return await service.delete_execution(execution_id)
