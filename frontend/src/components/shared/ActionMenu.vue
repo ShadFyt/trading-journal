@@ -1,8 +1,7 @@
 <script lang="ts" setup>
 import { Icon } from '@iconify/vue'
-defineProps<{ alertTitle: string; alertDescription: string }>()
+defineProps<{ alertTitle: string; alertDescription: string; triggerText: string }>()
 const emit = defineEmits<{
-  (e: 'open-form', type: 'execute' | 'edit'): []
   (e: 'delete'): []
 }>()
 const menuOpen = defineModel<boolean>('menu-open')
@@ -43,7 +42,7 @@ const confirmOpen = defineModel<boolean>('confirm-open')
         <AlertDialogTrigger as-child>
           <DropdownMenuItem class="text-red-600" @click.stop="confirmOpen = true"
             ><Icon icon="lucide:trash-2" width="24" height="24" />
-            Delete Plan
+            {{ triggerText }}
           </DropdownMenuItem>
         </AlertDialogTrigger>
         <AlertDialogContent>

@@ -2,9 +2,10 @@
 import type { LiveTrade, ScalePlan } from '@/interfaces'
 import { computed } from 'vue'
 import { sharesFromPercent } from '@/utils'
-import { useScalePlanMutations } from '@/composables'
+import { useScalePlanMutations, useTradeExecutionMutations } from '@/composables'
 import { Icon } from '@iconify/vue'
 const { deletePlanMutation } = useScalePlanMutations()
+const { deleteExecutionMutation } = useTradeExecutionMutations()
 
 const { plan, trade, idx } = defineProps<{
   trade: LiveTrade
@@ -33,31 +34,34 @@ const onUpdateHover = (v: boolean) => {
   hoverOpen.value = v
 }
 
-const onOpenForm = (type: 'execute' | 'edit') => {
-  console.info('testing')
-  emit('open-form', plan, type)
-}
-
 const onConfirmDelete = async () => {
+  const onSettled = () => {
+    menuOpen.value = false
+    confirmOpen.value = false
+  }
   if (!isReached.value) {
     await deletePlanMutation.mutateAsync(plan.id, {
-      onSettled() {
-        menuOpen.value = false
-        confirmOpen.value = false
-      },
+      onSettled,
     })
+    return
   }
+  // TODO: implement ability to select multiple executions to delete instead of deleting all by default
+  await deleteExecutionMutation.mutateAsync(
+    { ids: plan.executions.map((exec) => exec.id) },
+    { onSettled },
+  )
 }
 
 const actionMenuBind = computed(() => {
   const planBindings = {
     alertDescription: `This action cannot be undone. This will permanently remove this scale plan from the trade`,
-    onOpenForm: (type: 'execute' | 'edit') => onOpenForm(type),
     alertTitle: plan.label.trim(),
+    triggerText: 'Delete Plan',
   }
   const executionBindings = {
     alertDescription: `This action cannot be undone. This will permanently remove all executions from this scale plan`,
     alertTitle: plan.label.trim() + ' Executions',
+    triggerText: 'Delete Executions',
   }
 
   return {
