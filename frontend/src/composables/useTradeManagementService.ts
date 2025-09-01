@@ -4,7 +4,7 @@ import { liveTradeKeys } from '@/composables/useLiveTradeService.ts'
 import { createScalePlan, deleteScalePlan, updateScalePlan } from '@/api/scale-plan.api.ts'
 import type { ExecutionCreateDto, ScalePlanCreate, ScalePlanUpdate } from '@/interfaces'
 import { handleErrorDisplay } from '@/api/api-error.util.ts'
-import { deleteExecution, deleteExecutions, executePlan } from '@/api'
+import { deleteExecutions, executePlan } from '@/api'
 
 export const scalePlanKeys = {
   all: ['scalePlan'] as const,

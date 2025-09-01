@@ -52,6 +52,7 @@ const confirmOpen = defineModel<boolean>('confirm-open')
               {{ alertDescription }}
             </AlertDialogDescription>
           </AlertDialogHeader>
+          <slot name="dialog-content" />
           <AlertDialogFooter>
             <AlertDialogCancel @click="confirmOpen = false">Cancel</AlertDialogCancel>
             <AlertDialogAction

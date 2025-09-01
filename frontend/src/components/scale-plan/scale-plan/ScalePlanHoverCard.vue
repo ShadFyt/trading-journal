@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import type { LiveTrade, ScalePlan } from '@/interfaces'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { sharesFromPercent } from '@/utils'
 import { useScalePlanMutations, useTradeExecutionMutations } from '@/composables'
 import { Icon } from '@iconify/vue'
+import ExecutionSelector from '../../trade-execution/ExecutionSelector.vue'
 const { deletePlanMutation } = useScalePlanMutations()
 const { deleteExecutionMutation } = useTradeExecutionMutations()
 
@@ -21,6 +22,7 @@ const emit = defineEmits<{
 const hoverOpen = ref(false)
 const menuOpen = ref(false)
 const confirmOpen = ref(false)
+const selectedExecutionIds = ref<string[]>([])
 const cardOpen = computed(() => hoverOpen.value || menuOpen.value || confirmOpen.value)
 
 const isReached = computed(() => {
@@ -29,6 +31,8 @@ const isReached = computed(() => {
   const qty = plan.executions.reduce((total, exec) => total + exec.qty, 0)
   return qty === shares
 })
+
+const isMultipleExecutions = computed(() => plan.executions.length > 1)
 
 const onUpdateHover = (v: boolean) => {
   hoverOpen.value = v
@@ -39,17 +43,21 @@ const onConfirmDelete = async () => {
     menuOpen.value = false
     confirmOpen.value = false
   }
+
   if (!isReached.value) {
     await deletePlanMutation.mutateAsync(plan.id, {
       onSettled,
     })
     return
   }
-  // TODO: implement ability to select multiple executions to delete instead of deleting all by default
-  await deleteExecutionMutation.mutateAsync(
-    { ids: plan.executions.map((exec) => exec.id) },
-    { onSettled },
-  )
+
+  // For multiple executions, ensure at least one is selected
+  if (isMultipleExecutions.value && selectedExecutionIds.value.length === 0) {
+    return // Don't proceed if no executions selected
+  }
+
+  const ids = isMultipleExecutions.value ? selectedExecutionIds.value : [plan.executions[0].id]
+  await deleteExecutionMutation.mutateAsync({ ids }, { onSettled })
 }
 
 const actionMenuBind = computed(() => {
@@ -88,6 +96,13 @@ const actionMenuBind = computed(() => {
           <DropdownMenuItem @select="emit('open-form', plan, 'edit')">
             <Icon icon="lucide:edit" width="24" height="24" />edit
           </DropdownMenuItem>
+        </template>
+        <template v-if="isMultipleExecutions" #dialog-content>
+          <ExecutionSelector
+            :executions="plan.executions"
+            :open="confirmOpen"
+            @update:selected="selectedExecutionIds = $event"
+          />
         </template>
       </ActionMenu>
 
