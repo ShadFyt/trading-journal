@@ -18,8 +18,7 @@ export const SCALE_PLAN_STATUSES = {
   PLANNED: 'planned',
   CANCELLED: 'cancelled',
   FILLED: 'filled',
-  PARTIALLY_FILLED: 'partially_filled',
-  TRIGGERED: 'triggered',
+  PARTIALLY_FILLED: 'filled_partial',
 } as const
 
 export const ScalePlanStatusEnum = z.nativeEnum(SCALE_PLAN_STATUSES)

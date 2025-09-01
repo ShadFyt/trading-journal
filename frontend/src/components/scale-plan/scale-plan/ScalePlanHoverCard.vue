@@ -5,6 +5,7 @@ import { sharesFromPercent } from '@/utils'
 import { useScalePlanMutations, useTradeExecutionMutations } from '@/composables'
 import { Icon } from '@iconify/vue'
 import ExecutionSelector from '../../trade-execution/ExecutionSelector.vue'
+import { ScalePlanStatusEnum } from '@/enums'
 const { deletePlanMutation } = useScalePlanMutations()
 const { deleteExecutionMutation } = useTradeExecutionMutations()
 
@@ -106,7 +107,15 @@ const actionMenuBind = computed(() => {
         </template>
       </ActionMenu>
 
-      <TradeExecutionContent v-if="isReached" :trade :plan :idx />
+      <TradeExecutionContent
+        v-if="
+          plan.status === ScalePlanStatusEnum.enum.FILLED ||
+          plan.status === ScalePlanStatusEnum.enum.PARTIALLY_FILLED
+        "
+        :trade
+        :plan
+        :idx
+      />
       <ScalePlanContent v-else :trade :plan :idx />
     </HoverCardContent>
   </HoverCard>
