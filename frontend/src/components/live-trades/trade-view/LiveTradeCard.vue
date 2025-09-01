@@ -46,13 +46,12 @@ const detailsId = computed(() => `trade-details-${trade.id}`)
       <ContentHeader :trade />
 
       <ProfitLossDisplay :trade :pnl />
+      <ScalePlans :trade />
 
       <Transition name="fade">
         <div v-if="isExpanded" :id="detailsId">
           <!-- Price Information -->
           <PriceInfo :trade />
-
-          <ScalePlans :trade />
 
           <!-- Price Progress Bar -->
           <TradeProgressBar :pnl :trade />

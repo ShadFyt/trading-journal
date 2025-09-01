@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { LiveTrade } from '@/interfaces'
 import { useFormatters } from '@/composables'
+import InfoWrapper from '@/components/live-trades/portfolio/InfoWrapper.vue'
 
 const { trade, pnl } = defineProps<{
   trade: LiveTrade
@@ -28,44 +29,20 @@ const pnlStyling = computed(() => {
     :class="[pnlStyling.bgColor, pnlStyling.borderColor]"
   >
     <!-- Current Price -->
-    <div class="flex sm:flex-col justify-between sm:justify-between sm:h-full">
-      <p class="text-xs text-gray-600 uppercase tracking-wide">Current Price</p>
-      <span
-        class="text-base font-bold sm:mt-1 sm:text-xl"
-        :class="trade.currentPrice >= trade.entryPriceAvg ? 'text-green-600' : 'text-red-600'"
-        aria-live="polite"
-        aria-atomic="true"
-      >
-        {{ formatCurrency(trade.currentPrice) }}
-      </span>
-    </div>
+    <InfoWrapper :title="'Current Price'" :is-green="trade.currentPrice >= trade.entryPriceAvg">
+      {{ formatCurrency(trade.currentPrice) }}
+    </InfoWrapper>
 
     <!-- Profit/Loss -->
-    <div class="flex sm:flex-col justify-between sm:justify-between sm:h-full">
-      <p class="text-xs text-gray-600 uppercase tracking-wide">Profit/Loss</p>
-      <span
-        class="text-base font-bold sm:mt-1 sm:text-2xl"
-        :class="pnl >= 0 ? 'text-green-600' : 'text-red-600'"
-        aria-live="polite"
-        aria-atomic="true"
-      >
-        {{ (pnl >= 0 ? '+' : '') + formatCurrency(pnl) }}
-      </span>
-    </div>
+    <InfoWrapper :title="'Profit/Loss'" :is-green="pnl >= 0">
+      {{ (pnl >= 0 ? '+' : '') + formatCurrency(pnl) }}
+    </InfoWrapper>
 
     <!-- Percentage -->
-    <div class="flex sm:flex-col justify-between sm:justify-between sm:h-full sm:text-right">
-      <p class="text-xs text-gray-600 uppercase tracking-wide">Percentage</p>
-      <span
-        class="text-sm sm:mt-1 sm:text-base"
-        :class="pnl >= 0 ? 'text-green-600' : 'text-red-600'"
-        aria-live="polite"
-        aria-atomic="true"
-      >
-        {{
-          formatPercentage(((trade.currentPrice - trade.entryPriceAvg) / trade.entryPriceAvg) * 100)
-        }}
-      </span>
-    </div>
+    <InfoWrapper :title="'Percentage'" :is-green="pnl >= 0">
+      {{
+        formatPercentage(((trade.currentPrice - trade.entryPriceAvg) / trade.entryPriceAvg) * 100)
+      }}
+    </InfoWrapper>
   </section>
 </template>
