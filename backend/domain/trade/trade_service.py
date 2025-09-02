@@ -13,7 +13,7 @@ from database.models import (
     Trade,
     TradeIdeaStatus,
     AnnotationType,
-    LiveTradeStatus,
+    TradeStatus,
     ScalePlan,
     ScalePlanKind,
 )
@@ -112,7 +112,7 @@ class LiveTradeService:
         )
         payload.update(
             {
-                "status": LiveTradeStatus.OPEN,
+                "status": TradeStatus.OPEN,
                 "commissions": payload.get("commissions", 2),
                 "annotations": annotations,
                 "scale_plans": scale_plans,
