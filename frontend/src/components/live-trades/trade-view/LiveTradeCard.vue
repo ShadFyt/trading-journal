@@ -20,13 +20,6 @@ const emit = defineEmits<{
 
 const [isExpanded, toggleExpanded] = useToggle(false)
 
-/**
- * Calculate P&L based on current price vs entry price
- */
-const pnl = computed(() => {
-  return (trade.currentPrice - trade.entryPriceAvg) * trade.positionSize
-})
-
 const detailsId = computed(() => `trade-details-${trade.id}`)
 </script>
 
@@ -45,7 +38,7 @@ const detailsId = computed(() => `trade-details-${trade.id}`)
     <CardContent class="pt-0">
       <ContentHeader :trade />
 
-      <ProfitLossDisplay :trade :pnl />
+      <ProfitLossDisplay :trade />
       <ScalePlans :trade />
 
       <Transition name="fade">
@@ -54,7 +47,7 @@ const detailsId = computed(() => `trade-details-${trade.id}`)
           <PriceInfo :trade />
 
           <!-- Price Progress Bar -->
-          <TradeProgressBar :pnl :trade />
+          <TradeProgressBar :trade />
 
           <!-- Trade Metrics -->
           <TradeMetrics :trade />
