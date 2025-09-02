@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { baseTradeSchema } from './base-trade.schema'
 import { AnnotationSchema } from './annotation.schema'
 import { ScalePlanCreateSchema, ScalePlanSchema } from './scale-plan.schema'
+import { ExecutionSchema } from '@/schemas/execution.schema.ts'
 
 export const liveTradeCreateSchema = baseTradeSchema
   .extend({
@@ -31,6 +32,7 @@ export const LiveTradeSchema = liveTradeCreateSchema
     priceChange: z.number().optional(),
     percentChange: z.number().optional(),
     scalePlans: ScalePlanSchema.array(),
+    executions: z.array(ExecutionSchema),
   })
   .omit({ notes: true, catalysts: true })
 

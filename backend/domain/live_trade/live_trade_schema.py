@@ -37,6 +37,7 @@ class LiveTradeResponse(LiveTradeBase):
     risk_per_share: float
     realized_pnl: Optional[float]
     realized_r: Optional[float]
+    executions: list[ExecutionRead] = []
 
 
 class LiveTradeCreate(LiveTradeBase):
