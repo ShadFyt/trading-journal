@@ -1,17 +1,17 @@
 from database.session import SessionDep
 from database.models import Trade, ScalePlan
 from core.base_repo import BaseRepo
-from domain.trade.trade_schema import LiveTradeUpdate
+from domain.trade.trade_schema import TradeUpdate
 from fastapi import HTTPException
 from sqlmodel import select
 from sqlalchemy.orm import selectinload
 
 
-class LiveTradeRepo(BaseRepo[Trade]):
+class TradeRepo(BaseRepo[Trade]):
     def __init__(self, session: SessionDep):
         super().__init__(session, Trade)
 
-    async def get_all_live_trades(self):
+    async def get_all_trades(self):
         stmt = (
             select(Trade)
             .options(
@@ -24,7 +24,7 @@ class LiveTradeRepo(BaseRepo[Trade]):
         result = await self.session.exec(stmt)
         return result.all()
 
-    async def get_live_trade_by_id(self, id: str, include_annotations: bool = True):
+    async def get_trade_by_id(self, id: str, include_annotations: bool = True):
         options = [
             selectinload(Trade.executions),
             selectinload(Trade.scale_plans).selectinload(ScalePlan.executions),
@@ -35,27 +35,21 @@ class LiveTradeRepo(BaseRepo[Trade]):
         print("test-id", options)
         return await self.session.get(Trade, id, options=options)
 
-    async def get_live_trade_by_trade_idea_id(self, trade_idea_id: str) -> Trade | None:
-
-        stmt = select(Trade).where(Trade.trade_idea_id == trade_idea_id)
-        result = await self.session.exec(stmt)
-        return result.first()
-
-    async def update_live_trade(self, id: str, payload: LiveTradeUpdate):
+    async def update_trade(self, id: str, payload: TradeUpdate):
         try:
-            db_live_trade = await self.get_live_trade_by_id(id)
-            if not db_live_trade:
+            db_trade = await self.get_trade_by_id(id)
+            if not db_trade:
                 raise HTTPException(status_code=404, detail="Live trade not found")
             # Update only provided fields (exclude_unset=True)
             update_fields = payload.model_dump(exclude_unset=True)
             for key, value in update_fields.items():
-                setattr(db_live_trade, key, value)
-            return await self._save(db_live_trade)
+                setattr(db_trade, key, value)
+            return await self._save(db_trade)
         except Exception as e:
             raise HTTPException(status_code=400, detail=str(e))
 
-    async def create_live_trade(self, live_trade: Trade):
-        result = await self.create(live_trade)
+    async def create_trade(self, trade: Trade):
+        result = await self.create(trade)
 
         stmt = (
             select(Trade)
@@ -69,9 +63,9 @@ class LiveTradeRepo(BaseRepo[Trade]):
         fresh_result = await self.session.exec(stmt)
         return fresh_result.first()
 
-    async def delete_live_trade(self, id: str):
+    async def delete_trade(self, id: str):
         try:
-            db_live_trade = await self.get_live_trade_by_id(id)
+            db_live_trade = await self.get_trade_by_id(id)
             if not db_live_trade:
                 raise HTTPException(status_code=404, detail="Live trade not found")
             await self.session.delete(db_live_trade)

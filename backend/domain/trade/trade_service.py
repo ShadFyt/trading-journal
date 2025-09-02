@@ -1,30 +1,27 @@
-from domain.trade.trade_repo import LiveTradeRepo
+from domain.trade.trade_repo import TradeRepo
 from domain.trade.trade_schema import (
-    LiveTradeCreate,
-    LiveTradeUpdate,
-    LiveTradeResponse,
+    TradeCreate,
+    TradeUpdate,
+    TradeResponse,
 )
 from domain.scale_plan.scale_plan_schema import ScalePlanCreate
-from domain.trade_idea.trade_idea_schema import TradeIdeaUpdate
 from domain.trade_idea.trade_idea_service import TradeIdeaService
 from domain.annotation.annotation_repo import AnnotationRepo
 from database.models import (
     Annotation,
     Trade,
-    TradeIdeaStatus,
     AnnotationType,
     TradeStatus,
     ScalePlan,
-    ScalePlanKind,
 )
 from fastapi import HTTPException, status
 from core.stock_price.stock_price_service import StockPriceService
 
 
-class LiveTradeService:
+class TradeService:
     def __init__(
         self,
-        repo: LiveTradeRepo,
+        repo: TradeRepo,
         annotation_repo: AnnotationRepo,
         trade_idea_service: TradeIdeaService,
         stock_price_service: StockPriceService,
@@ -34,25 +31,23 @@ class LiveTradeService:
         self.trade_idea_service = trade_idea_service
         self.stock_price_service = stock_price_service
 
-    async def get_all_live_trades(self) -> list[LiveTradeResponse]:
-        # Get all live trades from the repository
-        db_live_trades = await self.repo.get_all_live_trades()
+    async def get_all_trades(self) -> list[TradeResponse]:
+        # Get all trades from the repository
+        db_trades = await self.repo.get_all_trades()
 
         # Convert SQLModel instances to Pydantic models for modification
-        live_trades = [
-            LiveTradeResponse.model_validate(trade) for trade in db_live_trades
-        ]
+        trades = [TradeResponse.model_validate(trade) for trade in db_trades]
 
         # Extract unique symbols from live trades
-        symbols = list(dict.fromkeys(t.symbol for t in live_trades if t.symbol))
+        symbols = list(dict.fromkeys(t.symbol for t in trades if t.symbol))
         if not symbols:
-            return live_trades
+            return trades
 
         # Fetch current prices for all symbols
         try:
             price_map = self._get_price_map(symbols)
             # Merge current price data with live trades
-            for trade in live_trades:
+            for trade in trades:
                 if trade.symbol in price_map:
                     quote = price_map[trade.symbol]
                     trade.current_price = quote.current_price
@@ -62,58 +57,40 @@ class LiveTradeService:
             # Log error but don't fail the entire request
             print(f"Warning: Could not fetch current prices: {e}")
 
-        return live_trades
+        return trades
 
-    async def get_live_trade_by_id(
-        self, live_trade_id: str
-    ) -> LiveTradeResponse | None:
-        return await self.repo.get_live_trade_by_id(live_trade_id)
+    async def get_live_trade_by_id(self, live_trade_id: str) -> TradeResponse | None:
+        return await self.repo.get_trade_by_id(live_trade_id)
 
-    async def create_live_trade(self, live_trade: LiveTradeCreate) -> LiveTradeResponse:
-        if await self.repo.get_live_trade_by_trade_idea_id(live_trade.trade_idea_id):
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail="Live trade already exists for this trade idea",
-            )
-
-        payload = self._build_payload(live_trade)
+    async def create_trade(self, trade: TradeCreate) -> TradeResponse:
+        payload = self._build_payload(trade)
         # Create LiveTrade instance
-        live_trade_instance = Trade(**payload)
+        trade_instance = Trade(**payload)
 
-        # Create the live trade
-        result = await self.repo.create_live_trade(live_trade_instance)
-
-        # Update the associated TradeIdea status to Live
-        await self.trade_idea_service.update_trade_idea(
-            live_trade.trade_idea_id, TradeIdeaUpdate(status=TradeIdeaStatus.LIVE)
-        )
+        # Create the trade
+        result = await self.repo.create_trade(trade_instance)
 
         return result
 
-    async def update_live_trade(
-        self, live_trade_id: str, payload: LiveTradeUpdate
-    ) -> LiveTradeResponse | None:
-        return await self.repo.update_live_trade(live_trade_id, payload)
+    async def update_trade(
+        self, trade_id: str, payload: TradeUpdate
+    ) -> TradeResponse | None:
+        return await self.repo.update_trade(trade_id, payload)
 
-    async def delete_live_trade(self, live_trade_id: str) -> None:
-        return await self.repo.delete_live_trade(live_trade_id)
+    async def delete_trade(self, trade_id: str) -> None:
+        return await self.repo.delete_trade(trade_id)
 
     def _get_price_map(self, symbols: list[str]):
         quotes = self.stock_price_service.get_stock_price_batch(symbols)
         return {quote.symbol: quote for quote in quotes}
 
-    def _build_payload(self, live_trade: LiveTradeCreate):
-        annotations = self._build_annotations(live_trade)
-        scale_plans = self._build_scale_plans(
-            live_trade.scale_plans, live_trade.position_size
-        )
-        payload = live_trade.model_dump(
-            exclude={"notes", "catalysts"}, exclude_none=True
-        )
+    def _build_payload(self, trade: TradeCreate):
+        annotations = self._build_annotations(trade)
+        scale_plans = self._build_scale_plans(trade.scale_plans, trade.position_size)
+        payload = trade.model_dump(exclude_none=True)
         payload.update(
             {
-                "status": TradeStatus.OPEN,
-                "commissions": payload.get("commissions", 2),
+                "status": TradeStatus.WATCHING,
                 "annotations": annotations,
                 "scale_plans": scale_plans,
             }
@@ -121,7 +98,7 @@ class LiveTradeService:
         return payload
 
     @staticmethod
-    def _build_annotations(dto: LiveTradeCreate):
+    def _build_annotations(dto: TradeCreate):
         annotations: list[Annotation] = []
         if dto.notes:
             annotations.extend(
@@ -143,16 +120,6 @@ class LiveTradeService:
         if not plans:
             return []
 
-        # Ensure all plans use the same kind
-        kinds = {p.kind for p in plans}
-        if len(kinds) > 1:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="All scale plans must use the same kind.",
-            )
-
-        kind = next(iter(kinds))
-
         # Allow at most one 'remainder' plan with no explicit target price
         none_target_count = sum(
             1 for p in plans if getattr(p, "target_price", None) is None
@@ -162,21 +129,13 @@ class LiveTradeService:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="At most one scale plan may have a null target_price (remainder).",
             )
-        total_value = sum(p.value for p in plans)
 
-        if kind == ScalePlanKind.PERCENT:
-            # Combined percent cannot exceed 100
-            if total_value > 100:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Total percent for scale plans cannot exceed 100.",
-                )
-        else:
-            # Assume shares; combined shares cannot exceed position size
-            if total_value > position_size:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Total shares for scale plans cannot exceed position size.",
-                )
+        # Validate total shares don't exceed position size
+        total_qty = sum(p.qty for p in plans)
+        if total_qty > position_size:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Total shares for scale plans cannot exceed position size.",
+            )
 
         return [ScalePlan(**p.model_dump()) for p in plans]

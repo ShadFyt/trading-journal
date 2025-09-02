@@ -1,9 +1,7 @@
 from database.session import SessionDep
-from domain.trade.trade_repo import LiveTradeRepo
-from domain.trade_idea.trade_idea_deps import get_trade_idea_service
+from domain.trade.trade_repo import TradeRepo
 from fastapi import Depends
-from domain.trade.trade_service import LiveTradeService
-from domain.trade_idea.trade_idea_service import TradeIdeaService
+from domain.trade.trade_service import TradeService
 from domain.annotation.annotation_deps import get_annotation_repo
 from typing import Annotated
 from domain.annotation.annotation_repo import AnnotationRepo
@@ -14,22 +12,20 @@ def get_stock_price_service() -> StockPriceService:
     return StockPriceService()
 
 
-def get_live_trade_repo(session: SessionDep) -> LiveTradeRepo:
-    return LiveTradeRepo(session=session)
+def get_trade_repo(session: SessionDep) -> TradeRepo:
+    return TradeRepo(session=session)
 
 
-def get_live_trade_service(
-    repo: LiveTradeRepo = Depends(get_live_trade_repo),
+def get_trade_service(
+    repo: TradeRepo = Depends(get_trade_repo),
     annotation_repo: AnnotationRepo = Depends(get_annotation_repo),
-    trade_idea_service: TradeIdeaService = Depends(get_trade_idea_service),
     stock_price_service: StockPriceService = Depends(get_stock_price_service),
-) -> LiveTradeService:
-    return LiveTradeService(
+) -> TradeService:
+    return TradeService(
         repo=repo,
-        trade_idea_service=trade_idea_service,
         annotation_repo=annotation_repo,
         stock_price_service=stock_price_service,
     )
 
 
-LiveTradeServiceDep = Annotated[LiveTradeService, Depends(get_live_trade_service)]
+TradeServiceDep = Annotated[TradeService, Depends(get_trade_service)]

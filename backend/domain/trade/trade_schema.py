@@ -6,7 +6,7 @@ from domain.execution.execution_schema import ExecutionRead
 from domain.scale_plan.scale_plan_schema import ScalePlanCreate, ScalePlanRead
 
 
-class LiveTradeBase(BaseSchema):
+class TradeBase(BaseSchema):
     symbol: str
     setup: str
     rating: float
@@ -22,7 +22,7 @@ class LiveTradeBase(BaseSchema):
     trade_idea_id: str
 
 
-class LiveTradeResponse(LiveTradeBase):
+class TradeResponse(TradeBase):
     id: str
     annotations: List[AnnotationRead]
     scale_plans: List[ScalePlanRead]
@@ -40,13 +40,13 @@ class LiveTradeResponse(LiveTradeBase):
     executions: list[ExecutionRead] = []
 
 
-class LiveTradeCreate(LiveTradeBase):
+class TradeCreate(TradeBase):
     notes: List[str]
     catalysts: List[str]
     scale_plans: List[ScalePlanCreate]
 
 
-class LiveTradeUpdate(LiveTradeBase):
+class TradeUpdate(TradeBase):
     symbol: Optional[str] = None
     setup: Optional[str] = None
     rating: Optional[float] = None
