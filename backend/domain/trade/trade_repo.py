@@ -32,7 +32,6 @@ class TradeRepo(BaseRepo[Trade]):
         if include_annotations:
             options.append(selectinload(Trade.annotations))
 
-        print("test-id", options)
         return await self.session.get(Trade, id, options=options)
 
     async def update_trade(self, id: str, payload: TradeUpdate):
