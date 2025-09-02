@@ -14,7 +14,6 @@ class BaseTrade(SQLModel):
     symbol: str = Field(nullable=False, index=True)
     setup: str = Field(nullable=False)
     rating: float = Field(nullable=False)
-    stop: float = Field(nullable=True)
 
 
 class BaseNote(SQLModel):
@@ -91,9 +90,10 @@ class ScalePlanStatus(str, Enum):
     FILLED = "filled"
 
 
-class ScalePlanKind(str, Enum):
-    SHARES = "shares"
-    PERCENT = "percent"
+class PlanType(str, Enum):
+    ENTRY = "entry"
+    TARGET = "target"
+    STOP_LOSS = "stop_loss"
 
 
 class OrderType(str, Enum):
@@ -134,12 +134,7 @@ class Annotation(BaseNote, table=True):
 
 class ScalePlan(SQLModel, table=True):
     __tablename__ = "scale_plan"
-    __table_args__ = (
-        CheckConstraint("value > 0", name="ck_scale_plan_value_positive"),
-        CheckConstraint(
-            "(kind != 'percent') OR (value <= 100)", name="ck_scale_plan_percent_range"
-        ),
-    )
+    __table_args__ = (CheckConstraint("qty > 0", name="ck_scale_plan_qty_positive"),)
     id: str = Field(
         default_factory=lambda: str(uuid4()), primary_key=True, nullable=False
     )
@@ -152,18 +147,19 @@ class ScalePlan(SQLModel, table=True):
         default=ScalePlanStatus.PLANNED,
         sa_column=Column(SAEnum(ScalePlanStatus), nullable=False, index=True),
     )
-    kind: ScalePlanKind = Field(
-        default=ScalePlanKind.PERCENT,
-        sa_column=Column(SAEnum(ScalePlanKind), nullable=False),
-    )
+
     order_type: OrderType = Field(
         default=OrderType.LIMIT, sa_column=Column(SAEnum(OrderType), nullable=False)
     )
     trade_type: TradeType = Field(
         default=TradeType.LONG, sa_column=Column(SAEnum(TradeType), nullable=False)
     )
+    plan_type: PlanType = Field(
+        default=PlanType.TARGET,
+        sa_column=Column(SAEnum(PlanType), nullable=False, index=True),
+    )
     label: str = Field(default="T1", nullable=False)
-    value: float = Field(nullable=False)
+    qty: float = Field(nullable=False)
     target_price: Optional[float] = Field(nullable=True)
     notes: str = Field(default="")
     good_till: Optional[datetime] = Field(default=None, nullable=True)
