@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useToggle } from '@vueuse/core'
 
 import type { LiveTrade } from '@/interfaces/live-trade.type.ts'
+import { useTradeMetrics } from '@/composables'
 
 interface Props {
   trade: LiveTrade
@@ -17,15 +18,23 @@ const emit = defineEmits<{
   'close-trade': [tradeId: string]
   'edit-trade': [tradeId: string]
 }>()
+const { totalPnL, realizedPnL, remainingShares } = useTradeMetrics(trade)
 
 const [isExpanded, toggleExpanded] = useToggle(false)
 
 const detailsId = computed(() => `trade-details-${trade.id}`)
+const pnlStyling = computed(() => {
+  const isProfit = realizedPnL.value > 0
+  if (totalPnL.value < 0) return 'border-red-200'
+  if (isProfit) return 'border-green-200'
+  return 'border-grey-200'
+})
 </script>
 
 <template>
   <Card
-    class="relative transition-shadow hover:shadow-2xl border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden group animate-fadein"
+    class="relative transition-shadow hover:shadow-2xl border bg-white shadow-sm overflow-hidden group animate-fadein"
+    :class="pnlStyling"
   >
     <CardHeader>
       <MenuHeader
@@ -44,7 +53,7 @@ const detailsId = computed(() => `trade-details-${trade.id}`)
       <Transition name="fade">
         <div v-if="isExpanded" :id="detailsId">
           <!-- Price Information -->
-          <PriceInfo :trade />
+          <PriceInfo :trade :remaining-position="remainingShares" />
 
           <!-- Price Progress Bar -->
           <TradeProgressBar :trade />

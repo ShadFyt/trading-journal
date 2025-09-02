@@ -2,7 +2,7 @@
 import type { LiveTrade } from '@/interfaces'
 import { useFormatters } from '@/composables'
 
-const { trade } = defineProps<{ trade: LiveTrade }>()
+const { trade } = defineProps<{ trade: LiveTrade; remainingPosition: number }>()
 const { formatCurrency } = useFormatters()
 </script>
 
@@ -18,7 +18,8 @@ const { formatCurrency } = useFormatters()
       {{ formatCurrency(trade.stop) }}
     </KeyValueItem>
 
-    <KeyValueItem label="Position:"> {{ trade.positionSize }} shares </KeyValueItem>
+    <KeyValueItem label="Initial Position:"> {{ trade.positionSize }} shares </KeyValueItem>
+    <KeyValueItem label="Remaining Position:"> {{ remainingPosition }} shares </KeyValueItem>
     <KeyValueItem label="Rating:">
       <RatingBadge :rating="trade.rating" />
     </KeyValueItem>
