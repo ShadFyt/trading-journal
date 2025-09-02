@@ -13,6 +13,7 @@ from database.models import (
     TradeStatus,
     ScalePlan,
     PlanType,
+    TradeType,
 )
 from fastapi import HTTPException, status
 from core.stock_price.stock_price_service import StockPriceService
@@ -111,8 +112,7 @@ class TradeService:
 
         return annotations
 
-    @staticmethod
-    def _build_plans(plans: list[ScalePlanCreate]):
+    def _build_plans(self, plans: list[ScalePlanCreate]):
         # Empty plans are allowed
         if not plans:
             raise HTTPException(
@@ -121,12 +121,55 @@ class TradeService:
             )
 
         entry_plan = next((p for p in plans if p.plan_type == PlanType.ENTRY), None)
-        if not entry_plan:
+        self._validate_entry_plan(entry_plan)
+        self._validate_target_plan(plans, entry_plan)
+        return [ScalePlan(**p.model_dump()) for p in plans]
+
+    @staticmethod
+    def _validate_entry_plan(plan: ScalePlanCreate):
+        if not plan or plan.plan_type != PlanType.ENTRY:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="At least one entry plan is required.",
             )
+        if plan.qty <= 0:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Entry plan qty must be greater than 0.",
+            )
+        if (plan.limit_price or 0) <= 0:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Entry plan limit price must be greater than 0.",
+            )
 
+        # Validate stop price exists and relationship to limit price based on trade type
+        stop_price = plan.stop_price or 0
+        limit_price = plan.limit_price or 0
+
+        if stop_price <= 0:  # Not sure if I want to enforce this
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Entry plan stop price must be greater than 0.",
+            )
+
+        # For long trades: stop < limit (stop loss below entry)
+        # For short trades: stop > limit (stop loss above entry)
+        if plan.trade_type == TradeType.LONG and stop_price >= limit_price:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="For long trades, stop price must be less than limit price.",
+            )
+        elif plan.trade_type == TradeType.SHORT and stop_price <= limit_price:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="For short trades, stop price must be greater than limit price.",
+            )
+
+    @staticmethod
+    def _validate_target_plan(
+        plans: list[ScalePlanCreate], entry_plan: ScalePlanCreate
+    ):
         target_plans = [p for p in plans if p.plan_type == PlanType.TARGET]
 
         # Allow at most one TARGET plan with no explicit target price (remainder)
@@ -147,5 +190,3 @@ class TradeService:
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="Total target shares cannot exceed entry shares.",
                 )
-
-        return [ScalePlan(**p.model_dump()) for p in plans]
