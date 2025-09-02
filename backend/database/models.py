@@ -131,7 +131,7 @@ class TradeIdea(BaseTrade, RrRatioMixin, table=True):
     target_prices: List[float] = Field(
         default_factory=list, sa_column=Column(JSON, nullable=False)
     )
-    live_trade: Optional["LiveTrade"] = Relationship(
+    live_trade: Optional["Trade"] = Relationship(
         back_populates="trade_idea", sa_relationship_kwargs={"uselist": False}
     )
 
@@ -154,11 +154,9 @@ class Annotation(BaseNote, table=True):
         sa_column=Column(SAEnum(AnnotationType), nullable=False)
     )
     live_trade_id: str = Field(
-        sa_column=Column(
-            ForeignKey("live_trade.id", ondelete="CASCADE"), nullable=False
-        )
+        sa_column=Column(ForeignKey("trade.id", ondelete="CASCADE"), nullable=False)
     )
-    live_trade: "LiveTrade" = Relationship(back_populates="annotations")
+    live_trade: "Trade" = Relationship(back_populates="annotations")
 
 
 class ScalePlan(SQLModel, table=True):
@@ -174,7 +172,7 @@ class ScalePlan(SQLModel, table=True):
     )
     live_trade_id: str = Field(
         sa_column=Column(
-            ForeignKey("live_trade.id", ondelete="CASCADE"), nullable=False, index=True
+            ForeignKey("trade.id", ondelete="CASCADE"), nullable=False, index=True
         )
     )
     status: ScalePlanStatus = Field(
@@ -195,7 +193,7 @@ class ScalePlan(SQLModel, table=True):
     good_till: Optional[datetime] = Field(default=None, nullable=True)
     stop_price: Optional[float] = Field(default=None, nullable=True)
     limit_price: Optional[float] = Field(default=None, nullable=True)
-    live_trade: "LiveTrade" = Relationship(back_populates="scale_plans")
+    live_trade: "Trade" = Relationship(back_populates="scale_plans")
     executions: List["TradeExecution"] = Relationship(back_populates="scale_plan")
 
 
@@ -211,7 +209,7 @@ class TradeExecution(SQLModel, table=True):
     )
     live_trade_id: str = Field(
         sa_column=Column(
-            ForeignKey("live_trade.id", ondelete="CASCADE"), nullable=False, index=True
+            ForeignKey("trade.id", ondelete="CASCADE"), nullable=False, index=True
         )
     )
     scale_plan_id: Optional[str] = Field(
@@ -232,12 +230,12 @@ class TradeExecution(SQLModel, table=True):
     qty: int = Field(nullable=False)
     price: float = Field(nullable=False)
     notes: str = Field(default="")
-    live_trade: "LiveTrade" = Relationship(back_populates="executions")
+    live_trade: "Trade" = Relationship(back_populates="executions")
     scale_plan: Optional["ScalePlan"] = Relationship(back_populates="executions")
 
 
-class LiveTrade(BaseTrade, RrRatioMixin, table=True):
-    __tablename__ = "live_trade"
+class Trade(BaseTrade, RrRatioMixin, table=True):
+    __tablename__ = "trade"
     trade_idea_id: str = Field(foreign_key="trade_idea.id", nullable=False, unique=True)
     status: LiveTradeStatus = Field(
         default=LiveTradeStatus.OPEN,
@@ -252,15 +250,15 @@ class LiveTrade(BaseTrade, RrRatioMixin, table=True):
     net_gain_loss: Optional[float] = Field(nullable=True)
     outcome: Optional[str] = Field(nullable=True)
     annotations: List[Annotation] = Relationship(
-        back_populates="live_trade",
+        back_populates="trade",
         sa_relationship_kwargs={
             "cascade": "all, delete-orphan",
             "passive_deletes": True,  # honor DB-side cascade
         },
     )
-    trade_idea: TradeIdea = Relationship(back_populates="live_trade")
+    trade_idea: TradeIdea = Relationship(back_populates="trade")
     scale_plans: List[ScalePlan] = Relationship(
-        back_populates="live_trade",
+        back_populates="trade",
         sa_relationship_kwargs={
             "cascade": "all, delete-orphan",
             "single_parent": True,
@@ -268,7 +266,7 @@ class LiveTrade(BaseTrade, RrRatioMixin, table=True):
         },
     )
     executions: List[TradeExecution] = Relationship(
-        back_populates="live_trade",
+        back_populates="trade",
         sa_relationship_kwargs={
             "cascade": "all, delete-orphan",
             "single_parent": True,
@@ -283,7 +281,9 @@ class LiveTrade(BaseTrade, RrRatioMixin, table=True):
             return None
 
         # Derive target prices from scale plans; ignore plans without a target price
-        targets = [p.target_price for p in self.scale_plans if p.target_price is not None]
+        targets = [
+            p.target_price for p in self.scale_plans if p.target_price is not None
+        ]
 
         # If there are no explicit targets, RR cannot be computed
         if not targets:

@@ -54,7 +54,7 @@ class ExecutionService:
         else:  # percent
             # You'll need the live trade to calculate percent-based quantities
             # This assumes you have access to the live trade through relationships
-            if hasattr(scale_plan, "live_trade") and scale_plan.live_trade:
+            if hasattr(scale_plan, "trade") and scale_plan.live_trade:
                 target_qty = int(
                     scale_plan.live_trade.position_size * (scale_plan.value / 100)
                 )

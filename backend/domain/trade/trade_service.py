@@ -1,5 +1,5 @@
-from domain.live_trade.live_trade_repo import LiveTradeRepo
-from domain.live_trade.live_trade_schema import (
+from domain.trade.trade_repo import LiveTradeRepo
+from domain.trade.trade_schema import (
     LiveTradeCreate,
     LiveTradeUpdate,
     LiveTradeResponse,
@@ -10,7 +10,7 @@ from domain.trade_idea.trade_idea_service import TradeIdeaService
 from domain.annotation.annotation_repo import AnnotationRepo
 from database.models import (
     Annotation,
-    LiveTrade,
+    Trade,
     TradeIdeaStatus,
     AnnotationType,
     LiveTradeStatus,
@@ -78,7 +78,7 @@ class LiveTradeService:
 
         payload = self._build_payload(live_trade)
         # Create LiveTrade instance
-        live_trade_instance = LiveTrade(**payload)
+        live_trade_instance = Trade(**payload)
 
         # Create the live trade
         result = await self.repo.create_live_trade(live_trade_instance)
@@ -125,7 +125,8 @@ class LiveTradeService:
         annotations: list[Annotation] = []
         if dto.notes:
             annotations.extend(
-                Annotation(content=n, annotation_type=AnnotationType.note) for n in dto.notes
+                Annotation(content=n, annotation_type=AnnotationType.note)
+                for n in dto.notes
             )
 
         if dto.catalysts:
@@ -153,7 +154,9 @@ class LiveTradeService:
         kind = next(iter(kinds))
 
         # Allow at most one 'remainder' plan with no explicit target price
-        none_target_count = sum(1 for p in plans if getattr(p, "target_price", None) is None)
+        none_target_count = sum(
+            1 for p in plans if getattr(p, "target_price", None) is None
+        )
         if none_target_count > 1:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
