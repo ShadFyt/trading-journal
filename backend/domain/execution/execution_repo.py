@@ -26,7 +26,9 @@ class ExecutionRepo(BaseRepo):
         return await self.get_by_id(execution_id)
 
     async def execute(self, execution: TradeExecution) -> TradeExecution:
-        return await self.create(execution)
+        self.session.add(execution)
+        await self.session.flush()
+        return execution
 
     async def update_execution(self, execution_id: str, execution: ExecutionUpdate):
         return await self.update(execution_id, execution)
@@ -54,3 +56,6 @@ class ExecutionRepo(BaseRepo):
             "scale_plan_ids": affected_scale_plan_ids,
         }
         return payload
+
+    async def commit_all(self):
+        await self.session.commit()

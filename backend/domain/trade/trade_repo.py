@@ -1,5 +1,5 @@
 from database.session import SessionDep
-from database.models import Trade, ScalePlan
+from database.models import Trade, ScalePlan, TradeStatus
 from core.base_repo import BaseRepo
 from domain.trade.trade_schema import TradeUpdate
 from fastapi import HTTPException
@@ -46,6 +46,12 @@ class TradeRepo(BaseRepo[Trade]):
             return await self._save(db_trade)
         except Exception as e:
             raise HTTPException(status_code=400, detail=str(e))
+
+    async def update_trade_status(self, trade_id: str, status: TradeStatus):
+        db_trade = await self.get_trade_by_id(trade_id)
+        db_trade.status = status
+        self.session.add(db_trade)
+        return db_trade
 
     async def create_trade(self, trade: Trade):
         result = await self.create(trade)

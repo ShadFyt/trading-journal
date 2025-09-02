@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 
-from database.models import TradeExecution, ScalePlan, ScalePlanStatus
+from database.models import TradeExecution, ScalePlan, ScalePlanStatus, TradeStatus
 from domain.execution.execution_repo import ExecutionRepo
 from domain.scale_plan.scale_plan_repo import ScalePlanRepo
 from domain.execution.execution_schema import (
@@ -8,12 +8,16 @@ from domain.execution.execution_schema import (
     ExecutionCreate,
     ExecutionUpdate,
 )
+from domain.trade.trade_repo import TradeRepo
 
 
 class ExecutionService:
-    def __init__(self, repo: ExecutionRepo, scale_plan_repo: ScalePlanRepo = None):
+    def __init__(
+        self, repo: ExecutionRepo, scale_plan_repo: ScalePlanRepo, trade_repo: TradeRepo
+    ):
         self.repo = repo
         self.scale_plan_repo = scale_plan_repo
+        self.trade_repo = trade_repo
 
     async def get_executions(self, trade_id: str | None = None) -> list[TradeExecution]:
         return await self.repo.get_executions(trade_id)
@@ -27,11 +31,11 @@ class ExecutionService:
 
         # Create the execution first
         created_execution = await self.repo.execute(execution)
-
         # Update scale plan status if execution is linked to a scale plan
         if created_execution.scale_plan_id and self.scale_plan_repo:
             await self._update_scale_plan_status(created_execution)
 
+        await self.repo.commit_all()
         return created_execution
 
     async def _update_scale_plan_status(self, execution: TradeExecution) -> None:
@@ -48,22 +52,10 @@ class ExecutionService:
         # Calculate total executed quantity for this scale plan
         total_executed_qty = sum(exec.qty for exec in scale_plan.executions)
 
-        # Determine new status based on execution logic
-        if scale_plan.kind == "shares":
-            target_qty = scale_plan.value
-        else:  # percent
-            # You'll need the live trade to calculate percent-based quantities
-            # This assumes you have access to the live trade through relationships
-            if hasattr(scale_plan, "trade") and scale_plan.live_trade:
-                target_qty = int(
-                    scale_plan.live_trade.position_size * (scale_plan.value / 100)
-                )
-            else:
-                return  # Can't calculate without live trade info
-
         # Update status based on execution progress
         new_status = scale_plan.status
-        if total_executed_qty >= target_qty:
+        is_filled = total_executed_qty == scale_plan.qty
+        if is_filled:
             new_status = ScalePlanStatus.FILLED
         elif total_executed_qty > 0:
             new_status = ScalePlanStatus.FILLED_PARTIAL
@@ -75,7 +67,14 @@ class ExecutionService:
             from domain.scale_plan.scale_plan_schema import ScalePlanUpdate
 
             update_payload = ScalePlanUpdate(status=new_status)
-            await self.scale_plan_repo.update_by_id(scale_plan.id, update_payload)
+            await self.scale_plan_repo.update_by_id(
+                scale_plan.id, update_payload, commit=False
+            )
+
+        if is_filled and scale_plan.plan_type == "entry":
+            await self.trade_repo.update_trade_status(
+                scale_plan.trade_id, TradeStatus.OPEN
+            )
 
     async def update_execution(
         self, execution_id: str, payload: ExecutionUpdate

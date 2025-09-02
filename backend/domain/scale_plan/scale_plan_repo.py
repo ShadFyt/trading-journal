@@ -33,7 +33,9 @@ class ScalePlanRepo(BaseRepo[ScalePlan]):
         result = await self.session.exec(stmt)
         return result.first()
 
-    async def update_by_id(self, scale_plan_id: str, payload: ScalePlanUpdate):
+    async def update_by_id(
+        self, scale_plan_id: str, payload: ScalePlanUpdate, commit: bool = True
+    ):
         # Manual update using the session to surface the root cause clearly
         db_scale_plan = await self.get_scale_plan_by_id(scale_plan_id)
         if not db_scale_plan:
@@ -47,8 +49,9 @@ class ScalePlanRepo(BaseRepo[ScalePlan]):
             if hasattr(db_scale_plan, key):
                 setattr(db_scale_plan, key, value)
 
-        await self.session.commit()
-        await self.session.refresh(db_scale_plan)
+        if commit:
+            await self.session.commit()
+            await self.session.refresh(db_scale_plan)
         return db_scale_plan
 
     async def create_scale_plan(self, scale_plan: ScalePlan) -> ScalePlan:
