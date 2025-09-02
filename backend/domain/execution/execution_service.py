@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 
-from database.models import TradeExecution, ScalePlan, ScalePlanStatus, ScalePlanKind
+from database.models import TradeExecution, ScalePlan, ScalePlanStatus
 from domain.execution.execution_repo import ExecutionRepo
 from domain.scale_plan.scale_plan_repo import ScalePlanRepo
 from domain.execution.execution_schema import (

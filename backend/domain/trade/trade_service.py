@@ -5,7 +5,6 @@ from domain.trade.trade_schema import (
     TradeResponse,
 )
 from domain.scale_plan.scale_plan_schema import ScalePlanCreate
-from domain.trade_idea.trade_idea_service import TradeIdeaService
 from domain.annotation.annotation_repo import AnnotationRepo
 from database.models import (
     Annotation,
@@ -13,6 +12,7 @@ from database.models import (
     AnnotationType,
     TradeStatus,
     ScalePlan,
+    PlanType,
 )
 from fastapi import HTTPException, status
 from core.stock_price.stock_price_service import StockPriceService
@@ -23,12 +23,10 @@ class TradeService:
         self,
         repo: TradeRepo,
         annotation_repo: AnnotationRepo,
-        trade_idea_service: TradeIdeaService,
         stock_price_service: StockPriceService,
     ):
         self.repo = repo
         self.annotation_repo = annotation_repo
-        self.trade_idea_service = trade_idea_service
         self.stock_price_service = stock_price_service
 
     async def get_all_trades(self) -> list[TradeResponse]:
@@ -63,7 +61,7 @@ class TradeService:
         return await self.repo.get_trade_by_id(live_trade_id)
 
     async def create_trade(self, trade: TradeCreate) -> TradeResponse:
-        payload = self._build_payload(trade)
+        payload = self._build_watchlist_payload(trade)
         # Create LiveTrade instance
         trade_instance = Trade(**payload)
 
@@ -84,14 +82,13 @@ class TradeService:
         quotes = self.stock_price_service.get_stock_price_batch(symbols)
         return {quote.symbol: quote for quote in quotes}
 
-    def _build_payload(self, trade: TradeCreate):
-        annotations = self._build_annotations(trade)
-        scale_plans = self._build_scale_plans(trade.scale_plans, trade.position_size)
+    def _build_watchlist_payload(self, trade: TradeCreate):
+        scale_plans = self._build_plans(trade.scale_plans)
+
         payload = trade.model_dump(exclude_none=True)
         payload.update(
             {
                 "status": TradeStatus.WATCHING,
-                "annotations": annotations,
                 "scale_plans": scale_plans,
             }
         )
@@ -115,27 +112,40 @@ class TradeService:
         return annotations
 
     @staticmethod
-    def _build_scale_plans(plans: list[ScalePlanCreate], position_size: int):
+    def _build_plans(plans: list[ScalePlanCreate]):
         # Empty plans are allowed
         if not plans:
-            return []
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="At least one entry plan is required.",
+            )
 
-        # Allow at most one 'remainder' plan with no explicit target price
+        entry_plan = next((p for p in plans if p.plan_type == PlanType.ENTRY), None)
+        if not entry_plan:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="At least one entry plan is required.",
+            )
+
+        target_plans = [p for p in plans if p.plan_type == PlanType.TARGET]
+
+        # Allow at most one TARGET plan with no explicit target price (remainder)
         none_target_count = sum(
-            1 for p in plans if getattr(p, "target_price", None) is None
+            1 for p in target_plans if getattr(p, "target_price", None) is None
         )
         if none_target_count > 1:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="At most one scale plan may have a null target_price (remainder).",
+                detail="At most one TARGET plan may have a null target_price (remainder).",
             )
 
-        # Validate total shares don't exceed position size
-        total_qty = sum(p.qty for p in plans)
-        if total_qty > position_size:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Total shares for scale plans cannot exceed position size.",
-            )
+        # Validate total target shares don't exceed entry shares
+        if target_plans:
+            total_target_qty = sum(p.qty for p in target_plans)
+            if total_target_qty > entry_plan.qty:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Total target shares cannot exceed entry shares.",
+                )
 
         return [ScalePlan(**p.model_dump()) for p in plans]

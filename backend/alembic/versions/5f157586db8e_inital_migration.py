@@ -1,8 +1,8 @@
-"""inital
+"""inital migration
 
-Revision ID: fd8bcc453289
+Revision ID: 5f157586db8e
 Revises: 
-Create Date: 2025-08-15 15:03:57.389597
+Create Date: 2025-09-02 14:18:23.088400
 
 """
 from typing import Sequence, Union
@@ -14,7 +14,7 @@ import sqlmodel
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'fd8bcc453289'
+revision: str = '5f157586db8e'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -30,81 +30,56 @@ def upgrade() -> None:
     sa.Column('max_active_trades', sa.Integer(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('trade_idea',
+    op.create_table('trade',
     sa.Column('id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('symbol', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('setup', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('rating', sa.Float(), nullable=False),
-    sa.Column('stop', sa.Float(), nullable=True),
-    sa.Column('status', sa.Enum('WATCHING', 'IN_PROGRESS', 'INVALIDATED', 'LIVE', name='tradeideastatus'), nullable=True),
-    sa.Column('entry_min', sa.Float(), nullable=True),
-    sa.Column('entry_max', sa.Float(), nullable=True),
-    sa.Column('catalysts', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('status', sa.Enum('OPEN', 'CLOSED', 'INVALIDATED', 'WATCHING', name='tradestatus'), nullable=False),
     sa.Column('idea_date', sa.DateTime(), nullable=False),
-    sa.Column('notes', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
-    sa.Column('target_prices', sa.JSON(), nullable=False),
+    sa.Column('enter_date', sa.DateTime(), nullable=True),
+    sa.Column('exit_date', sa.DateTime(), nullable=True),
+    sa.Column('outcome', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
-    with op.batch_alter_table('trade_idea', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_trade_idea_symbol'), ['symbol'], unique=False)
-
-    op.create_table('live_trade',
-    sa.Column('id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-    sa.Column('symbol', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-    sa.Column('setup', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-    sa.Column('rating', sa.Float(), nullable=False),
-    sa.Column('stop', sa.Float(), nullable=True),
-    sa.Column('trade_idea_id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-    sa.Column('status', sa.Enum('OPEN', 'CLOSED', name='livetradestatus'), nullable=False),
-    sa.Column('position_size', sa.Integer(), nullable=False),
-    sa.Column('entry_price_avg', sa.Float(), nullable=False),
-    sa.Column('exit_price_avg', sa.Float(), nullable=True),
-    sa.Column('commissions', sa.Float(), nullable=True),
-    sa.Column('enter_date', sa.DateTime(), nullable=False),
-    sa.Column('exit_date', sa.DateTime(), nullable=True),
-    sa.Column('net_gain_loss', sa.Float(), nullable=True),
-    sa.Column('outcome', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
-    sa.ForeignKeyConstraint(['trade_idea_id'], ['trade_idea.id'], ),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('trade_idea_id')
-    )
-    with op.batch_alter_table('live_trade', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_live_trade_symbol'), ['symbol'], unique=False)
+    with op.batch_alter_table('trade', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_trade_symbol'), ['symbol'], unique=False)
 
     op.create_table('annotation',
     sa.Column('date', sa.DateTime(), nullable=False),
     sa.Column('id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('content', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('annotation_type', sa.Enum('note', 'catalyst', name='annotationtype'), nullable=False),
-    sa.Column('live_trade_id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-    sa.ForeignKeyConstraint(['live_trade_id'], ['live_trade.id'], ondelete='CASCADE'),
+    sa.Column('trade_id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.ForeignKeyConstraint(['trade_id'], ['trade.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('scale_plan',
     sa.Column('id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-    sa.Column('live_trade_id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('trade_id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('status', sa.Enum('PLANNED', 'CANCELED', 'TRIGGERED', 'FILLED_PARTIAL', 'FILLED', name='scaleplanstatus'), nullable=False),
-    sa.Column('kind', sa.Enum('SHARES', 'PERCENT', name='scaleplankind'), nullable=False),
     sa.Column('order_type', sa.Enum('MARKET', 'LIMIT', 'STOP_LIMIT', name='ordertype'), nullable=False),
+    sa.Column('trade_type', sa.Enum('LONG', 'SHORT', name='tradetype'), nullable=False),
+    sa.Column('plan_type', sa.Enum('ENTRY', 'TARGET', 'STOP_LOSS', name='plantype'), nullable=False),
     sa.Column('label', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-    sa.Column('value', sa.Float(), nullable=False),
+    sa.Column('qty', sa.Float(), nullable=False),
     sa.Column('target_price', sa.Float(), nullable=True),
     sa.Column('notes', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('good_till', sa.DateTime(), nullable=True),
     sa.Column('stop_price', sa.Float(), nullable=True),
     sa.Column('limit_price', sa.Float(), nullable=True),
-    sa.CheckConstraint("(kind != 'percent') OR (value <= 100)", name='ck_scale_plan_percent_range'),
-    sa.CheckConstraint('value > 0', name='ck_scale_plan_value_positive'),
-    sa.ForeignKeyConstraint(['live_trade_id'], ['live_trade.id'], ondelete='CASCADE'),
+    sa.CheckConstraint('qty > 0', name='ck_scale_plan_qty_positive'),
+    sa.ForeignKeyConstraint(['trade_id'], ['trade.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     with op.batch_alter_table('scale_plan', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_scale_plan_live_trade_id'), ['live_trade_id'], unique=False)
+        batch_op.create_index(batch_op.f('ix_scale_plan_plan_type'), ['plan_type'], unique=False)
         batch_op.create_index(batch_op.f('ix_scale_plan_status'), ['status'], unique=False)
+        batch_op.create_index(batch_op.f('ix_scale_plan_trade_id'), ['trade_id'], unique=False)
 
     op.create_table('trade_execution',
     sa.Column('id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-    sa.Column('live_trade_id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('trade_id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('scale_plan_id', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('side', sa.Enum('BUY', 'SELL', name='side'), nullable=False),
     sa.Column('source', sa.Enum('MANUAL', 'IMPORT', 'AUTOMATED', name='execsource'), nullable=False),
@@ -116,13 +91,13 @@ def upgrade() -> None:
     sa.CheckConstraint('commission >= 0', name='ck_trade_execution_commission_nonneg'),
     sa.CheckConstraint('price > 0', name='ck_trade_execution_price_positive'),
     sa.CheckConstraint('qty > 0', name='ck_trade_execution_qty_positive'),
-    sa.ForeignKeyConstraint(['live_trade_id'], ['live_trade.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['scale_plan_id'], ['scale_plan.id'], ondelete='SET NULL'),
+    sa.ForeignKeyConstraint(['trade_id'], ['trade.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     with op.batch_alter_table('trade_execution', schema=None) as batch_op:
         batch_op.create_index(batch_op.f('ix_trade_execution_executed_at'), ['executed_at'], unique=False)
-        batch_op.create_index(batch_op.f('ix_trade_execution_live_trade_id'), ['live_trade_id'], unique=False)
+        batch_op.create_index(batch_op.f('ix_trade_execution_trade_id'), ['trade_id'], unique=False)
 
     # ### end Alembic commands ###
 
@@ -131,23 +106,20 @@ def downgrade() -> None:
     """Downgrade schema."""
     # ### commands auto generated by Alembic - please adjust! ###
     with op.batch_alter_table('trade_execution', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_trade_execution_live_trade_id'))
+        batch_op.drop_index(batch_op.f('ix_trade_execution_trade_id'))
         batch_op.drop_index(batch_op.f('ix_trade_execution_executed_at'))
 
     op.drop_table('trade_execution')
     with op.batch_alter_table('scale_plan', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_scale_plan_trade_id'))
         batch_op.drop_index(batch_op.f('ix_scale_plan_status'))
-        batch_op.drop_index(batch_op.f('ix_scale_plan_live_trade_id'))
+        batch_op.drop_index(batch_op.f('ix_scale_plan_plan_type'))
 
     op.drop_table('scale_plan')
     op.drop_table('annotation')
-    with op.batch_alter_table('live_trade', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_live_trade_symbol'))
+    with op.batch_alter_table('trade', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_trade_symbol'))
 
-    op.drop_table('live_trade')
-    with op.batch_alter_table('trade_idea', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_trade_idea_symbol'))
-
-    op.drop_table('trade_idea')
+    op.drop_table('trade')
     op.drop_table('account')
     # ### end Alembic commands ###

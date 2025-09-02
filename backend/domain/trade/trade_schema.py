@@ -13,7 +13,8 @@ class TradeBase(BaseSchema):
     setup: str
     rating: float
     exit_date: Optional[datetime] = None
-    status: TradeStatus
+    enter_date: Optional[datetime] = None
+
     outcome: Optional[str] = None
 
 
@@ -21,18 +22,18 @@ class TradeResponse(TradeBase):
     id: str
     annotations: List[AnnotationRead]
     scale_plans: List[ScalePlanRead]
-    rr_ratio: Optional[float] = None
-    enter_date: datetime
+    # rr_ratio: Optional[float] = None
     idea_date: datetime
+    status: TradeStatus
 
     # Current market data (added for real-time price display)
     current_price: Optional[float] = None
     price_change: Optional[float] = None
     percent_change: Optional[float] = None
-    remaining_shares: float
-    risk_per_share: float
-    realized_pnl: Optional[float]
-    realized_r: Optional[float]
+    # remaining_shares: float
+    # risk_per_share: float
+    # realized_pnl: Optional[float]
+    # realized_r: Optional[float]
     executions: list[ExecutionRead] = []
 
 
