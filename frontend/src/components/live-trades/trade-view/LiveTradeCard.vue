@@ -18,7 +18,7 @@ const emit = defineEmits<{
   'close-trade': [tradeId: string]
   'edit-trade': [tradeId: string]
 }>()
-const { totalPnL, realizedPnL, remainingShares } = useTradeMetrics(trade)
+const { totalPnL, realizedPnL, remainingShares, initialPosition } = useTradeMetrics(trade)
 
 const [isExpanded, toggleExpanded] = useToggle(false)
 
@@ -59,7 +59,7 @@ const pnlStyling = computed(() => {
           <TradeProgressBar :trade />
 
           <!-- Trade Metrics -->
-          <TradeMetrics :trade />
+          <TradeMetrics :trade :position-size="initialPosition" />
 
           <!-- Setup & Notes -->
           <NotesDisplay :trade="trade" />

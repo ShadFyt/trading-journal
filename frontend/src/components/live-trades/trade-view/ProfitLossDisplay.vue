@@ -6,7 +6,8 @@ const { trade } = defineProps<{
   trade: LiveTrade
 }>()
 
-const { realizedPnL, realizedPct, unrealizedPnL, totalPnL, unrealizedPct } = useTradeMetrics(trade)
+const { realizedPnL, realizedPct, unrealizedPnL, totalPnL, unrealizedPct, entryPrice } =
+  useTradeMetrics(trade)
 
 const { formatCurrency, formatPercentage } = useFormatters()
 
@@ -27,20 +28,20 @@ const pnlStyling = computed(() => {
     class="grid grid-cols-1 gap-3 sm:grid-cols-3 p-3 rounded-lg mb-3 border"
     :class="[pnlStyling.bgColor, pnlStyling.borderColor]"
   >
-    <InfoWrapper :title="'Current Price'" :is-green="trade.currentPrice >= trade.entryPriceAvg">
+    <InfoWrapper :title="'Current Price'" :is-green="trade.currentPrice >= entryPrice">
       {{ formatCurrency(trade.currentPrice) }}
     </InfoWrapper>
 
-    <InfoWrapper :title="'Realized PnL'" :is-green="realizedPnL >= 0">
+    <InfoWrapper :title="'Realized PnL'" :is-green="realizedPnL > 0">
       {{ (realizedPnL >= 0 ? '+' : '') + formatCurrency(realizedPnL) }}
-      <p class="text-xs ml-5" :class="realizedPnL >= 0 ? 'text-emerald-700' : 'text-rose-700'">
+      <p class="text-xs ml-5" :class="realizedPnL > 0 ? 'text-emerald-700' : 'text-rose-700'">
         ({{ realizedPct != null ? formatPercentage(realizedPct) : '' }})
       </p>
     </InfoWrapper>
 
-    <InfoWrapper :title="'Unrealized PnL'" :is-green="realizedPnL >= 0">
+    <InfoWrapper :title="'Unrealized PnL'" :is-green="unrealizedPnL > 0">
       {{ (unrealizedPnL >= 0 ? '+' : '') + formatCurrency(unrealizedPnL) }}
-      <p class="text-xs ml-5" :class="unrealizedPnL >= 0 ? 'text-emerald-700' : 'text-rose-700'">
+      <p class="text-xs ml-5" :class="unrealizedPnL > 0 ? 'text-emerald-700' : 'text-rose-700'">
         ({{ realizedPct != null ? formatPercentage(unrealizedPct) : '' }})
       </p>
     </InfoWrapper>

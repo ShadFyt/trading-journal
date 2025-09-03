@@ -30,6 +30,7 @@ export const useTradeMetrics = (trade: LiveTrade) => {
       return {
         entryPriceAvg: 0,
         qty: 0,
+        stopLoss: 0,
       }
     }
 
@@ -39,6 +40,7 @@ export const useTradeMetrics = (trade: LiveTrade) => {
     return {
       entryPriceAvg: avgPrice,
       qty: totalQty,
+      stopLoss: plan.stopPrice ?? 0,
     }
   })
 
@@ -85,5 +87,8 @@ export const useTradeMetrics = (trade: LiveTrade) => {
     unrealizedPct,
     totalPnL,
     totalPct,
+    entryPrice: entryPlan.value.entryPriceAvg,
+    initialPosition: entryPlan.value.qty,
+    stopLoss: entryPlan.value.stopLoss,
   }
 }
