@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { LiveTrade, ScalePlan } from '@/interfaces'
 import { computed, ref } from 'vue'
-import { sharesFromPercent } from '@/utils'
 import { useScalePlanMutations, useTradeExecutionMutations } from '@/composables'
 import { Icon } from '@iconify/vue'
 import ExecutionSelector from '../../trade-execution/ExecutionSelector.vue'
@@ -27,10 +26,8 @@ const selectedExecutionIds = ref<string[]>([])
 const cardOpen = computed(() => hoverOpen.value || menuOpen.value || confirmOpen.value)
 
 const isReached = computed(() => {
-  const shares =
-    plan.kind === 'percent' ? sharesFromPercent(trade.positionSize, plan.value).shares : plan.value
   const qty = plan.executions.reduce((total, exec) => total + exec.qty, 0)
-  return qty === shares
+  return qty === plan.qty
 })
 
 const isMultipleExecutions = computed(() => plan.executions.length > 1)

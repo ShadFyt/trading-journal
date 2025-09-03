@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import type { LiveTrade, ScalePlan } from '@/interfaces'
 import { useFormatters } from '@/composables'
-import { sharesFromPercent } from '@/utils'
 const { convertStringToDate } = useFormatters()
 
 const { plan, trade } = defineProps<{
@@ -17,10 +16,6 @@ const commissions = computed(() =>
 )
 
 const lastExecution = computed(() => executions.value[executions.value.length - 1])
-
-const plannedShares = computed(() =>
-  plan.kind === 'percent' ? sharesFromPercent(trade.positionSize, plan.value).shares : plan.value,
-)
 </script>
 
 <template>
@@ -29,7 +24,7 @@ const plannedShares = computed(() =>
 
     <div class="my-2 border-t border-gray-200"></div>
 
-    <PlanProgressBar :planned-shares="plannedShares" :filled-qty="filledQty" :commissions />
+    <PlanProgressBar :planned-shares="plan.qty" :filled-qty="filledQty" :commissions />
 
     <ExecutionSummary
       :executions
