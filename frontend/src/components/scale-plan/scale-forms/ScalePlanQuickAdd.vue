@@ -4,22 +4,24 @@ import { Tooltip } from '@/components/ui/tooltip'
 import { toTypedSchema } from '@vee-validate/zod'
 import { ScalePlanCreateSchema } from '@/schemas'
 import { useForm } from 'vee-validate'
-import { useScalePlanMutations } from '@/composables'
+import { useScalePlanMutations, useTradeMetrics } from '@/composables'
 import type { LiveTrade } from '@/interfaces'
-import { OrderTypeEnum, ScalePlanKindEnum } from '@/enums'
+import { OrderTypeEnum, ScalePlanTypeEnum } from '@/enums'
 import { addScalePlanLimitIssue, addScalePlanTargetPriceIssue } from '@/utils/scale-plan.util.ts'
 
 const { trade } = defineProps<{
   trade: LiveTrade
 }>()
+const { initialPosition, entryPrice } = useTradeMetrics(trade)
+
 const open = ref(false)
 
 const refinedSchema = ScalePlanCreateSchema.superRefine((data, ctx) => {
   // 1) Total value cap: sum(existing) + new.value <= positionSize
-  const existingTotal = trade.scalePlans.reduce((sum, p) => sum + (p.value ?? 0), 0)
-  const newTotal = existingTotal + (data.value ?? 0)
-  addScalePlanLimitIssue(ctx, trade.positionSize, newTotal, data.kind)
-  addScalePlanTargetPriceIssue(ctx, data.targetPrice, trade.entryPriceAvg)
+  const existingTotal = trade.scalePlans.reduce((sum, p) => sum + (p.qty ?? 0), 0)
+  const newTotal = existingTotal + (data.qty ?? 0)
+  addScalePlanLimitIssue(ctx, initialPosition, newTotal)
+  addScalePlanTargetPriceIssue(ctx, data.targetPrice, entryPrice)
 })
 
 const formSchema = toTypedSchema(refinedSchema)
@@ -29,8 +31,8 @@ const { isFieldDirty, isSubmitting, handleSubmit } = useForm({
   initialValues: {
     notes: '',
     orderType: OrderTypeEnum.enum.LIMIT,
-    kind: ScalePlanKindEnum.enum.SHARES,
-    targetPrice: trade.entryPriceAvg + 0.5,
+    planType: ScalePlanTypeEnum.enum.TARGET,
+    targetPrice: entryPrice + 0.5,
     label: `T${trade.scalePlans.length + 1}(Target ${trade.scalePlans.length + 1})`,
   },
 })
@@ -81,7 +83,7 @@ const onSubmit = handleSubmit(async (values) => {
         <div class="grid grid-cols-1 gap-3 md:grid-cols-12">
           <ScalePlanFormFields />
         </div>
-        <Button type="submit" class="mt-3" :disabled="!isFieldDirty('value') || isSubmitting">
+        <Button type="submit" class="mt-3" :disabled="!isFieldDirty('qty') || isSubmitting">
           Add Scale Plan
         </Button>
       </form>

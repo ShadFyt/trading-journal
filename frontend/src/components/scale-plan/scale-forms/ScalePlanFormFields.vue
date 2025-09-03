@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { SCALE_PLAN_KINDS } from '@/enums'
+import { ScalePlanTypeEnum } from '@/enums'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import {
   Select,
@@ -49,17 +49,17 @@ import {
 
   <!-- Kind -->
   <div class="md:col-span-6">
-    <FormField name="kind" v-slot="{ componentField }">
+    <FormField name="planType" v-slot="{ componentField }">
       <FormItem>
-        <FormLabel for="kind">Kind</FormLabel>
+        <FormLabel for="planType">Plan Type</FormLabel>
         <Select v-bind="componentField">
           <FormControl>
-            <SelectTrigger id="kind" class="w-full">
-              <SelectValue placeholder="Select kind" />
+            <SelectTrigger id="planType" class="w-full">
+              <SelectValue placeholder="Select plan type" />
             </SelectTrigger>
           </FormControl>
           <SelectContent>
-            <SelectItem v-for="k in SCALE_PLAN_KINDS" :key="k" :value="k">
+            <SelectItem v-for="k in ScalePlanTypeEnum.enum" :key="k" :value="k">
               {{ k }}
             </SelectItem>
           </SelectContent>

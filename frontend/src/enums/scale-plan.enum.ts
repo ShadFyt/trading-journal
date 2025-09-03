@@ -1,11 +1,5 @@
 import { z } from 'zod'
 
-export const SCALE_PLAN_KINDS = {
-  SHARES: 'shares',
-  PERCENT: 'percent',
-} as const
-export const ScalePlanKindEnum = z.nativeEnum(SCALE_PLAN_KINDS)
-
 export const ORDER_TYPES = {
   MARKET: 'market',
   LIMIT: 'limit',
