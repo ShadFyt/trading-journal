@@ -18,7 +18,10 @@ const open = ref(false)
 
 const refinedSchema = ScalePlanCreateSchema.superRefine((data, ctx) => {
   // 1) Total value cap: sum(existing) + new.value <= positionSize
-  const existingTotal = trade.scalePlans.reduce((sum, p) => sum + (p.qty ?? 0), 0)
+  const existingTotal = trade.scalePlans.reduce(
+    (sum, p) => sum + (p.planType === ScalePlanTypeEnum.enum.TARGET ? p.qty : 0),
+    0,
+  )
   const newTotal = existingTotal + (data.qty ?? 0)
   addScalePlanLimitIssue(ctx, initialPosition, newTotal)
   addScalePlanTargetPriceIssue(ctx, data.targetPrice, entryPrice)
@@ -41,7 +44,7 @@ const onSubmit = handleSubmit(async (values) => {
   createPlanMutation.mutate(
     {
       data: values,
-      liveTradeId: trade.id,
+      tradeId: trade.id,
     },
     {
       onSuccess() {
@@ -84,7 +87,7 @@ const onSubmit = handleSubmit(async (values) => {
           <ScalePlanFormFields />
         </div>
         <Button type="submit" class="mt-3" :disabled="!isFieldDirty('qty') || isSubmitting">
-          Add Scale Plan
+          Add New Plan
         </Button>
       </form>
     </PopoverContent>

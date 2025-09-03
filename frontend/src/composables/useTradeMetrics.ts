@@ -98,5 +98,6 @@ export const useTradeMetrics = (trade: LiveTrade) => {
     entryPrice: entryPlan.value.entryPriceAvg,
     initialPosition: entryPlan.value.qty,
     stopLoss: entryPlan.value.stopLoss,
+    executions,
   }
 }

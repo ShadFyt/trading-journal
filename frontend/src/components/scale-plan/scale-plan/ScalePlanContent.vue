@@ -10,13 +10,11 @@ const { plan } = defineProps<{
 
 const { formatTradeDate } = useFormatters()
 
-const formatValue = (kind: string, value?: number) =>
-  typeof value === 'number' ? (kind === 'percent' ? `${value}%` : `${value} shares`) : '—'
+const formatValue = (value?: number) => (typeof value === 'number' ? `${value} shares` : '—')
 
 const pills = computed(() => [
   { label: 'Order', value: plan.orderType },
-  { label: 'Kind', value: plan.kind },
-  { label: 'Value', value: formatValue(plan.kind as string, plan.value) },
+  { label: 'Quantity', value: formatValue(plan.qty) },
 ])
 </script>
 

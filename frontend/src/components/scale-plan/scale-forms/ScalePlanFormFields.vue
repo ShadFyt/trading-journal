@@ -28,7 +28,6 @@ import {
     </FormField>
   </div>
 
-  <!-- Optional target price (for display/UX if you keep it in schema) -->
   <div class="md:col-span-6">
     <FormField name="targetPrice" v-slot="{ componentField }">
       <FormItem>
@@ -47,7 +46,6 @@ import {
     </FormField>
   </div>
 
-  <!-- Kind -->
   <div class="md:col-span-6">
     <FormField name="planType" v-slot="{ componentField }">
       <FormItem>
@@ -55,12 +53,12 @@ import {
         <Select v-bind="componentField">
           <FormControl>
             <SelectTrigger id="planType" class="w-full">
-              <SelectValue placeholder="Select plan type" />
+              <SelectValue placeholder="Select type" />
             </SelectTrigger>
           </FormControl>
           <SelectContent>
-            <SelectItem v-for="k in ScalePlanTypeEnum.enum" :key="k" :value="k">
-              {{ k }}
+            <SelectItem v-for="type in ScalePlanTypeEnum.enum" :key="type" :value="type">
+              {{ type }}
             </SelectItem>
           </SelectContent>
         </Select>
@@ -71,11 +69,11 @@ import {
 
   <!-- Value -->
   <div class="md:col-span-6">
-    <FormField name="value" v-slot="{ componentField }">
+    <FormField name="qty" v-slot="{ componentField }">
       <FormItem>
-        <FormLabel for="value">Value</FormLabel>
+        <FormLabel for="qty">Quantity</FormLabel>
         <Input
-          id="value"
+          id="qty"
           type="number"
           step="1"
           min="1"
