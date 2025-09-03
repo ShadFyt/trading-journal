@@ -1,6 +1,11 @@
 import { z } from 'zod'
 
-import { ScalePlanKindEnum, OrderTypeEnum, ScalePlanStatusEnum } from '@/enums/scale-plan.enum'
+import {
+  ScalePlanKindEnum,
+  OrderTypeEnum,
+  ScalePlanStatusEnum,
+  ScalePlanTypeEnum,
+} from '@/enums/scale-plan.enum'
 import { ExecutionSchema } from '@/schemas/execution.schema.ts'
 
 export const ScalePlanSchema = z.object({
@@ -10,9 +15,9 @@ export const ScalePlanSchema = z.object({
   orderType: OrderTypeEnum,
   label: z.string().min(1, 'Label is required'),
   status: ScalePlanStatusEnum,
-  entryPrice: z.number().optional(),
+  planType: ScalePlanTypeEnum,
   targetPrice: z.number().optional(),
-  value: z.number().min(1, 'Value is required'),
+  qty: z.number().min(1, 'Qty is required'),
   notes: z.string().optional(),
   goodTillDate: z.date().optional(),
   stopPrice: z.number().optional(),

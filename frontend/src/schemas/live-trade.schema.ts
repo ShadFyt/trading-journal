@@ -6,9 +6,6 @@ import { ExecutionSchema } from '@/schemas/execution.schema.ts'
 
 export const liveTradeCreateSchema = baseTradeSchema
   .extend({
-    entryPriceAvg: z.number().min(1, 'Entry price is required'),
-    exitPriceAvg: z.number().optional(),
-    positionSize: z.number().min(1, 'Position size is required'),
     notes: z.string().optional(),
     catalysts: z.string().optional(),
     tradeIdeaId: z.string().uuid(),
@@ -25,8 +22,7 @@ export const LiveTradeSchema = liveTradeCreateSchema
       .optional(),
     status: z.enum(['open', 'partial', 'closed']),
     exitDate: z.date().optional(),
-    enterDate: z.date(),
-    commissions: z.number().optional(),
+    enterDate: z.date().optional(),
     annotations: z.array(AnnotationSchema),
     currentPrice: z.number(),
     priceChange: z.number().optional(),

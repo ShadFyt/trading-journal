@@ -4,7 +4,7 @@ import type { LiveTrade, ScalePlan } from '@/interfaces'
 import { ref } from 'vue'
 import ScalePlanHoverCard from '@/components/scale-plan/scale-plan/ScalePlanHoverCard.vue'
 import { useSorted } from '@vueuse/core'
-import { ScalePlanStatusEnum } from '@/enums'
+import { ScalePlanStatusEnum, ScalePlanTypeEnum } from '@/enums'
 
 const { trade } = defineProps<{
   trade: LiveTrade
@@ -15,7 +15,12 @@ const isFormOpen = ref(false)
 const formType = ref<'edit' | 'execute' | null>(null)
 
 const plans = useSorted(
-  () => trade.scalePlans.filter((plan) => plan.status !== ScalePlanStatusEnum.enum.CANCELLED) ?? [],
+  () =>
+    trade.scalePlans.filter(
+      (plan) =>
+        plan.status !== ScalePlanStatusEnum.enum.CANCELLED &&
+        plan.planType === ScalePlanTypeEnum.enum.TARGET,
+    ) ?? [],
   (a, b) => {
     const at = a.targetPrice ?? Infinity
     const bt = b.targetPrice ?? Infinity

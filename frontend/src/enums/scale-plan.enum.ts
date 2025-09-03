@@ -22,3 +22,11 @@ export const SCALE_PLAN_STATUSES = {
 } as const
 
 export const ScalePlanStatusEnum = z.nativeEnum(SCALE_PLAN_STATUSES)
+
+const SCALE_PLAN_TYPES = {
+  ENTRY: 'entry',
+  TARGET: 'target',
+  STOP_LOSS: 'stop_loss',
+} as const
+
+export const ScalePlanTypeEnum = z.nativeEnum(SCALE_PLAN_TYPES)
