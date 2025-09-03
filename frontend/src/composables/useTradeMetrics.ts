@@ -19,6 +19,14 @@ export const useTradeMetrics = (trade: LiveTrade) => {
     return totalValue / totalQty
   }
 
+  const latestStopLossPlan = computed(() => {
+    return trade.scalePlans.find(
+      (plan) =>
+        plan.planType === ScalePlanTypeEnum.enum.STOP_LOSS &&
+        plan.status !== ScalePlanStatusEnum.enum.CANCELLED,
+    )
+  })
+
   const entryPlan = computed(() => {
     const plan = trade.scalePlans.find(
       (plan) =>
@@ -30,7 +38,7 @@ export const useTradeMetrics = (trade: LiveTrade) => {
       return {
         entryPriceAvg: 0,
         qty: 0,
-        stopLoss: 0,
+        stopLoss: latestStopLossPlan.value?.stopPrice ?? 0,
       }
     }
 
@@ -40,7 +48,7 @@ export const useTradeMetrics = (trade: LiveTrade) => {
     return {
       entryPriceAvg: avgPrice,
       qty: totalQty,
-      stopLoss: plan.stopPrice ?? 0,
+      stopLoss: latestStopLossPlan.value?.stopPrice ?? plan.stopPrice ?? 0,
     }
   })
 
