@@ -1,3 +1,4 @@
+import type { InjectionKey } from 'vue'
 import type { LiveTrade } from '@/interfaces'
 import { ScalePlanStatusEnum, ScalePlanTypeEnum } from '@/enums'
 
@@ -99,5 +100,19 @@ export const useTradeMetrics = (trade: LiveTrade) => {
     initialPosition: entryPlan.value.qty,
     stopLoss: entryPlan.value.stopLoss,
     executions,
+    trade,
   }
+}
+
+export type TradeMetricsType = ReturnType<typeof useTradeMetrics>
+export const TRADE_METRICS_KEY: InjectionKey<TradeMetricsType> = Symbol('tradeMetrics')
+
+export const useInjectTradeMetrics = (): TradeMetricsType => {
+  const tradeMetrics = inject(TRADE_METRICS_KEY)
+
+  if (!tradeMetrics) {
+    throw new Error('Trade metrics not provided. Make sure to wrap component with trade provider.')
+  }
+
+  return tradeMetrics
 }
