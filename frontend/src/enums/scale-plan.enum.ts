@@ -24,3 +24,10 @@ const SCALE_PLAN_TYPES = {
 } as const
 
 export const ScalePlanTypeEnum = z.nativeEnum(SCALE_PLAN_TYPES)
+
+const SCALE_TRADE_TYPES = {
+  LONG: 'long',
+  SHORT: 'short',
+} as const
+
+export const ScaleTradeTypeEnum = z.nativeEnum(SCALE_TRADE_TYPES)
