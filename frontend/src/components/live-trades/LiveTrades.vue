@@ -38,45 +38,51 @@ const rightTrades = computed(() => activeTrades.value?.filter((_, i) => i % 2 ==
 </script>
 
 <template>
-  <main class="p-4 max-w-7xl mx-auto">
-    <PortfolioHeader @refetch-live-trades="refetchLiveTrades" />
+  <div class="flex h-screen w-full bg-gray-950">
+    <main class="ml-3 mr-3 p-4 mx-auto w-full">
+      <PortfolioHeader @refetch-live-trades="refetchLiveTrades" />
 
-    <!-- Live Trades Grid -->
-    <section v-if="activeTrades?.length" class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-      <div class="flex flex-col gap-6">
-        <LiveTradeCard
-          v-for="trade in leftTrades"
-          :key="trade.id"
-          :trade
-          @close-trade="handleCloseTrade"
-          @edit-trade="handleEditTrade"
-        />
-      </div>
-      <div class="flex flex-col gap-6">
-        <LiveTradeCard
-          v-for="trade in rightTrades"
-          :key="trade.id"
-          :trade
-          @close-trade="handleCloseTrade"
-          @edit-trade="handleEditTrade"
-        />
-      </div>
-    </section>
+      <!-- Live Trades Grid -->
+      <section
+        v-if="activeTrades?.length"
+        class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start"
+      >
+        <div class="flex flex-col gap-6">
+          <LiveTradeCard
+            v-for="trade in leftTrades"
+            :key="trade.id"
+            :trade
+            @close-trade="handleCloseTrade"
+            @edit-trade="handleEditTrade"
+          />
+        </div>
+        <div class="flex flex-col gap-6">
+          <LiveTradeCard
+            v-for="trade in rightTrades"
+            :key="trade.id"
+            :trade
+            @close-trade="handleCloseTrade"
+            @edit-trade="handleEditTrade"
+          />
+        </div>
+      </section>
 
-    <!-- Empty State -->
-    <div v-if="!activeTrades?.length" class="text-center py-12">
-      <div class="text-6xl mb-4">📈</div>
-      <h3 class="text-xl font-semibold text-gray-900 mb-2">No Active Trades</h3>
-      <p class="text-gray-600">
-        Your live trades will appear here once you convert trade ideas to positions.
-      </p>
-    </div>
-  </main>
-  <LiveTradeFormEdit
-    v-if="selectedTrade"
-    :trade="selectedTrade"
-    :isOpen="isEditFormOpen"
-    :close="handleFormClose"
-    :formType="formType"
-  />
+      <!-- Empty State -->
+      <div v-if="!activeTrades?.length" class="text-center py-12">
+        <div class="text-6xl mb-4">📈</div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">No Active Trades</h3>
+        <p class="text-gray-600">
+          Your live trades will appear here once you convert trade ideas to positions.
+        </p>
+      </div>
+      <LiveTradeFormEdit
+        v-if="selectedTrade"
+        :trade="selectedTrade"
+        :isOpen="isEditFormOpen"
+        :close="handleFormClose"
+        :formType="formType"
+      />
+    </main>
+    <TradeSidebar />
+  </div>
 </template>

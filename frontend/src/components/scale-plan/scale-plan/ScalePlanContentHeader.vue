@@ -7,9 +7,7 @@ const statusBadgeClass = computed(() => {
   switch (plan.status) {
     case 'planned':
       return 'bg-blue-100 text-blue-800'
-    case 'triggered':
-      return 'bg-yellow-100 text-yellow-800'
-    case 'partially_filled':
+    case 'filled_partial':
       return 'bg-orange-100 text-orange-800'
     case 'filled':
       return 'bg-green-100 text-green-800'
@@ -23,7 +21,7 @@ const statusBadgeClass = computed(() => {
 
 <template>
   <header class="flex items-center justify-between mb-1 pr-10">
-    <h4 :id="`sp-${id}-title`" class="text-sm font-semibold">
+    <h4 :id="`sp-${id}-title`" class="text-sm font-semibold text-blue-400">
       {{ plan.label?.trim() || `Plan ${idx + 1}` }}
     </h4>
     <Badge

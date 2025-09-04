@@ -165,5 +165,6 @@ declare module 'vue' {
     TradeManagement: typeof import('./src/components/live-trades/trade-view/trade-management/TradeManagement.vue')['default']
     TradeMetrics: typeof import('./src/components/live-trades/trade-view/TradeMetrics.vue')['default']
     TradeProgressBar: typeof import('./src/components/live-trades/trade-view/TradeProgressBar.vue')['default']
+    TradeSidebar: typeof import('./src/components/live-trades/watchlist/TradeSidebar.vue')['default']
   }
 }

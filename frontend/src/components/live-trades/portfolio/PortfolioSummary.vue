@@ -25,7 +25,7 @@ const portfolioStats = computed(() => {
     </PortfolioCard>
 
     <PortfolioCard title="Portfolio Value">
-      <span class="text-gray-900">{{ formatCurrency(portfolioStats.totalValue) }}</span>
+      <span class="text-slate-300">{{ formatCurrency(portfolioStats.totalValue) }}</span>
     </PortfolioCard>
 
     <PortfolioCard title="Active Positions">
