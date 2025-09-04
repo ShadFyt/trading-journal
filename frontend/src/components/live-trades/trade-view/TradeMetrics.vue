@@ -1,12 +1,11 @@
 <script lang="ts" setup>
-import type { LiveTrade } from '@/interfaces'
-import { useFormatters } from '@/composables'
-const { trade, positionSize } = defineProps<{ trade: LiveTrade; positionSize: number }>()
+import { useFormatters, useInjectTradeMetrics } from '@/composables'
+const { trade, initialPosition } = useInjectTradeMetrics()
 const { formatCurrency, formatTradeDuration } = useFormatters()
 
 const positionValue = computed(() => {
   const { currentPrice } = trade
-  return positionSize * currentPrice
+  return initialPosition * currentPrice
 })
 </script>
 

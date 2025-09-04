@@ -55,13 +55,13 @@ provide(TRADE_METRICS_KEY, tradeMetrics)
       <Transition name="fade">
         <div v-if="isExpanded" :id="detailsId">
           <!-- Price Information -->
-          <PriceInfo :trade :remaining-position="tradeMetrics.remainingShares" />
+          <PriceInfo />
 
           <!-- Price Progress Bar -->
-          <TradeProgressBar :trade />
+          <TradeProgressBar />
 
           <!-- Trade Metrics -->
-          <TradeMetrics :trade :position-size="tradeMetrics.initialPosition" />
+          <TradeMetrics />
 
           <!-- Setup & Notes -->
           <NotesDisplay :trade="trade" />

@@ -4,15 +4,12 @@ import { Tooltip } from '@/components/ui/tooltip'
 import { toTypedSchema } from '@vee-validate/zod'
 import { ScalePlanCreateSchema } from '@/schemas'
 import { useForm } from 'vee-validate'
-import { useScalePlanMutations, useTradeMetrics } from '@/composables'
-import type { LiveTrade } from '@/interfaces'
+import { useInjectTradeMetrics, useScalePlanMutations } from '@/composables'
 import { OrderTypeEnum, ScalePlanTypeEnum } from '@/enums'
 import { addScalePlanLimitIssue, addScalePlanTargetPriceIssue } from '@/utils/scale-plan.util.ts'
 
-const { trade } = defineProps<{
-  trade: LiveTrade
-}>()
-const { initialPosition, entryPrice } = useTradeMetrics(trade)
+const { entryPrice, initialPosition, trade } = useInjectTradeMetrics()
+
 const targetPlans = computed(() =>
   trade.scalePlans.filter((p) => p.planType === ScalePlanTypeEnum.enum.TARGET),
 )

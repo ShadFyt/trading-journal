@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import type { LiveTrade, ScalePlan } from '@/interfaces'
-import { useFormatters, useTradeMetrics } from '@/composables'
+import type { ScalePlan } from '@/interfaces'
+import { useFormatters, useInjectTradeMetrics } from '@/composables'
 
-const { trade, plan } = defineProps<{
-  trade: LiveTrade
+const { plan } = defineProps<{
   plan: ScalePlan
 }>()
-const { initialPosition, entryPrice } = useTradeMetrics(trade)
+const { entryPrice } = useInjectTradeMetrics()
 
 const { formatCurrency } = useFormatters()
 
@@ -14,15 +13,14 @@ const isFiniteNumber = (v: unknown): v is number => {
   return typeof v === 'number' && Number.isFinite(v)
 }
 
-const computeEffectiveShares = (baseShares: number, value: unknown): number | null => {
+const computeEffectiveShares = (value: unknown): number | null => {
   return isFiniteNumber(value) ? value : null
 }
 
 const projectedPnLAtTarget = computed(() => {
   if (entryPrice == null || plan.targetPrice == null) return null
 
-  const baseShares = initialPosition
-  const effectiveShares = computeEffectiveShares(baseShares, plan.qty)
+  const effectiveShares = computeEffectiveShares(plan.qty)
   if (!effectiveShares || effectiveShares <= 0) return null
 
   const isLong = true // TODO: infer from side/orderType

@@ -1,14 +1,14 @@
 <script lang="ts" setup>
-import type { LiveTrade, ScalePlan } from '@/interfaces'
-import { useFormatters } from '@/composables'
+import type { ScalePlan } from '@/interfaces'
+import { useFormatters, useInjectTradeMetrics } from '@/composables'
 const { convertStringToDate } = useFormatters()
 
-const { plan, trade } = defineProps<{
-  trade: LiveTrade
+const { plan } = defineProps<{
   plan: ScalePlan
   idx: number
 }>()
 
+const { entryPrice, stopLoss, trade } = useInjectTradeMetrics()
 const executions = computed(() => plan.executions)
 const filledQty = computed(() => executions.value.reduce((total, exec) => total + exec.qty, 0))
 const commissions = computed(() =>
@@ -28,9 +28,9 @@ const lastExecution = computed(() => executions.value[executions.value.length - 
 
     <ExecutionSummary
       :executions
-      :entry-price-avg="trade.entryPriceAvg"
+      :entry-price-avg="entryPrice"
       :target-price="plan.targetPrice"
-      :stop="trade.stop"
+      :stop="stopLoss"
     />
 
     <div v-if="lastExecution?.notes" class="text-sm">

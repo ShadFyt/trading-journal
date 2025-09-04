@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import type { LiveTrade } from '@/interfaces'
-import { useFormatters, useTradeMetrics } from '@/composables'
-import InfoWrapper from '@/components/live-trades/portfolio/InfoWrapper.vue'
-const { trade } = defineProps<{
-  trade: LiveTrade
-}>()
+import { useFormatters, useInjectTradeMetrics } from '@/composables'
 
-const { realizedPnL, realizedPct, unrealizedPnL, totalPnL, unrealizedPct, entryPrice } =
-  useTradeMetrics(trade)
+import InfoWrapper from '@/components/live-trades/portfolio/InfoWrapper.vue'
+
+const { realizedPnL, realizedPct, unrealizedPnL, totalPnL, unrealizedPct, entryPrice, trade } =
+  useInjectTradeMetrics()
 
 const { formatCurrency, formatPercentage } = useFormatters()
 

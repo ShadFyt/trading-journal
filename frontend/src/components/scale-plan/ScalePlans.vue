@@ -46,7 +46,7 @@ const closeEditForm = () => {
       <div class="mb-3">
         <div class="flex justify-between">
           <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">Targets</p>
-          <ScalePlanQuickAdd :trade="trade" />
+          <ScalePlanQuickAdd />
         </div>
         <div class="flex flex-wrap gap-1">
           <ScalePlanHoverCard
@@ -64,7 +64,6 @@ const closeEditForm = () => {
       <ScalePlanQuickEdit
         v-if="selectedPlan && formType === 'edit'"
         :scalePlan="selectedPlan"
-        :trade="trade"
         @close="closeEditForm"
       />
       <TradeExecutionForm

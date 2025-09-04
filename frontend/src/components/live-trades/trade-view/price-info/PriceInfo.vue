@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import type { LiveTrade } from '@/interfaces'
-import { useFormatters, useTradeMetrics } from '@/composables'
+import { useFormatters, useInjectTradeMetrics } from '@/composables'
 
-const { trade } = defineProps<{ trade: LiveTrade }>()
-const { remainingShares, entryPrice, initialPosition, stopLoss } = useTradeMetrics(trade)
+const {
+  remainingShares,
+  entryPrice,
+  initialPosition,
+  stopLoss,
+  trade: { rating },
+} = useInjectTradeMetrics()
 
 const { formatCurrency } = useFormatters()
 </script>
@@ -23,7 +27,7 @@ const { formatCurrency } = useFormatters()
     <KeyValueItem label="Initial Position:"> {{ initialPosition }} shares </KeyValueItem>
     <KeyValueItem label="Remaining Position:"> {{ remainingShares }} shares </KeyValueItem>
     <KeyValueItem label="Rating:">
-      <RatingBadge :rating="trade.rating" />
+      <RatingBadge :rating />
     </KeyValueItem>
   </dl>
 </template>

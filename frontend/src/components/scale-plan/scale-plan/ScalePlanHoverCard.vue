@@ -109,7 +109,6 @@ const actionMenuBind = computed(() => {
           plan.status === ScalePlanStatusEnum.enum.FILLED ||
           plan.status === ScalePlanStatusEnum.enum.PARTIALLY_FILLED
         "
-        :trade
         :plan
         :idx
       />

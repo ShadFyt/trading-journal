@@ -32,7 +32,7 @@ const pills = computed(() => [
       </li>
     </ul>
 
-    <ScalePlanTargetPanel :trade :plan />
+    <ScalePlanTargetPanel :plan />
 
     <div v-if="plan.goodTillDate" class="text-xs text-gray-600">
       Good till: <span class="font-medium">{{ formatTradeDate(plan.goodTillDate) }}</span>

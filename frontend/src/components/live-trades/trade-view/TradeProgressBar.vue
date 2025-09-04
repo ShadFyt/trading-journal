@@ -1,13 +1,8 @@
 <script lang="ts" setup>
 import { ProgressIndicator, ProgressRoot } from 'reka-ui'
-import type { LiveTrade } from '@/interfaces'
-import { useTradeMetrics } from '@/composables'
+import { useInjectTradeMetrics } from '@/composables'
 
-const { trade } = defineProps<{
-  trade: LiveTrade
-}>()
-
-const { totalPnL, stopLoss } = useTradeMetrics(trade)
+const { totalPnL, stopLoss, trade } = useInjectTradeMetrics()
 
 /**
  * Calculate progress percentage between stop loss and highest target
