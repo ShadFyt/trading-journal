@@ -5,7 +5,7 @@ import { ExecutionSchema } from '@/schemas/execution.schema.ts'
 
 export const ScalePlanSchema = z.object({
   id: z.string().uuid(),
-  liveTradeId: z.string().uuid(),
+  tradeId: z.string().uuid(),
   orderType: OrderTypeEnum,
   label: z.string().min(1, 'Label is required'),
   status: ScalePlanStatusEnum,
@@ -22,12 +22,12 @@ export const ScalePlanSchema = z.object({
 export const ScalePlanCreateSchema = ScalePlanSchema.omit({
   id: true,
   status: true,
-  liveTradeId: true,
+  tradeId: true,
   executions: true,
 })
 
 export const ScalePlanUpdateSchema = ScalePlanSchema.omit({
   id: true,
-  liveTradeId: true,
+  tradeId: true,
   executions: true,
 }).partial()

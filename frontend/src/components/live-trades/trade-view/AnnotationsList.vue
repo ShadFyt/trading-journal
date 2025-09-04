@@ -7,7 +7,7 @@ import { PopoverContent, PopoverPortal, PopoverRoot, PopoverTrigger } from 'reka
 const props = defineProps<{
   annotations: Annotation[]
   type: 'note' | 'catalyst'
-  liveTradeId: string
+  tradeId: string
   title: string
 }>()
 
@@ -30,7 +30,7 @@ const handleAnnotationCreation = (close: () => void) => {
   createMutation.mutate({
     content: newAnnotation.value,
     type: props.type,
-    liveTradeId: props.liveTradeId,
+    tradeId: props.tradeId,
   })
   close()
 }

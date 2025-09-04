@@ -25,7 +25,7 @@ const formSchema = toTypedSchema(ExecutionCreateSchema)
 const { isSubmitting, handleSubmit } = useForm({
   validationSchema: formSchema,
   initialValues: {
-    liveTradeId: scalePlan.liveTradeId,
+    tradeId: scalePlan.tradeId,
     scalePlanId: scalePlan.id,
     side: ExecutionSideEnum.enum.SELL,
     source: ExecutionSourceEnum.enum.MANUAL,
