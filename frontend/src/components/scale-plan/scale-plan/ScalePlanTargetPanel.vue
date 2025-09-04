@@ -1,51 +1,41 @@
 <script setup lang="ts">
 import type { LiveTrade, ScalePlan } from '@/interfaces'
-import { useFormatters } from '@/composables'
+import { useFormatters, useTradeMetrics } from '@/composables'
 
 const { trade, plan } = defineProps<{
   trade: LiveTrade
   plan: ScalePlan
 }>()
+const { initialPosition, entryPrice } = useTradeMetrics(trade)
+
 const { formatCurrency } = useFormatters()
 
 const isFiniteNumber = (v: unknown): v is number => {
   return typeof v === 'number' && Number.isFinite(v)
 }
 
-const computeEffectiveShares = (
-  baseShares: number,
-  kind: string,
-  value: unknown,
-): number | null => {
-  if (kind === 'shares') return isFiniteNumber(value) ? value : null
-  if (kind === 'percent')
-    return isFiniteNumber(value) ? Math.floor((baseShares * value) / 100) : null
-  return null
+const computeEffectiveShares = (baseShares: number, value: unknown): number | null => {
+  return isFiniteNumber(value) ? value : null
 }
 
 const projectedPnLAtTarget = computed(() => {
-  if (trade.entryPriceAvg == null || plan.targetPrice == null) return null
+  if (entryPrice == null || plan.targetPrice == null) return null
 
-  const baseShares = trade.positionSize ?? 0
-  const effectiveShares = computeEffectiveShares(baseShares, plan.kind as string, plan.value)
+  const baseShares = initialPosition
+  const effectiveShares = computeEffectiveShares(baseShares, plan.qty)
   if (!effectiveShares || effectiveShares <= 0) return null
 
   const isLong = true // TODO: infer from side/orderType
-  const delta = isLong
-    ? plan.targetPrice - trade.entryPriceAvg
-    : trade.entryPriceAvg - plan.targetPrice
+  const delta = isLong ? plan.targetPrice - entryPrice : entryPrice - plan.targetPrice
   return delta * effectiveShares
 })
 
 const projectedReturnPct = computed(() => {
-  if (trade.entryPriceAvg == null || trade.entryPriceAvg === 0 || plan.targetPrice == null)
-    return null
+  if (entryPrice == null || entryPrice === 0 || plan.targetPrice == null) return null
   const isLong = true
 
-  const delta = isLong
-    ? plan.targetPrice - trade.entryPriceAvg
-    : trade.entryPriceAvg - plan.targetPrice
-  return (delta / trade.entryPriceAvg) * 100
+  const delta = isLong ? plan.targetPrice - entryPrice : entryPrice - plan.targetPrice
+  return (delta / entryPrice) * 100
 })
 
 const pnlPercentBadgeClass = computed(() => {
