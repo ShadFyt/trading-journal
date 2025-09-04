@@ -13,15 +13,18 @@ const { trade } = defineProps<{
   trade: LiveTrade
 }>()
 const { initialPosition, entryPrice } = useTradeMetrics(trade)
+const targetPlans = computed(() =>
+  trade.scalePlans.filter((p) => p.planType === ScalePlanTypeEnum.enum.TARGET),
+)
+const isDisabled = computed(() => {
+  const totalQty = targetPlans.value.reduce((sum, p) => sum + (p.qty ?? 0), 0)
+  return totalQty >= initialPosition
+})
 
 const open = ref(false)
 
 const refinedSchema = ScalePlanCreateSchema.superRefine((data, ctx) => {
-  // 1) Total value cap: sum(existing) + new.value <= positionSize
-  const existingTotal = trade.scalePlans.reduce(
-    (sum, p) => sum + (p.planType === ScalePlanTypeEnum.enum.TARGET ? p.qty : 0),
-    0,
-  )
+  const existingTotal = targetPlans.value.reduce((sum, p) => sum + (p.qty ?? 0), 0)
   const newTotal = existingTotal + (data.qty ?? 0)
   addScalePlanLimitIssue(ctx, initialPosition, newTotal)
   addScalePlanTargetPriceIssue(ctx, data.targetPrice, entryPrice)
@@ -36,7 +39,7 @@ const { isFieldDirty, isSubmitting, handleSubmit } = useForm({
     orderType: OrderTypeEnum.enum.LIMIT,
     planType: ScalePlanTypeEnum.enum.TARGET,
     targetPrice: entryPrice + 0.5,
-    label: `T${trade.scalePlans.length + 1}(Target ${trade.scalePlans.length + 1})`,
+    label: `T${targetPlans.value.length + 1}(Target ${targetPlans.value.length + 1})`,
   },
 })
 
@@ -57,19 +60,26 @@ const onSubmit = handleSubmit(async (values) => {
 
 <template>
   <Popover v-model:open="open">
-    <PopoverTrigger>
+    <PopoverTrigger
+      :disabled="isDisabled"
+      :class="isDisabled ? 'opacity-50 cursor-not-allowed' : ''"
+    >
       <TooltipProvider>
         <Tooltip>
-          <TooltipTrigger as-child>
+          <TooltipTrigger as-child disabled>
             <Icon
-              class="hover:opacity-80 cursor-pointer"
+              :class="
+                isDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-80 cursor-pointer'
+              "
               icon="lucide:battery-plus"
               width="24"
               height="24"
             />
           </TooltipTrigger>
           <TooltipContent>
-            <p class="text-xs font-semibold tracking-wide">Add Scale Plan</p>
+            <p class="text-xs font-semibold tracking-wide">
+              {{ isDisabled ? 'Max quantity reached' : 'Add Scale Plan' }}
+            </p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
