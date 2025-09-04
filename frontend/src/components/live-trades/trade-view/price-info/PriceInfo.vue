@@ -1,8 +1,14 @@
 <script setup lang="ts">
-import type { LiveTrade } from '@/interfaces'
-import { useFormatters } from '@/composables'
+import { useFormatters, useInjectTradeMetrics } from '@/composables'
 
-const { trade } = defineProps<{ trade: LiveTrade; remainingPosition: number }>()
+const {
+  remainingShares,
+  entryPrice,
+  initialPosition,
+  stopLoss,
+  trade: { rating },
+} = useInjectTradeMetrics()
+
 const { formatCurrency } = useFormatters()
 </script>
 
@@ -11,17 +17,17 @@ const { formatCurrency } = useFormatters()
     class="grid grid-cols-[max-content_1fr] md:grid-cols-[max-content_1fr_max-content_1fr] gap-x-4 gap-y-2 text-sm"
   >
     <KeyValueItem label="Entry:">
-      {{ formatCurrency(trade.entryPriceAvg) }}
+      {{ formatCurrency(entryPrice) }}
     </KeyValueItem>
 
     <KeyValueItem label="Stop Loss:">
-      {{ formatCurrency(trade.stop) }}
+      {{ formatCurrency(stopLoss) }}
     </KeyValueItem>
 
-    <KeyValueItem label="Initial Position:"> {{ trade.positionSize }} shares </KeyValueItem>
-    <KeyValueItem label="Remaining Position:"> {{ remainingPosition }} shares </KeyValueItem>
+    <KeyValueItem label="Initial Position:"> {{ initialPosition }} shares </KeyValueItem>
+    <KeyValueItem label="Remaining Position:"> {{ remainingShares }} shares </KeyValueItem>
     <KeyValueItem label="Rating:">
-      <RatingBadge :rating="trade.rating" />
+      <RatingBadge :rating />
     </KeyValueItem>
   </dl>
 </template>

@@ -24,7 +24,7 @@ export const useLiveTradeFetchingService = () => {
     staleTime: 60 * 60 * 1000, // 1 hour
     refetchOnWindowFocus: true,
   })
-  const liveTrades = computed(() => data.value)
+  const liveTrades = computed(() => data.value?.filter((trade) => trade.status === 'open') ?? [])
 
   return { liveTrades, isLoading, refetchLiveTrades: refetch }
 }

@@ -13,7 +13,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useTradeExecutionMutations } from '@/composables'
-import { sharesFromPercent } from '@/utils'
 
 const { scalePlan } = defineProps<{ scalePlan: ScalePlan }>()
 const $emit = defineEmits<{
@@ -22,24 +21,18 @@ const $emit = defineEmits<{
 
 const { executePlanMutation } = useTradeExecutionMutations()
 
-const shares = computed(() => {
-  return scalePlan.kind === 'percent'
-    ? sharesFromPercent(scalePlan.value, scalePlan.value).shares
-    : scalePlan.value
-})
-
 const formSchema = toTypedSchema(ExecutionCreateSchema)
 const { isSubmitting, handleSubmit } = useForm({
   validationSchema: formSchema,
   initialValues: {
-    liveTradeId: scalePlan.liveTradeId,
+    tradeId: scalePlan.tradeId,
     scalePlanId: scalePlan.id,
     side: ExecutionSideEnum.enum.SELL,
     source: ExecutionSourceEnum.enum.MANUAL,
     notes: '',
     commission: 1,
     price: scalePlan.targetPrice,
-    qty: shares.value,
+    qty: scalePlan.qty,
   },
 })
 

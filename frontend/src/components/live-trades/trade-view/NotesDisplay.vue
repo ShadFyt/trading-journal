@@ -17,7 +17,7 @@ const { trade } = defineProps<{ trade: LiveTrade }>()
       :annotations="trade.annotations"
       type="catalyst"
       title="Catalysts"
-      :liveTradeId="trade.id"
+      :tradeId="trade.id"
     />
 
     <!-- Notes -->
@@ -25,7 +25,7 @@ const { trade } = defineProps<{ trade: LiveTrade }>()
       :annotations="trade.annotations"
       type="note"
       title="Notes"
-      :liveTradeId="trade.id"
+      :tradeId="trade.id"
     />
   </section>
 </template>

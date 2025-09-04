@@ -1,13 +1,8 @@
 <script lang="ts" setup>
 import { ProgressIndicator, ProgressRoot } from 'reka-ui'
-import type { LiveTrade } from '@/interfaces'
-import { useTradeMetrics } from '@/composables'
+import { useInjectTradeMetrics } from '@/composables'
 
-const { trade } = defineProps<{
-  trade: LiveTrade
-}>()
-
-const { totalPnL } = useTradeMetrics(trade)
+const { totalPnL, stopLoss, trade } = useInjectTradeMetrics()
 
 /**
  * Calculate progress percentage between stop loss and highest target
@@ -22,11 +17,11 @@ const priceProgress = computed(() => {
   }, null)
 
   if (highest == null) return 100
-  const range = highest - trade.stop
+  const range = highest - stopLoss
   if (range <= 0) return 100
 
   const clamp = (v: number, min = 0, max = 100) => Math.max(min, Math.min(max, v))
-  return clamp(((trade.currentPrice - trade.stop) / range) * 100)
+  return clamp(((trade.currentPrice - stopLoss) / range) * 100)
 })
 
 const ariaValueText = computed(() => `${Math.round(priceProgress.value)} percent toward target`)

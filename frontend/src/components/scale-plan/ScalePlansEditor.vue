@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { SCALE_PLAN_KINDS } from '@/enums/scale-plan.enum'
+import { ScalePlanTypeEnum } from '@/enums/scale-plan.enum'
 import type { ScalePlanCreate } from '@/interfaces'
 
 const { fields, push, remove } = useFieldArray<ScalePlanCreate>('scalePlans')
@@ -17,9 +17,9 @@ const { fields, push, remove } = useFieldArray<ScalePlanCreate>('scalePlans')
 function addPlan() {
   push({
     label: '',
-    kind: SCALE_PLAN_KINDS.SHARES,
+    planType: ScalePlanTypeEnum.enum.TARGET,
     orderType: 'limit',
-    value: 1,
+    qty: 1,
     targetPrice: undefined,
     stopPrice: undefined,
     limitPrice: undefined,
@@ -115,16 +115,16 @@ const hasPlans = computed(() => fields.value.length > 0)
           <div class="md:col-span-6">
             <FormField :name="`scalePlans[${idx}].kind`" v-slot="{ componentField }">
               <FormItem>
-                <FormLabel :for="`sp-kind-${idx}`">Kind</FormLabel>
+                <FormLabel :for="`sp-plan-type-${idx}`">Plan Type</FormLabel>
                 <Select v-bind="componentField">
                   <FormControl>
-                    <SelectTrigger :id="`sp-kind-${idx}`" class="w-full">
-                      <SelectValue placeholder="Select kind" />
+                    <SelectTrigger :id="`sp-plan-type-${idx}`" class="w-full">
+                      <SelectValue placeholder="Select plan type" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem v-for="k in SCALE_PLAN_KINDS" :key="k" :value="k">
-                      {{ k }}
+                    <SelectItem v-for="type in ScalePlanTypeEnum.enum" :key="type" :value="type">
+                      {{ type }}
                     </SelectItem>
                   </SelectContent>
                 </Select>

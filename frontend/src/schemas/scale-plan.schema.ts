@@ -1,18 +1,17 @@
 import { z } from 'zod'
 
-import { ScalePlanKindEnum, OrderTypeEnum, ScalePlanStatusEnum } from '@/enums/scale-plan.enum'
+import { OrderTypeEnum, ScalePlanStatusEnum, ScalePlanTypeEnum } from '@/enums/scale-plan.enum'
 import { ExecutionSchema } from '@/schemas/execution.schema.ts'
 
 export const ScalePlanSchema = z.object({
   id: z.string().uuid(),
-  liveTradeId: z.string().uuid(),
-  kind: ScalePlanKindEnum,
+  tradeId: z.string().uuid(),
   orderType: OrderTypeEnum,
   label: z.string().min(1, 'Label is required'),
   status: ScalePlanStatusEnum,
-  entryPrice: z.number().optional(),
+  planType: ScalePlanTypeEnum,
   targetPrice: z.number().optional(),
-  value: z.number().min(1, 'Value is required'),
+  qty: z.number().min(1, 'Qty is required'),
   notes: z.string().optional(),
   goodTillDate: z.date().optional(),
   stopPrice: z.number().optional(),
@@ -23,12 +22,12 @@ export const ScalePlanSchema = z.object({
 export const ScalePlanCreateSchema = ScalePlanSchema.omit({
   id: true,
   status: true,
-  liveTradeId: true,
+  tradeId: true,
   executions: true,
 })
 
 export const ScalePlanUpdateSchema = ScalePlanSchema.omit({
   id: true,
-  liveTradeId: true,
+  tradeId: true,
   executions: true,
 }).partial()

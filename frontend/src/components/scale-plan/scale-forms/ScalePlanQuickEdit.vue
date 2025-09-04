@@ -2,30 +2,30 @@
 import { toTypedSchema } from '@vee-validate/zod'
 import { ScalePlanUpdateSchema } from '@/schemas'
 import { useForm } from 'vee-validate'
-import { useScalePlanMutations } from '@/composables'
-import type { LiveTrade, ScalePlan } from '@/interfaces'
+import { useInjectTradeMetrics, useScalePlanMutations } from '@/composables'
+import type { ScalePlan } from '@/interfaces'
 import { addScalePlanLimitIssue, addScalePlanTargetPriceIssue } from '@/utils/scale-plan.util.ts'
 
-const { scalePlan, trade } = defineProps<{
+const { scalePlan } = defineProps<{
   scalePlan: ScalePlan
-  trade: LiveTrade
 }>()
 
 const $emit = defineEmits<{
   (e: 'close'): void
 }>()
+const { initialPosition, entryPrice, trade } = useInjectTradeMetrics()
 
 const refinedSchema = ScalePlanUpdateSchema.superRefine((data, ctx) => {
-  const nextValue = data.value ?? scalePlan.value
+  const nextValue = data.qty ?? scalePlan.qty
   const nextTarget = data.targetPrice ?? scalePlan.targetPrice
 
   const otherTotal = trade.scalePlans
     .filter((plan) => plan.id !== scalePlan.id)
-    .reduce((total, plan) => total + plan.value, 0)
+    .reduce((total, plan) => total + plan.qty, 0)
 
   const newTotal = otherTotal + (nextValue ?? 0)
-  addScalePlanLimitIssue(ctx, trade.positionSize, newTotal, scalePlan.kind)
-  addScalePlanTargetPriceIssue(ctx, nextTarget, trade.entryPriceAvg)
+  addScalePlanLimitIssue(ctx, initialPosition, newTotal)
+  addScalePlanTargetPriceIssue(ctx, nextTarget, entryPrice)
 })
 
 const formSchema = toTypedSchema(refinedSchema)

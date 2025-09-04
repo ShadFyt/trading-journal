@@ -16,7 +16,9 @@ const emit = defineEmits(['toggle'])
   <footer
     class="mt-3 pt-2 border-t border-gray-100 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between flex-wrap text-xs text-gray-400"
   >
-    <span>Entered {{ convertStringToDate(trade.enterDate).toLocaleDateString() }}</span>
+    <span v-if="trade.enterDate"
+      >Entered {{ convertStringToDate(trade.enterDate).toLocaleDateString() }}</span
+    >
     <button
       type="button"
       :aria-expanded="isExpanded"

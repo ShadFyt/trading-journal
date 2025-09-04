@@ -24,8 +24,8 @@ export const useScalePlanMutations = () => {
   }
 
   const createPlanMutation = useMutation({
-    mutationFn: ({ data, liveTradeId }: { data: ScalePlanCreate; liveTradeId: string }) =>
-      createScalePlan(liveTradeId, data),
+    mutationFn: ({ data, tradeId }: { data: ScalePlanCreate; tradeId: string }) =>
+      createScalePlan(tradeId, data),
     onSuccess: () => handleSuccess('create'),
     onError: (e) => handleErrorDisplay(e, 'create', domain),
   })

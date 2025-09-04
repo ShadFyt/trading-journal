@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { SCALE_PLAN_KINDS } from '@/enums'
+import { ScaleTradeTypeEnum } from '@/enums'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import {
   Select,
@@ -28,7 +28,6 @@ import {
     </FormField>
   </div>
 
-  <!-- Optional target price (for display/UX if you keep it in schema) -->
   <div class="md:col-span-6">
     <FormField name="targetPrice" v-slot="{ componentField }">
       <FormItem>
@@ -47,20 +46,19 @@ import {
     </FormField>
   </div>
 
-  <!-- Kind -->
   <div class="md:col-span-6">
-    <FormField name="kind" v-slot="{ componentField }">
+    <FormField name="tradeType" v-slot="{ componentField }">
       <FormItem>
-        <FormLabel for="kind">Kind</FormLabel>
+        <FormLabel for="tradeType">Trade Type</FormLabel>
         <Select v-bind="componentField">
           <FormControl>
-            <SelectTrigger id="kind" class="w-full">
-              <SelectValue placeholder="Select kind" />
+            <SelectTrigger id="tradeType" class="w-full">
+              <SelectValue placeholder="Select type" />
             </SelectTrigger>
           </FormControl>
           <SelectContent>
-            <SelectItem v-for="k in SCALE_PLAN_KINDS" :key="k" :value="k">
-              {{ k }}
+            <SelectItem v-for="type in ScaleTradeTypeEnum.enum" :key="type" :value="type">
+              {{ type }}
             </SelectItem>
           </SelectContent>
         </Select>
@@ -71,11 +69,11 @@ import {
 
   <!-- Value -->
   <div class="md:col-span-6">
-    <FormField name="value" v-slot="{ componentField }">
+    <FormField name="qty" v-slot="{ componentField }">
       <FormItem>
-        <FormLabel for="value">Value</FormLabel>
+        <FormLabel for="qty">Quantity</FormLabel>
         <Input
-          id="value"
+          id="qty"
           type="number"
           step="1"
           min="1"

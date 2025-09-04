@@ -5,7 +5,7 @@ export const AnnotationSchema = z.object({
   content: z.string(),
   date: z.date(),
   type: z.enum(['note', 'catalyst']),
-  liveTradeId: z.string().uuid(),
+  tradeId: z.string().uuid(),
 })
 
 export const AnnotationCreateSchema = AnnotationSchema.omit({ id: true, date: true })

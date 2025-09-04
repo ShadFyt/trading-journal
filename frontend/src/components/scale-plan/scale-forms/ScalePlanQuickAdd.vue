@@ -4,22 +4,27 @@ import { Tooltip } from '@/components/ui/tooltip'
 import { toTypedSchema } from '@vee-validate/zod'
 import { ScalePlanCreateSchema } from '@/schemas'
 import { useForm } from 'vee-validate'
-import { useScalePlanMutations } from '@/composables'
-import type { LiveTrade } from '@/interfaces'
-import { OrderTypeEnum, ScalePlanKindEnum } from '@/enums'
+import { useInjectTradeMetrics, useScalePlanMutations } from '@/composables'
+import { OrderTypeEnum, ScalePlanTypeEnum } from '@/enums'
 import { addScalePlanLimitIssue, addScalePlanTargetPriceIssue } from '@/utils/scale-plan.util.ts'
 
-const { trade } = defineProps<{
-  trade: LiveTrade
-}>()
+const { entryPrice, initialPosition, trade } = useInjectTradeMetrics()
+
+const targetPlans = computed(() =>
+  trade.scalePlans.filter((p) => p.planType === ScalePlanTypeEnum.enum.TARGET),
+)
+const isDisabled = computed(() => {
+  const totalQty = targetPlans.value.reduce((sum, p) => sum + (p.qty ?? 0), 0)
+  return totalQty >= initialPosition
+})
+
 const open = ref(false)
 
 const refinedSchema = ScalePlanCreateSchema.superRefine((data, ctx) => {
-  // 1) Total value cap: sum(existing) + new.value <= positionSize
-  const existingTotal = trade.scalePlans.reduce((sum, p) => sum + (p.value ?? 0), 0)
-  const newTotal = existingTotal + (data.value ?? 0)
-  addScalePlanLimitIssue(ctx, trade.positionSize, newTotal, data.kind)
-  addScalePlanTargetPriceIssue(ctx, data.targetPrice, trade.entryPriceAvg)
+  const existingTotal = targetPlans.value.reduce((sum, p) => sum + (p.qty ?? 0), 0)
+  const newTotal = existingTotal + (data.qty ?? 0)
+  addScalePlanLimitIssue(ctx, initialPosition, newTotal)
+  addScalePlanTargetPriceIssue(ctx, data.targetPrice, entryPrice)
 })
 
 const formSchema = toTypedSchema(refinedSchema)
@@ -29,9 +34,9 @@ const { isFieldDirty, isSubmitting, handleSubmit } = useForm({
   initialValues: {
     notes: '',
     orderType: OrderTypeEnum.enum.LIMIT,
-    kind: ScalePlanKindEnum.enum.SHARES,
-    targetPrice: trade.entryPriceAvg + 0.5,
-    label: `T${trade.scalePlans.length + 1}(Target ${trade.scalePlans.length + 1})`,
+    planType: ScalePlanTypeEnum.enum.TARGET,
+    targetPrice: entryPrice + 0.5,
+    label: `T${targetPlans.value.length + 1}(Target ${targetPlans.value.length + 1})`,
   },
 })
 
@@ -39,7 +44,7 @@ const onSubmit = handleSubmit(async (values) => {
   createPlanMutation.mutate(
     {
       data: values,
-      liveTradeId: trade.id,
+      tradeId: trade.id,
     },
     {
       onSuccess() {
@@ -52,19 +57,26 @@ const onSubmit = handleSubmit(async (values) => {
 
 <template>
   <Popover v-model:open="open">
-    <PopoverTrigger>
+    <PopoverTrigger
+      :disabled="isDisabled"
+      :class="isDisabled ? 'opacity-50 cursor-not-allowed' : ''"
+    >
       <TooltipProvider>
         <Tooltip>
-          <TooltipTrigger as-child>
+          <TooltipTrigger as-child disabled>
             <Icon
-              class="hover:opacity-80 cursor-pointer"
+              :class="
+                isDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-80 cursor-pointer'
+              "
               icon="lucide:battery-plus"
               width="24"
               height="24"
             />
           </TooltipTrigger>
           <TooltipContent>
-            <p class="text-xs font-semibold tracking-wide">Add Scale Plan</p>
+            <p class="text-xs font-semibold tracking-wide">
+              {{ isDisabled ? 'Max quantity reached' : 'Add Scale Plan' }}
+            </p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -81,8 +93,8 @@ const onSubmit = handleSubmit(async (values) => {
         <div class="grid grid-cols-1 gap-3 md:grid-cols-12">
           <ScalePlanFormFields />
         </div>
-        <Button type="submit" class="mt-3" :disabled="!isFieldDirty('value') || isSubmitting">
-          Add Scale Plan
+        <Button type="submit" class="mt-3" :disabled="!isFieldDirty('qty') || isSubmitting">
+          Add New Plan
         </Button>
       </form>
     </PopoverContent>

@@ -1,26 +1,10 @@
-import { ScalePlanKindEnum } from '@/enums'
 import { z } from 'zod'
 
-export const getLimitByKind = (
-  positionSize?: number,
-): Record<
-  (typeof ScalePlanKindEnum.enum)[keyof typeof ScalePlanKindEnum.enum],
-  number | undefined
-> => ({
-  [ScalePlanKindEnum.enum.SHARES]: positionSize,
-  [ScalePlanKindEnum.enum.PERCENT]: 100,
-})
-
-export const buildTargetPriceIssue = (
-  kind: z.infer<typeof ScalePlanKindEnum>,
-  positionSize: number,
-  newTotal: number,
-) => {
-  const limitLabel = kind === ScalePlanKindEnum.enum.SHARES ? positionSize : undefined
+export const buildTargetPriceIssue = (positionSize: number, newTotal: number) => {
   return {
     code: z.ZodIssueCode.custom,
-    path: ['value'],
-    message: `Total planned value (${newTotal.toFixed(2)}) exceeds ${limitLabel}.`,
+    path: ['qty'],
+    message: `Total planned value (${newTotal.toFixed(2)}) exceeds ${positionSize}.`,
   }
 }
 
@@ -28,15 +12,10 @@ export const addScalePlanLimitIssue = (
   ctx: z.RefinementCtx,
   positionSize: number,
   newTotal: number,
-  kind: z.infer<typeof ScalePlanKindEnum>,
 ) => {
-  const limit = getLimitByKind(positionSize)[kind]
-  const hasIssue =
-    (typeof limit === 'number' && newTotal > limit) ||
-    (typeof limit === 'undefined' && newTotal > 100)
-
+  const hasIssue = newTotal > positionSize
   if (hasIssue) {
-    const issueObj = buildTargetPriceIssue(kind, positionSize, newTotal)
+    const issueObj = buildTargetPriceIssue(positionSize, newTotal)
     ctx.addIssue(issueObj)
   }
 }

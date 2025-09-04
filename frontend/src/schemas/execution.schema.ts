@@ -3,7 +3,7 @@ import { ExecutionSideEnum, ExecutionSourceEnum } from '@/enums'
 
 export const ExecutionSchema = z.object({
   id: z.string().uuid(),
-  liveTradeId: z.string().uuid(),
+  tradeId: z.string().uuid(),
   scalePlanId: z.string().uuid(),
   price: z.number().min(1, 'Price is required'),
   qty: z.number().min(1, 'Quantity is required'),

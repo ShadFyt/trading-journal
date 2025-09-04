@@ -1,7 +1,7 @@
 import { apiClient } from './client'
 import type { LiveTrade, LiveTradeCreate, LiveTradeUpdate } from '@/interfaces/live-trade.type'
 
-const LIVE_TRADE_API_URL = '/live-trades'
+const LIVE_TRADE_API_URL = '/trades'
 
 export const getLiveTrades = () => {
   return apiClient.get<LiveTrade[]>(LIVE_TRADE_API_URL)

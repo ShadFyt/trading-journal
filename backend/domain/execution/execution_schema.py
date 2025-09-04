@@ -15,7 +15,7 @@ class ExecutionBase(BaseSchema):
 class ExecutionCreate(ExecutionBase):
     qty: int
     price: float
-    live_trade_id: str
+    trade_id: str
     scale_plan_id: str
 
 

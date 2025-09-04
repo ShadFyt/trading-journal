@@ -3,8 +3,8 @@ import { apiClient } from './client'
 
 const SCALE_PLAN_API_URL = '/scale-plans'
 
-export const createScalePlan = (liveTradeId: string, data: ScalePlanCreate) =>
-  apiClient.post(SCALE_PLAN_API_URL, { ...data, liveTradeId })
+export const createScalePlan = (tradeId: string, data: ScalePlanCreate) =>
+  apiClient.post(SCALE_PLAN_API_URL, { ...data, tradeId })
 
 export const updateScalePlan = (id: string, data: ScalePlanUpdate) =>
   apiClient.patch(`${SCALE_PLAN_API_URL}/${id}`, data)
