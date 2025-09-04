@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 
 from core.base_schema import BaseSchema
-from database.models import ScalePlanStatus, OrderType, PlanType
+from database.models import ScalePlanStatus, OrderType, PlanType, TradeType
 from domain.execution.execution_schema import ExecutionRead
 
 
@@ -29,6 +29,7 @@ class ScalePlanCreateWithTradeId(ScalePlanBase):
 class ScalePlanRead(ScalePlanBase):
     id: str
     trade_id: str
+    trade_type: TradeType
     status: ScalePlanStatus
     executions: list[ExecutionRead] = []
 

@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from database.session import SessionDep
 from database.models import Trade, ScalePlan, TradeStatus
 from core.base_repo import BaseRepo
@@ -47,9 +49,10 @@ class TradeRepo(BaseRepo[Trade]):
         except Exception as e:
             raise HTTPException(status_code=400, detail=str(e))
 
-    async def update_trade_status(self, trade_id: str, status: TradeStatus):
+    async def execute_trade(self, trade_id: str, status: TradeStatus):
         db_trade = await self.get_trade_by_id(trade_id)
         db_trade.status = status
+        db_trade.enter_date = datetime.now(timezone.utc)
         self.session.add(db_trade)
         return db_trade
 

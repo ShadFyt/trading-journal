@@ -72,9 +72,7 @@ class ExecutionService:
             )
 
         if is_filled and scale_plan.plan_type == "entry":
-            await self.trade_repo.update_trade_status(
-                scale_plan.trade_id, TradeStatus.OPEN
-            )
+            await self.trade_repo.execute_trade(scale_plan.trade_id, TradeStatus.OPEN)
 
     async def update_execution(
         self, execution_id: str, payload: ExecutionUpdate
