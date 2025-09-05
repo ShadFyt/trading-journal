@@ -43,6 +43,6 @@ const getStatusColor = (status: string) => {
 
   <div class="flex justify-between text-xs text-gray-400">
     <span>Entry: {{ formatCurrency(entryPrice) }}</span>
-    <StarRating :rating="trade.rating" read-only size="sm" />
+    <RatingBadge :rating="trade.rating" />
   </div>
 </template>
