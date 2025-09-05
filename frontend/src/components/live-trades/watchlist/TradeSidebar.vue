@@ -1,9 +1,15 @@
 <script lang="ts" setup>
 import { useLiveTradeFetchingService } from '@/composables'
 import type { LiveTrade } from '@/interfaces'
+import { ScalePlanTypeEnum } from '@/enums'
 
 const { watchlist } = useLiveTradeFetchingService()
 const selectedTrade = ref<LiveTrade | null>(null)
+const isExecutionFormOpen = ref(true)
+
+const entryPlan = computed(() => {
+  return selectedTrade.value?.scalePlans.find((p) => p.planType === ScalePlanTypeEnum.enum.ENTRY)
+})
 
 const handleTradeSelect = (trade: LiveTrade) => {
   selectedTrade.value = trade
@@ -38,6 +44,11 @@ const handleTradeSelect = (trade: LiveTrade) => {
         </div>
       </ScrollArea>
     </div>
-    <TradeDetails v-if="selectedTrade" :selected-trade="selectedTrade" />
+    <TradeExecutionForm
+      v-if="isExecutionFormOpen && entryPlan"
+      :scalePlan="entryPlan"
+      :extraClass="'p-3 m-2 bg-gray-800/50 border-none text-gray-100'"
+    />
+    <TradeDetails v-if="selectedTrade && !isExecutionFormOpen" :selected-trade="selectedTrade" />
   </aside>
 </template>
