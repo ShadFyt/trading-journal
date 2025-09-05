@@ -4,6 +4,10 @@ import type { LiveTrade } from '@/interfaces'
 
 const { watchlist } = useLiveTradeFetchingService()
 const selectedTrade = ref<LiveTrade | null>(null)
+
+const handleTradeSelect = (trade: LiveTrade) => {
+  selectedTrade.value = trade
+}
 </script>
 
 <template>
@@ -27,11 +31,13 @@ const selectedTrade = ref<LiveTrade | null>(null)
               'p-3 rounded-lg cursor-pointer transition-all hover:bg-gray-800 mb-1',
               selectedTrade?.id === trade.id ? 'bg-gray-800 ring-1 ring-blue-500' : '',
             ]"
+            @click="handleTradeSelect(trade)"
           >
             <TradePriceDetail :trade />
           </div>
         </div>
       </ScrollArea>
     </div>
+    <TradeDetails v-if="selectedTrade" :selected-trade="selectedTrade" />
   </aside>
 </template>
