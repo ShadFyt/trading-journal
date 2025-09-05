@@ -32,7 +32,8 @@ export const useTradeMetrics = (trade: LiveTrade) => {
     const plan = trade.scalePlans.find(
       (plan) =>
         plan.planType === ScalePlanTypeEnum.enum.ENTRY &&
-        plan.status === ScalePlanStatusEnum.enum.FILLED,
+        (plan.status === ScalePlanStatusEnum.enum.FILLED ||
+          plan.status === ScalePlanStatusEnum.enum.PLANNED),
     )
 
     if (!plan?.executions?.length) {

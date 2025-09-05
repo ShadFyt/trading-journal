@@ -10,6 +10,7 @@ import { AxiosError } from 'axios'
 import type { crudType, LiveTradeCreate, LiveTradeUpdate } from '@/interfaces'
 import { tradeIdeaKeys } from '@/composables/useTradeIdeaService'
 import { handleErrorDisplay } from '@/api/api-error.util.ts'
+import { TradeStatusEnum } from '@/enums/trade.enum.ts'
 
 export const liveTradeKeys = {
   all: ['live-trades'] as const,
@@ -25,8 +26,11 @@ export const useLiveTradeFetchingService = () => {
     refetchOnWindowFocus: true,
   })
   const liveTrades = computed(() => data.value?.filter((trade) => trade.status === 'open') ?? [])
+  const watchlist = computed(
+    () => data.value?.filter((trade) => trade.status === TradeStatusEnum.enum.WATCHING) ?? [],
+  )
 
-  return { liveTrades, isLoading, refetchLiveTrades: refetch }
+  return { liveTrades, isLoading, refetchLiveTrades: refetch, watchlist }
 }
 
 export const useLiveTradeMutationService = () => {
