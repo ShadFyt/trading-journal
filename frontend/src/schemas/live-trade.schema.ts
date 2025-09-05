@@ -3,6 +3,7 @@ import { baseTradeSchema } from './base-trade.schema'
 import { AnnotationSchema } from './annotation.schema'
 import { ScalePlanCreateSchema, ScalePlanSchema } from './scale-plan.schema'
 import { ExecutionSchema } from '@/schemas/execution.schema.ts'
+import { TradeStatusEnum } from '@/enums/trade.enum.ts'
 
 export const liveTradeCreateSchema = baseTradeSchema.extend({
   tradeIdeaId: z.string().uuid(),
@@ -15,13 +16,15 @@ export const LiveTradeSchema = liveTradeCreateSchema.extend({
   outcome: z
     .enum(['big win', 'small win', 'small loss', 'big loss', 'break even', 'pending'])
     .optional(),
-  status: z.enum(['open', 'partial', 'closed']),
+  status: TradeStatusEnum,
   exitDate: z.date().optional(),
   enterDate: z.date().optional(),
   annotations: z.array(AnnotationSchema),
   currentPrice: z.number(),
   priceChange: z.number().optional(),
   percentChange: z.number().optional(),
+  openPrice: z.number().optional(),
+  previousClose: z.number().optional(),
   scalePlans: ScalePlanSchema.array(),
   executions: z.array(ExecutionSchema),
 })
@@ -36,4 +39,6 @@ export const LiveTradeUpdateSchema = LiveTradeSchema.omit({
   tradeIdeaId: true,
   status: true,
   scalePlans: true,
+  openPrice: true,
+  previousClose: true,
 }).partial()

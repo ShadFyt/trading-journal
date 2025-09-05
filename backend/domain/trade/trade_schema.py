@@ -30,10 +30,8 @@ class TradeResponse(TradeBase):
     current_price: Optional[float] = None
     price_change: Optional[float] = None
     percent_change: Optional[float] = None
-    # remaining_shares: float
-    # risk_per_share: float
-    # realized_pnl: Optional[float]
-    # realized_r: Optional[float]
+    open_price: Optional[float] = None
+    previous_close: Optional[float] = None
     executions: list[ExecutionRead] = []
 
 

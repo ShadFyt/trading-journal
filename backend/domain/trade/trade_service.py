@@ -52,6 +52,8 @@ class TradeService:
                     trade.current_price = quote.current_price
                     trade.price_change = quote.change
                     trade.percent_change = quote.percent_change
+                    trade.open_price = quote.open_price
+                    trade.previous_close = quote.previous_close
         except Exception as e:
             # Log error but don't fail the entire request
             print(f"Warning: Could not fetch current prices: {e}")
