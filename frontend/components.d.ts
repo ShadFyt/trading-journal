@@ -151,6 +151,7 @@ declare module 'vue' {
     ShowScalePlan: typeof import('./src/components/scale-plan/scale-plan/ShowScalePlan.vue')['default']
     SlideOverPanel: typeof import('./src/components/ui/SlideOverPanel.vue')['default']
     Sonner: typeof import('./src/components/ui/sonner/Sonner.vue')['default']
+    StarRating: typeof import('./src/components/live-trades/watchlist/StarRating.vue')['default']
     TargetPriceField: typeof import('./src/components/fields/TargetPriceField.vue')['default']
     Textarea: typeof import('./src/components/ui/textarea/Textarea.vue')['default']
     Tooltip: typeof import('./src/components/ui/tooltip/Tooltip.vue')['default']

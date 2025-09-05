@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { Icon } from '@iconify/vue'
 import type { LiveTrade } from '@/interfaces'
 import { useFormatters, useTradeMetrics } from '@/composables'
 const { formatCurrency, formatPercentage } = useFormatters()
@@ -30,9 +29,6 @@ const getStatusColor = (status: string) => {
         {{ trade.status }}
       </Badge>
     </div>
-    <Button variant="ghost" size="sm" class="h-6 w-6 p-0">
-      <!--                <MoreVertical class="h-3 w-3 text-gray-400" />-->
-    </Button>
   </div>
 
   <div class="flex justify-between items-center mb-1">
@@ -47,13 +43,6 @@ const getStatusColor = (status: string) => {
 
   <div class="flex justify-between text-xs text-gray-400">
     <span>Entry: {{ formatCurrency(entryPrice) }}</span>
-    <div class="flex items-center gap-1">
-      <Icon
-        v-for="i in trade.rating"
-        :key="i"
-        icon="lucide:star"
-        class="h-4 w-4 fill-yellow-400 text-yellow-400"
-      />
-    </div>
+    <StarRating :rating="trade.rating" read-only size="sm" />
   </div>
 </template>
