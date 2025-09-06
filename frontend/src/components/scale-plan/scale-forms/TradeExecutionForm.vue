@@ -3,7 +3,7 @@ import type { ScalePlan } from '@/interfaces'
 import { toTypedSchema } from '@vee-validate/zod'
 import { ExecutionCreateSchema } from '@/schemas/execution.schema.ts'
 import { useForm } from 'vee-validate'
-import { EXECUTION_SIDE, EXECUTION_SOURCE, ExecutionSideEnum, ExecutionSourceEnum } from '@/enums'
+import { EXECUTION_SIDE, ExecutionSideEnum, ExecutionSourceEnum, ScalePlanTypeEnum } from '@/enums'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import {
   Select,
@@ -30,7 +30,7 @@ const { isSubmitting, handleSubmit } = useForm({
     side: ExecutionSideEnum.enum.SELL,
     source: ExecutionSourceEnum.enum.MANUAL,
     notes: '',
-    commission: 1,
+    commission: scalePlan.planType === ScalePlanTypeEnum.enum.ENTRY ? 0 : 1,
     price: scalePlan.limitPrice ?? scalePlan.targetPrice,
     qty: scalePlan.qty,
   },
@@ -107,22 +107,19 @@ const onSubmit = handleSubmit(async (values) => {
             </FormItem>
           </FormField>
         </div>
-        <div class="md:col-span-2">
-          <FormField name="source" v-slot="{ componentField }">
+        <div class="md:col-span-6">
+          <FormField name="commission" v-slot="{ componentField }">
             <FormItem>
-              <FormLabel for="source">Method</FormLabel>
-              <Select v-bind="componentField">
-                <FormControl>
-                  <SelectTrigger id="source" class="w-full">
-                    <SelectValue placeholder="Select Source" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem v-for="side in EXECUTION_SOURCE" :key="side" :value="side">
-                    {{ side }}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
+              <FormLabel for="commission">Commission</FormLabel>
+              <Input
+                id="commission"
+                type="number"
+                step="1"
+                inputmode="decimal"
+                class="w-full"
+                v-bind="componentField"
+                placeholder="e.g. 1"
+              />
               <FormMessage />
             </FormItem>
           </FormField>
