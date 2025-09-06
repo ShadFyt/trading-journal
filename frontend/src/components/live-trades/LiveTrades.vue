@@ -1,14 +1,18 @@
 <script setup lang="ts">
+import { Icon } from '@iconify/vue'
 import LiveTradeCard from './trade-view/LiveTradeCard.vue'
-import { useLiveTradeFetchingService } from '@/composables'
+import { useLiveTradeFetchingService, useMediaQuery } from '@/composables'
 
 import type { LiveTrade } from '@/interfaces/live-trade.type'
+import { useToggle } from '@vueuse/core'
 
 const { liveTrades: activeTrades, refetchLiveTrades } = useLiveTradeFetchingService()
+const { isDesktop } = useMediaQuery()
 
 const selectedTrade = ref<LiveTrade | null>(null)
 const isEditFormOpen = ref(false)
 const formType = ref<'edit' | 'close'>('edit')
+const [isSidebarOpen, toggleSidebar] = useToggle(false)
 
 /**
  * Handle trade management actions
@@ -38,8 +42,18 @@ const rightTrades = computed(() => activeTrades.value?.filter((_, i) => i % 2 ==
 </script>
 
 <template>
-  <div class="flex h-screen w-full bg-gray-950">
-    <main class="ml-3 mr-3 p-4 mx-auto w-full">
+  <div class="flex h-screen w-full bg-gray-950 relative">
+    <Button
+      v-if="!isDesktop"
+      @click="() => toggleSidebar()"
+      class="fixed top-4 right-4 z-50 bg-gray-800 hover:bg-gray-700 border-gray-600"
+      size="sm"
+      variant="outline"
+    >
+      <Icon icon="lucide:menu" class="h-4 w-4" />
+    </Button>
+
+    <main class="flex-1 p-4 overflow-auto">
       <PortfolioHeader @refetch-live-trades="refetchLiveTrades" />
 
       <!-- Live Trades Grid -->
@@ -83,6 +97,13 @@ const rightTrades = computed(() => activeTrades.value?.filter((_, i) => i % 2 ==
         :formType="formType"
       />
     </main>
-    <TradeSidebar />
+
+    <TradeSidebar :is-open="isSidebarOpen" />
+
+    <div
+      v-if="isSidebarOpen && !isDesktop"
+      @click="() => toggleSidebar(false)"
+      class="fixed inset-0 z-30 bg-black bg-opacity-50"
+    />
   </div>
 </template>

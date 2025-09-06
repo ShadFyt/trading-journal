@@ -4,6 +4,10 @@ import { Icon } from '@iconify/vue'
 import type { LiveTrade } from '@/interfaces'
 import { ScalePlanTypeEnum } from '@/enums'
 
+const props = defineProps<{
+  isOpen?: boolean
+}>()
+
 const { watchlist } = useLiveTradeFetchingService()
 const selectedTrade = ref<LiveTrade | null>(null)
 const isExecutionFormOpen = ref(false)
@@ -20,7 +24,12 @@ const openExecutionForm = () => (isExecutionFormOpen.value = true)
 </script>
 
 <template>
-  <aside class="w-100 h-screen bg-gray-900 border-r border-gray-800 flex flex-col">
+  <aside
+    :class="[
+      'fixed inset-y-0 right-0 z-40 w-full lg:w-80 h-screen bg-gray-900 border-r border-gray-800 flex flex-col transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0',
+      props.isOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'
+    ]"
+  >
     <div class="p-4 border-b border-gray-800">
       <h2 class="text-lg font-semibold text-white mb-3">Watchlist</h2>
       <div class="relative">
