@@ -47,7 +47,9 @@ const onSubmit = handleSubmit(async (values) => {
 
 <template>
   <Card :class="extraClass">
-    <p class="text-xs font-semibold text-center mb-3">Execute scale plan {{ scalePlan.label }}</p>
+    <slot name="header">
+      <p class="text-xs font-semibold text-center mb-3">Execute scale plan {{ scalePlan.label }}</p>
+    </slot>
     <form :validation-schema="formSchema" class="flex flex-col h-full relative" @submit="onSubmit">
       <FormLoadingSpinner :isSubmitting="isSubmitting" />
       <div class="grid grid-cols-1 gap-3 md:grid-cols-12">

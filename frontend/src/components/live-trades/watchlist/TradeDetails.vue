@@ -4,6 +4,9 @@ import { useFormatters, useTradeMetrics } from '@/composables'
 
 const { formatCurrency } = useFormatters()
 const { selectedTrade } = defineProps<{ selectedTrade: LiveTrade }>()
+const emit = defineEmits<{
+  'open-execution-form': []
+}>()
 const { entryPrice, stopLoss } = useTradeMetrics(selectedTrade)
 </script>
 
@@ -14,7 +17,13 @@ const { entryPrice, stopLoss } = useTradeMetrics(selectedTrade)
       <CardHeader class="flex items-center justify-between">
         <h3 class="text-white font-semibold text-sm">{{ selectedTrade?.symbol }} Details</h3>
         <div class="flex gap-2">
-          <Button size="sm" class="h-7 px-3 text-xs bg-blue-600 hover:bg-blue-700"> Trade </Button>
+          <Button
+            @click="emit('open-execution-form')"
+            size="sm"
+            class="h-7 px-3 text-xs bg-blue-600 hover:bg-blue-700"
+          >
+            Trade
+          </Button>
         </div>
       </CardHeader>
 

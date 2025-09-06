@@ -1,11 +1,12 @@
 <script lang="ts" setup>
 import { useLiveTradeFetchingService } from '@/composables'
+import { Icon } from '@iconify/vue'
 import type { LiveTrade } from '@/interfaces'
 import { ScalePlanTypeEnum } from '@/enums'
 
 const { watchlist } = useLiveTradeFetchingService()
 const selectedTrade = ref<LiveTrade | null>(null)
-const isExecutionFormOpen = ref(true)
+const isExecutionFormOpen = ref(false)
 
 const entryPlan = computed(() => {
   return selectedTrade.value?.scalePlans.find((p) => p.planType === ScalePlanTypeEnum.enum.ENTRY)
@@ -14,6 +15,8 @@ const entryPlan = computed(() => {
 const handleTradeSelect = (trade: LiveTrade) => {
   selectedTrade.value = trade
 }
+
+const openExecutionForm = () => (isExecutionFormOpen.value = true)
 </script>
 
 <template>
@@ -48,7 +51,26 @@ const handleTradeSelect = (trade: LiveTrade) => {
       v-if="isExecutionFormOpen && entryPlan"
       :scalePlan="entryPlan"
       :extraClass="'p-3 m-2 bg-gray-800/50 border-none text-gray-100'"
+    >
+      <template #header>
+        <div class="flex justify-between">
+          <p class="text-xs font-semibold text-center mb-3">
+            Execute Entry Plan for {{ selectedTrade?.symbol }}
+          </p>
+          <Icon
+            icon="lucide:square-x"
+            width="24"
+            height="24"
+            class="cursor-pointer text-red-400 hover:text-red-300"
+            @click="isExecutionFormOpen = false"
+          />
+        </div>
+      </template>
+    </TradeExecutionForm>
+    <TradeDetails
+      v-if="selectedTrade && !isExecutionFormOpen"
+      :selected-trade="selectedTrade"
+      @open-execution-form="openExecutionForm"
     />
-    <TradeDetails v-if="selectedTrade && !isExecutionFormOpen" :selected-trade="selectedTrade" />
   </aside>
 </template>
