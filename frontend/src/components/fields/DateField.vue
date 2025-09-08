@@ -31,6 +31,7 @@ const df = new DateFormatter('en-US', {
         <PopoverTrigger as-child>
           <FormControl>
             <Button
+              class="border-slate-600 bg-slate-800 text-slate-100"
               variant="outline"
               :class="cn('ps-3 text-start font-normal', 'text-muted-foreground')"
             >
@@ -42,6 +43,7 @@ const df = new DateFormatter('en-US', {
         </PopoverTrigger>
         <PopoverContent class="w-auto p-0">
           <Calendar
+            class="border-slate-600 bg-slate-800 text-slate-100 hover:bg-slate-700"
             :model-value="
               value ? parseDate(new Date(value).toISOString().split('T')[0]) : undefined
             "
