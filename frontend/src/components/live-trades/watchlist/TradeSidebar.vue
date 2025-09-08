@@ -3,6 +3,7 @@ import { useLiveTradeFetchingService } from '@/composables'
 import { Icon } from '@iconify/vue'
 import type { LiveTrade } from '@/interfaces'
 import { ScalePlanTypeEnum } from '@/enums'
+import TradeSideBarHeader from '@/components/live-trades/watchlist/TradeSideBarHeader.vue'
 
 const props = defineProps<{
   isOpen?: boolean
@@ -11,6 +12,7 @@ const props = defineProps<{
 const { watchlist } = useLiveTradeFetchingService()
 const selectedTrade = ref<LiveTrade | null>(null)
 const isExecutionFormOpen = ref(false)
+const isTradeFormOpen = ref(false)
 
 const entryPlan = computed(() => {
   return selectedTrade.value?.scalePlans.find((p) => p.planType === ScalePlanTypeEnum.enum.ENTRY)
@@ -27,18 +29,10 @@ const openExecutionForm = () => (isExecutionFormOpen.value = true)
   <aside
     :class="[
       'fixed inset-y-0 right-0 z-40 w-full lg:w-80 h-screen bg-gray-900 border-r border-gray-800 flex flex-col transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0',
-      props.isOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'
+      props.isOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0',
     ]"
   >
-    <div class="p-4 border-b border-gray-800">
-      <h2 class="text-lg font-semibold text-white mb-3">Watchlist</h2>
-      <div class="relative">
-        <Input
-          placeholder="Search symbols..."
-          class="pl-10 bg-gray-800 border-gray-700 text-white placeholder-gray-400"
-        />
-      </div>
-    </div>
+    <TradeSideBarHeader @open-trade-form="isTradeFormOpen = true" />
     <div class="flex-1 flex flex-col min-h-0">
       <ScrollArea class="flex-1">
         <div class="p-2">
