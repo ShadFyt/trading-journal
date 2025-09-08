@@ -2,14 +2,26 @@ import { useLiveTradeMutationService } from '@/composables'
 import { tradeCreateSchema } from '@/schemas'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
+import type { ScalePlanCreate } from '@/interfaces'
+import { ScalePlanTypeEnum } from '@/enums'
 
 export const useTradeFormCreate = (close?: (v: boolean) => void) => {
   const { createMutation } = useLiveTradeMutationService()
   const tradeFormSchema = toTypedSchema(tradeCreateSchema)
 
+  const entryPlanFactory = (): ScalePlanCreate => ({
+    orderType: 'stop_limit',
+    label: 'Entry',
+    qty: 0,
+    targetPrice: 0,
+    notes: '',
+    stopPrice: 0,
+    limitPrice: 0,
+    planType: ScalePlanTypeEnum.enum.ENTRY,
+  })
   const getInitialValues = () => {
     return {
-      scalePlans: [],
+      scalePlans: [entryPlanFactory()],
     }
   }
 
@@ -38,5 +50,6 @@ export const useTradeFormCreate = (close?: (v: boolean) => void) => {
     meta,
     schema: tradeFormSchema,
     isFormValid,
+    trade: values,
   }
 }
