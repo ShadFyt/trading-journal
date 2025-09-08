@@ -1,27 +1,20 @@
 import { useLiveTradeMutationService } from '@/composables'
-import { liveTradeCreateSchema } from '@/schemas'
+import { tradeCreateSchema } from '@/schemas'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
-import type { TradeIdea } from '@/interfaces/trade-idea.type.ts'
 
-export const useLiveTradeFormCreate = (tradeIdea: TradeIdea, close?: (v: boolean) => void) => {
+export const useTradeFormCreate = (close?: (v: boolean) => void) => {
   const { createMutation } = useLiveTradeMutationService()
-  const liveTradeFormSchema = toTypedSchema(liveTradeCreateSchema)
+  const tradeFormSchema = toTypedSchema(tradeCreateSchema)
 
   const getInitialValues = () => {
-    const { entryMin, entryMax, notes, catalysts, ideaDate, id, ...rest } = tradeIdea
     return {
-      ...rest,
-      entryPriceAvg: entryMin,
-      notes: '',
-      catalysts: '',
-      tradeIdeaId: id,
       scalePlans: [],
     }
   }
 
-  const { isFieldDirty, handleSubmit, setFieldValue, isSubmitting, meta } = useForm({
-    validationSchema: liveTradeFormSchema,
+  const { values, isFieldDirty, handleSubmit, setFieldValue, isSubmitting, meta } = useForm({
+    validationSchema: tradeFormSchema,
     initialValues: getInitialValues(),
   })
 
@@ -35,12 +28,15 @@ export const useLiveTradeFormCreate = (tradeIdea: TradeIdea, close?: (v: boolean
     }
   })
 
+  const isFormValid = computed(() => tradeCreateSchema.safeParse(values).success)
+
   return {
     isFieldDirty,
     onSubmit,
     setFieldValue,
     isSubmitting,
     meta,
-    schema: liveTradeFormSchema,
+    schema: tradeFormSchema,
+    isFormValid,
   }
 }

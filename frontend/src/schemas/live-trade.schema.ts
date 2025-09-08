@@ -5,12 +5,12 @@ import { ScalePlanCreateSchema, ScalePlanSchema } from './scale-plan.schema'
 import { ExecutionSchema } from '@/schemas/execution.schema.ts'
 import { TradeStatusEnum } from '@/enums/trade.enum.ts'
 
-export const liveTradeCreateSchema = baseTradeSchema.extend({
-  tradeIdeaId: z.string().uuid(),
+export const tradeCreateSchema = baseTradeSchema.extend({
   scalePlans: ScalePlanCreateSchema.array(),
+  ideaDate: z.date().optional(),
 })
 
-export const LiveTradeSchema = liveTradeCreateSchema.extend({
+export const LiveTradeSchema = tradeCreateSchema.extend({
   id: z.string().uuid(),
   rrRatio: z.number().optional(),
   outcome: z
@@ -36,7 +36,6 @@ export const LiveTradeUpdateSchema = LiveTradeSchema.omit({
   percentChange: true,
   currentPrice: true,
   rrRatio: true,
-  tradeIdeaId: true,
   status: true,
   scalePlans: true,
   openPrice: true,
