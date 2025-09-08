@@ -3,14 +3,14 @@ import { tradeCreateSchema } from '@/schemas'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
 import type { ScalePlanCreate } from '@/interfaces'
-import { ScalePlanTypeEnum } from '@/enums'
+import { OrderTypeEnum, ScalePlanTypeEnum } from '@/enums'
 
 export const useTradeFormCreate = (close?: (v: boolean) => void) => {
   const { createMutation } = useLiveTradeMutationService()
   const tradeFormSchema = toTypedSchema(tradeCreateSchema)
 
   const entryPlanFactory = (): ScalePlanCreate => ({
-    orderType: 'stop_limit',
+    orderType: OrderTypeEnum.enum.LIMIT,
     label: 'Entry',
     qty: 0,
     targetPrice: 0,

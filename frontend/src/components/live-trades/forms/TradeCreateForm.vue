@@ -6,6 +6,9 @@ const { onSubmit, isFormValid, schema, setFieldValue, isFieldDirty, trade } = us
 const entryPlan = computed(() =>
   trade.scalePlans?.find((p) => p.planType === ScalePlanTypeEnum.enum.ENTRY),
 )
+const targetPlans = computed(
+  () => trade?.scalePlans?.filter((p) => p.planType === ScalePlanTypeEnum.enum.TARGET) ?? [],
+)
 </script>
 
 <template>
@@ -29,7 +32,35 @@ const entryPlan = computed(() =>
         </CardHeader>
         <CardContent class="space-y-4">
           <BasicTradeField :set-field-value="setFieldValue" :is-field-dirty="isFieldDirty" />
+        </CardContent>
+      </Card>
+      <Card class="border border-slate-600 rounded-lg p-4 bg-slate-800/50 m-2">
+        <CardHeader class="flex items-center gap-2 bg-emerald-900 px-4 py-3 -m-4 mb-4 rounded-t-lg">
+          <CardTitle class="text-base text-slate-100 flex text-center">
+            <span class="font-medium text-md text-emerald-300">Entry Plan</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent class="space-y-4 p-0">
           <PlanForm v-if="entryPlan" :plan="entryPlan" :is-entry="true" />
+        </CardContent>
+      </Card>
+      <Card class="border border-slate-600 rounded-lg p-4 bg-slate-800/50 m-2">
+        <CardHeader
+          class="bg-blue-900/30 flex justify-between gap-2 px-4 py-3 -m-4 mb-4 rounded-t-lg"
+        >
+          <CardTitle class="text-blue-400 text-base flex gap-2">
+            <Icon icon="lucide:target" width="24" height="24" /> Target Plans
+          </CardTitle>
+          <Button size="sm" class="gap-1">
+            <Icon icon="lucide:plus" width="24" height="24" /> Add Target
+          </Button>
+        </CardHeader>
+        <CardContent class="space-y-4">
+          <div v-if="targetPlans.length === 0" class="text-slate-500 text-sm text-center py-8">
+            <p>No target plans yet.</p>
+            <p>Click "Add Target" to create exit strategies.</p>
+          </div>
+          <PlanForm v-for="plan in targetPlans" :key="plan.targetPrice" :plan :is-entry="false" />
         </CardContent>
       </Card>
     </section>
