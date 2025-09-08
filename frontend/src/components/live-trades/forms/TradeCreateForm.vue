@@ -2,13 +2,23 @@
 import { Icon } from '@iconify/vue'
 import { useTradeFormCreate } from '@/composables'
 import { ScalePlanTypeEnum } from '@/enums'
+import { targetPlanFactory } from '@/utils'
 const { onSubmit, isFormValid, schema, setFieldValue, isFieldDirty, trade } = useTradeFormCreate()
+
 const entryPlan = computed(() =>
   trade.scalePlans?.find((p) => p.planType === ScalePlanTypeEnum.enum.ENTRY),
 )
 const targetPlans = computed(
   () => trade?.scalePlans?.filter((p) => p.planType === ScalePlanTypeEnum.enum.TARGET) ?? [],
 )
+
+const addTargetPlan = () => {
+  const idx = targetPlans.value.length + 1
+  setFieldValue('scalePlans', [
+    ...(trade?.scalePlans ?? []),
+    targetPlanFactory(idx, entryPlan.value?.limitPrice),
+  ])
+}
 </script>
 
 <template>
@@ -41,7 +51,7 @@ const targetPlans = computed(
           </CardTitle>
         </CardHeader>
         <CardContent class="space-y-4 p-0">
-          <PlanForm v-if="entryPlan" :plan="entryPlan" :is-entry="true" />
+          <EntryPlanForm />
         </CardContent>
       </Card>
       <Card class="border border-slate-600 rounded-lg p-4 bg-slate-800/50 m-2">
@@ -51,16 +61,21 @@ const targetPlans = computed(
           <CardTitle class="text-blue-400 text-base flex gap-2">
             <Icon icon="lucide:target" width="24" height="24" /> Target Plans
           </CardTitle>
-          <Button size="sm" class="gap-1">
+          <Button size="sm" class="gap-1" @click.prevent="addTargetPlan">
             <Icon icon="lucide:plus" width="24" height="24" /> Add Target
           </Button>
         </CardHeader>
-        <CardContent class="space-y-4">
+        <CardContent class="space-y-4 p-0">
           <div v-if="targetPlans.length === 0" class="text-slate-500 text-sm text-center py-8">
             <p>No target plans yet.</p>
             <p>Click "Add Target" to create exit strategies.</p>
           </div>
-          <PlanForm v-for="plan in targetPlans" :key="plan.targetPrice" :plan :is-entry="false" />
+          <TargetPlanForm
+            v-for="plan in targetPlans"
+            :key="plan.targetPrice"
+            :plan
+            :is-entry="false"
+          />
         </CardContent>
       </Card>
     </section>
