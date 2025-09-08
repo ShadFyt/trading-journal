@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { Icon } from '@iconify/vue'
-import { FormField, FormItem, FormLabel, FormMessage } from '../../ui/form'
 import { useTradeFormCreate } from '@/composables'
 import { typedDateField } from '@/utils'
 import type { LiveTradeCreate } from '@/interfaces'
@@ -94,6 +93,7 @@ const TradeDateField = typedDateField<LiveTradeCreate>()
 
             <TradeDateField name="ideaDate" title="Entry Date" :setFieldValue="setFieldValue" />
           </div>
+          <BasicTradeField :set-field-value="setFieldValue" :is-field-dirty="isFieldDirty" />
         </CardContent>
       </Card>
     </section>

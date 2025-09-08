@@ -21,6 +21,7 @@ declare module 'vue' {
     AnnotationsList: typeof import('./src/components/live-trades/trade-view/AnnotationsList.vue')['default']
     Badge: typeof import('./src/components/ui/badge/Badge.vue')['default']
     BasicFields: typeof import('./src/components/trade-ideas/fields/BasicFields.vue')['default']
+    BasicTradeField: typeof import('./src/components/live-trades/forms/fields/BasicTradeField.vue')['default']
     Button: typeof import('./src/components/ui/button/Button.vue')['default']
     Calendar: typeof import('./src/components/ui/calendar/Calendar.vue')['default']
     CalendarCell: typeof import('./src/components/ui/calendar/CalendarCell.vue')['default']
