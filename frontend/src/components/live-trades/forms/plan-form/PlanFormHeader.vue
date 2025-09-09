@@ -2,7 +2,7 @@
 import { Icon } from '@iconify/vue'
 
 defineProps<{ isEntry: boolean }>()
-const emit = defineEmits<{ remove: [] }>()
+const emit = defineEmits<{ (e: 'remove-plan'): [] }>()
 </script>
 
 <template>
@@ -12,7 +12,7 @@ const emit = defineEmits<{ remove: [] }>()
       <span class="font-medium text-md">Target Plans</span>
     </div>
     <Button
-      @click="emit('remove')"
+      @click.prevent="emit('remove-plan')"
       class="text-red-400 bg-slate-900 hover:text-red-300 rounded transition-colors"
     >
       <Icon icon="lucide:x" />

@@ -10,16 +10,27 @@ const { isEntry, plan } = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  remove: [plan: ScalePlanCreate]
+  (e: 'remove-plan'): []
 }>()
 </script>
 
 <template>
-  <PlanFormHeader :is-entry="isEntry" @remove="emit('remove', plan)" />
+  <PlanFormHeader :is-entry="isEntry" @remove-plan="emit('remove-plan')" />
   <div class="space-y-4">
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <OrderTypeField />
-      <TradeTypeField />
+      <FormField class="space-y-2" name="label" v-slot="{ componentField }">
+        <FormItem>
+          <FormLabel for="label" class="text-xs font-medium text-slate-300 flex items-center gap-1">
+            Label
+          </FormLabel>
+          <Input
+            v-bind="componentField"
+            class="w-full bg-slate-800 border border-slate-600 text-slate-200 placeholder:text-slate-400 focus-visible:ring-emerald-500 focus-visible:border-emerald-500"
+          />
+          <FormMessage class="text-red-500" />
+        </FormItem>
+      </FormField>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <QtyField />

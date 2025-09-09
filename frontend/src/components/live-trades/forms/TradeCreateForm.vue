@@ -3,21 +3,26 @@ import { Icon } from '@iconify/vue'
 import { useTradeFormCreate } from '@/composables'
 import { ScalePlanTypeEnum } from '@/enums'
 import { targetPlanFactory } from '@/utils'
+import { useFieldArray } from 'vee-validate'
+import type { ScalePlanCreate } from '@/interfaces'
 const { onSubmit, isFormValid, schema, setFieldValue, isFieldDirty, trade } = useTradeFormCreate()
+const { fields, push, remove } = useFieldArray<ScalePlanCreate>('scalePlans')
 
 const entryPlan = computed(() =>
   trade.scalePlans?.find((p) => p.planType === ScalePlanTypeEnum.enum.ENTRY),
 )
 const targetPlans = computed(
-  () => trade?.scalePlans?.filter((p) => p.planType === ScalePlanTypeEnum.enum.TARGET) ?? [],
+  () => fields.value.filter((p) => p.value.planType === ScalePlanTypeEnum.enum.TARGET) ?? [],
 )
 
 const addTargetPlan = () => {
   const idx = targetPlans.value.length + 1
-  setFieldValue('scalePlans', [
-    ...(trade?.scalePlans ?? []),
-    targetPlanFactory(idx, entryPlan.value?.limitPrice),
-  ])
+  push(targetPlanFactory(idx, entryPlan.value?.limitPrice))
+}
+
+const removeTargetPlan = (idx: number, plan: any) => {
+  console.log('remove target plan', idx, plan)
+  remove(idx)
 }
 </script>
 
@@ -71,10 +76,11 @@ const addTargetPlan = () => {
             <p>Click "Add Target" to create exit strategies.</p>
           </div>
           <TargetPlanForm
-            v-for="plan in targetPlans"
-            :key="plan.targetPrice"
-            :plan
+            v-for="(plan, idx) in targetPlans"
+            :key="plan.value.targetPrice"
+            :plan="plan.value"
             :is-entry="false"
+            @remove-plan="removeTargetPlan(idx, plan)"
           />
         </CardContent>
       </Card>
