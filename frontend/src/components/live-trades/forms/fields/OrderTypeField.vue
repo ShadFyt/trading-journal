@@ -1,11 +1,14 @@
 <script lang="ts" setup>
 import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import type { ScalePlanCreate } from '@/interfaces'
+
+const orderType = defineModel<ScalePlanCreate['orderType']>()
 </script>
 <template>
-  <FormField class="space-y-2" v-slot="{ componentField }" name="orderType">
+  <FormField class="space-y-2" name="orderType">
     <FormItem>
       <FormLabel for="orderType" class="text-xs font-medium text-slate-300">Order Type</FormLabel>
-      <Select v-bind="componentField">
+      <Select v-model="orderType">
         <SelectTrigger class="w-full bg-slate-800 border border-slate-600 text-slate-200">
           <SelectValue placeholder="Market" />
         </SelectTrigger>

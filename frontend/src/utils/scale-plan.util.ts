@@ -61,4 +61,5 @@ export const targetPlanFactory = (idx: number, entryPrice = 0): ScalePlanCreate 
   limitPrice: 0,
   planType: 'target',
   tradeType: 'long',
+  orderType: OrderTypeEnum.enum.LIMIT,
 })

@@ -14,7 +14,7 @@ const TradeDateField = typedDateField<LiveTradeCreate>()
 <template>
   <FormField v-slot="{ componentField }" name="symbol" class="space-y-2">
     <FormItem>
-      <FormLabel for="symbol" class="text-slate-200">Symbol *</FormLabel>
+      <FormLabel for="symbol">Symbol *</FormLabel>
       <Input
         v-bind="componentField"
         placeholder="e.g. AAPL"

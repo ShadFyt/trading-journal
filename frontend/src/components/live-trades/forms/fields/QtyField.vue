@@ -1,9 +1,11 @@
 <script lang="ts" setup>
 import { Icon } from '@iconify/vue'
 import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+
+const qty = defineModel<number>()
 </script>
 <template>
-  <FormField class="space-y-2" v-slot="{ componentField }" name="qty">
+  <FormField class="space-y-2" name="qty">
     <FormItem>
       <FormLabel for="qty" class="text-xs font-medium text-slate-300 flex items-center gap-1">
         <Icon icon="lucide:hash" width="14" height="14" class="text-slate-400" />
@@ -11,7 +13,7 @@ import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/for
       </FormLabel>
       <Input
         type="number"
-        v-bind="componentField"
+        v-model="qty"
         min="1"
         placeholder="Shares"
         class="w-full bg-slate-800 border border-slate-600 text-slate-200 placeholder:text-slate-400 focus-visible:ring-emerald-500 focus-visible:border-emerald-500"

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+const plan = defineModel<ScalePlanCreate>()
 
 import { Icon } from '@iconify/vue'
 </script>
@@ -7,7 +8,7 @@ import { Icon } from '@iconify/vue'
 <template>
   <div class="space-y-4">
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <OrderTypeField />
+      <OrderTypeField v-model="plan.orderType" />
       <TradeTypeField />
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">

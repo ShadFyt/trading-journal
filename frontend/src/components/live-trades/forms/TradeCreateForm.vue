@@ -56,7 +56,7 @@ const removeTargetPlan = (plan: ScalePlanCreate) => {
           </CardTitle>
         </CardHeader>
         <CardContent class="space-y-4 p-0">
-          <EntryPlanForm />
+          <EntryPlanForm v-model="entryPlan" />
         </CardContent>
       </Card>
       <Card class="border border-slate-600 rounded-lg p-4 bg-slate-800/50 m-2">
@@ -77,7 +77,8 @@ const removeTargetPlan = (plan: ScalePlanCreate) => {
           </div>
           <TargetPlanForm
             v-for="plan in targetPlans"
-            :key="plan.value.targetPrice"
+            v-model="plan.value"
+            :key="plan.key"
             @remove-plan="removeTargetPlan(plan)"
           />
         </CardContent>
