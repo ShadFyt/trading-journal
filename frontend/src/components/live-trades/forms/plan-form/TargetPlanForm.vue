@@ -2,12 +2,6 @@
 import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 
 import { Icon } from '@iconify/vue'
-import type { ScalePlanCreate } from '@/interfaces'
-
-const { isEntry, plan } = defineProps<{
-  isEntry: boolean
-  plan: ScalePlanCreate
-}>()
 
 const emit = defineEmits<{
   (e: 'remove-plan'): []
@@ -15,7 +9,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <PlanFormHeader :is-entry="isEntry" @remove-plan="emit('remove-plan')" />
+  <PlanFormHeader @remove-plan="emit('remove-plan')" />
   <div class="space-y-4">
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <OrderTypeField />

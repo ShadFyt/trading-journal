@@ -20,9 +20,9 @@ const addTargetPlan = () => {
   push(targetPlanFactory(idx, entryPlan.value?.limitPrice))
 }
 
-const removeTargetPlan = (idx: number, plan: any) => {
-  console.log('remove target plan', idx, plan)
-  remove(idx)
+const removeTargetPlan = (plan: ScalePlanCreate) => {
+  const globalIdx = fields.value.findIndex((f) => f.key === plan.key)
+  remove(globalIdx)
 }
 </script>
 
@@ -76,11 +76,9 @@ const removeTargetPlan = (idx: number, plan: any) => {
             <p>Click "Add Target" to create exit strategies.</p>
           </div>
           <TargetPlanForm
-            v-for="(plan, idx) in targetPlans"
+            v-for="plan in targetPlans"
             :key="plan.value.targetPrice"
-            :plan="plan.value"
-            :is-entry="false"
-            @remove-plan="removeTargetPlan(idx, plan)"
+            @remove-plan="removeTargetPlan(plan)"
           />
         </CardContent>
       </Card>
