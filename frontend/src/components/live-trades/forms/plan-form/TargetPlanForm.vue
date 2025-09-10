@@ -2,6 +2,7 @@
 import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 
 import { Icon } from '@iconify/vue'
+import type { ScalePlanCreate } from '@/interfaces'
 
 const plan = defineModel<ScalePlanCreate>()
 
@@ -12,7 +13,7 @@ const emit = defineEmits<{
 
 <template>
   <PlanFormHeader @remove-plan="emit('remove-plan')" />
-  <div class="space-y-4">
+  <div class="space-y-4" v-if="plan">
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <OrderTypeField v-model="plan.orderType" />
       <FormField class="space-y-2" name="label">

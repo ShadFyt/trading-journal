@@ -3,7 +3,7 @@ import { Icon } from '@iconify/vue'
 import { useTradeFormCreate } from '@/composables'
 import { ScalePlanTypeEnum } from '@/enums'
 import { targetPlanFactory } from '@/utils'
-import { useFieldArray } from 'vee-validate'
+import { type FieldEntry, useFieldArray } from 'vee-validate'
 import type { ScalePlanCreate } from '@/interfaces'
 const { onSubmit, isFormValid, schema, setFieldValue, isFieldDirty, trade } = useTradeFormCreate()
 const { fields, push, remove } = useFieldArray<ScalePlanCreate>('scalePlans')
@@ -20,7 +20,7 @@ const addTargetPlan = () => {
   push(targetPlanFactory(idx, entryPlan.value?.limitPrice))
 }
 
-const removeTargetPlan = (plan: ScalePlanCreate) => {
+const removeTargetPlan = (plan: FieldEntry<ScalePlanCreate>) => {
   const globalIdx = fields.value.findIndex((f) => f.key === plan.key)
   remove(globalIdx)
 }

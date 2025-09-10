@@ -52,7 +52,6 @@ export const entryPlanFactory = (): ScalePlanCreate => ({
 })
 
 export const targetPlanFactory = (idx: number, entryPrice = 0): ScalePlanCreate => ({
-  orderType: 'limit',
   label: `Target ${idx}`,
   qty: 0,
   targetPrice: entryPrice + 1,

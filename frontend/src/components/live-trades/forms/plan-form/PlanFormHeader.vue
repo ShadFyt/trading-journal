@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { Icon } from '@iconify/vue'
 
-defineProps<{ isEntry: boolean }>()
 const emit = defineEmits<{ (e: 'remove-plan'): [] }>()
 </script>
 

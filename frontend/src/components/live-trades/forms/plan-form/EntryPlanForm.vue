@@ -3,10 +3,11 @@ import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/for
 const plan = defineModel<ScalePlanCreate>()
 
 import { Icon } from '@iconify/vue'
+import type { ScalePlanCreate } from '@/interfaces'
 </script>
 
 <template>
-  <div class="space-y-4">
+  <div v-if="plan" class="space-y-4">
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <OrderTypeField v-model="plan.orderType" />
       <TradeTypeField />
