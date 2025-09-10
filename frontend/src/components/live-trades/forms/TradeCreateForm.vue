@@ -32,13 +32,6 @@ const removeTargetPlan = (plan: FieldEntry<ScalePlanCreate>) => {
   const globalIdx = fields.value.findIndex((f) => f.key === plan.key)
   remove(globalIdx)
 }
-watch(
-  meta,
-  (newMeta) => {
-    console.log('Meta changed:', newMeta)
-  },
-  { deep: true },
-)
 </script>
 
 <template>

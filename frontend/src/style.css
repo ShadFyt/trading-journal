@@ -122,3 +122,57 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Custom Scrollbar Styles - Applied Globally */
+@layer utilities {
+  /* Webkit Scrollbar (Chrome, Safari, Edge) */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: oklch(0.445 0.043 257.421) oklch(0.205 0 0);
+  }
+  
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  *::-webkit-scrollbar-track {
+    background: oklch(0.205 0 0); /* slate-800 */
+    border-radius: 4px;
+  }
+  
+  *::-webkit-scrollbar-thumb {
+    background: oklch(0.445 0.043 257.421); /* slate-600 */
+    border-radius: 4px;
+    border: 1px solid oklch(0.269 0 0); /* slate-700 */
+    transition: background-color 0.2s ease;
+  }
+  
+  *::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.488 0.243 264.376); /* blue-600 */
+  }
+  
+  *::-webkit-scrollbar-thumb:active {
+    background: oklch(0.439 0.216 264.376); /* blue-700 */
+  }
+  
+  *::-webkit-scrollbar-corner {
+    background: oklch(0.205 0 0); /* slate-800 */
+  }
+  
+  /* Custom scrollbar for specific components that need thinner scrollbars */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: oklch(0.445 0.043 257.421);
+    border-radius: 3px;
+    border: none;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.488 0.243 264.376);
+  }
+}
