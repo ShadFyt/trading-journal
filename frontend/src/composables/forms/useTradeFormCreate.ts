@@ -4,7 +4,7 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
 import { entryPlanFactory } from '@/utils'
 
-export const useTradeFormCreate = (close?: (v: boolean) => void) => {
+export const useTradeFormCreate = (close?: () => void) => {
   const { createMutation } = useLiveTradeMutationService()
   const tradeFormSchema = toTypedSchema(tradeCreateSchema)
 
@@ -23,14 +23,12 @@ export const useTradeFormCreate = (close?: (v: boolean) => void) => {
   const onSubmit = handleSubmit(async (values) => {
     try {
       await createMutation.mutateAsync(values)
-      close?.(false)
+      close?.()
     } catch (error) {
       console.error('Form submission error:', error)
       throw error
     }
   })
-
-  const isFormValid = computed(() => meta.value.valid)
 
   return {
     isFieldDirty,
@@ -39,7 +37,6 @@ export const useTradeFormCreate = (close?: (v: boolean) => void) => {
     isSubmitting,
     meta,
     schema: tradeFormSchema,
-    isFormValid,
     trade: values,
   }
 }

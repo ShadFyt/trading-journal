@@ -5,11 +5,18 @@ import { ScalePlanTypeEnum } from '@/enums'
 import { targetPlanFactory } from '@/utils'
 import { type FieldEntry, useFieldArray } from 'vee-validate'
 import type { ScalePlanCreate } from '@/interfaces'
-const { onSubmit, isFormValid, schema, setFieldValue, isFieldDirty, trade } = useTradeFormCreate()
+
+const $emit = defineEmits<{
+  (e: 'close'): []
+}>()
+
+const { onSubmit, schema, setFieldValue, isFieldDirty, trade, meta } = useTradeFormCreate(() =>
+  $emit('close'),
+)
 const { fields, push, remove } = useFieldArray<ScalePlanCreate>('scalePlans')
 
-const entryPlan = computed(() =>
-  trade.scalePlans?.find((p) => p.planType === ScalePlanTypeEnum.enum.ENTRY),
+const entryPlan = computed(
+  () => fields.value?.find((p) => p.value.planType === ScalePlanTypeEnum.enum.ENTRY)?.value,
 )
 const targetPlans = computed(
   () => fields.value.filter((p) => p.value.planType === ScalePlanTypeEnum.enum.TARGET) ?? [],
@@ -17,13 +24,20 @@ const targetPlans = computed(
 
 const addTargetPlan = () => {
   const idx = targetPlans.value.length + 1
-  push(targetPlanFactory(idx, entryPlan.value?.limitPrice))
+  push(targetPlanFactory(idx, entryPlan?.value?.limitPrice))
 }
 
 const removeTargetPlan = (plan: FieldEntry<ScalePlanCreate>) => {
   const globalIdx = fields.value.findIndex((f) => f.key === plan.key)
   remove(globalIdx)
 }
+watch(
+  meta,
+  (newMeta) => {
+    console.log('Meta changed:', newMeta)
+  },
+  { deep: true },
+)
 </script>
 
 <template>
@@ -31,10 +45,10 @@ const removeTargetPlan = (plan: FieldEntry<ScalePlanCreate>) => {
     <header class="p-4 border-b border-slate-700 flex items-center justify-between">
       <h2 class="text-lg font-semibold">New Trade Idea</h2>
       <div class="flex gap-2">
-        <Button variant="ghost" class="text-slate-400 hover:text-white" @click="$emit('cancel')">
+        <Button variant="ghost" class="text-slate-400 hover:text-white" @click="$emit('close')">
           Cancel
         </Button>
-        <Button class="gap-1" type="submit" :disabled="!isFormValid">
+        <Button class="gap-1" type="submit" :disabled="!meta.valid">
           <Icon icon="lucide:check" width="24" height="24" /> Save Trade
         </Button>
       </div>
@@ -56,7 +70,7 @@ const removeTargetPlan = (plan: FieldEntry<ScalePlanCreate>) => {
           </CardTitle>
         </CardHeader>
         <CardContent class="space-y-4 p-0">
-          <EntryPlanForm v-model="entryPlan" />
+          <EntryPlanForm v-model="entryPlan" :idx="0" />
         </CardContent>
       </Card>
       <Card class="border border-slate-600 rounded-lg p-4 bg-slate-800/50 m-2">
@@ -79,6 +93,7 @@ const removeTargetPlan = (plan: FieldEntry<ScalePlanCreate>) => {
             v-for="plan in targetPlans"
             v-model="plan.value"
             :key="plan.key"
+            :idx="plan.key"
             @remove-plan="removeTargetPlan(plan)"
           />
         </CardContent>

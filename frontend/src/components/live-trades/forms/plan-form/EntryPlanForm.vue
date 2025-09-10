@@ -4,19 +4,22 @@ const plan = defineModel<ScalePlanCreate>()
 
 import { Icon } from '@iconify/vue'
 import type { ScalePlanCreate } from '@/interfaces'
+
+const { idx } = defineProps<{ idx: string | number }>()
+const planId = computed(() => `scalePlans.${idx}`)
 </script>
 
 <template>
   <div v-if="plan" class="space-y-4">
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <OrderTypeField v-model="plan.orderType" />
-      <TradeTypeField v-model="plan.tradeType" />
+      <OrderTypeField plan-id="planId" />
+      <TradeTypeField plan-id="planId" />
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-      <FormField class="space-y-2" name="limitPrice">
+      <FormField class="space-y-2" :name="`${planId}.limitPrice`" v-slot="{ value, setValue }">
         <FormItem>
           <FormLabel
-            for="limitPrice"
+            :for="`${planId}.limitPrice`"
             class="text-xs font-medium text-slate-300 flex items-center gap-1"
           >
             <Icon icon="lucide:dollar-sign" width="14" height="14" class="text-slate-400" />
@@ -24,7 +27,8 @@ import type { ScalePlanCreate } from '@/interfaces'
           </FormLabel>
           <Input
             type="number"
-            v-model="plan.limitPrice"
+            :model-value="value"
+            @update:model-value="setValue"
             min="0"
             step="0.01"
             placeholder="0.00"
@@ -33,10 +37,10 @@ import type { ScalePlanCreate } from '@/interfaces'
           <FormMessage class="text-red-500" />
         </FormItem>
       </FormField>
-      <FormField class="space-y-2" name="stopPrice">
+      <FormField class="space-y-2" :name="`${planId}.stopPrice`" v-slot="{ value, setValue }">
         <FormItem>
           <FormLabel
-            for="stopPrice"
+            :for="`${planId}.stopPrice`"
             class="text-xs font-medium text-slate-300 flex items-center gap-1"
           >
             <Icon icon="lucide:dollar-sign" width="14" height="14" class="text-slate-400" />
@@ -44,7 +48,8 @@ import type { ScalePlanCreate } from '@/interfaces'
           </FormLabel>
           <Input
             type="number"
-            v-model="plan.stopPrice"
+            :model-value="value"
+            @update:model-value="setValue"
             min="0"
             step="0.01"
             placeholder="0.00"
@@ -53,9 +58,9 @@ import type { ScalePlanCreate } from '@/interfaces'
           <FormMessage class="text-red-500" />
         </FormItem>
       </FormField>
-      <QtyField v-model="plan.qty" />
+      <QtyField plan-id="planId" />
     </div>
 
-    <NoteField />
+    <NoteField :plan-id="planId" />
   </div>
 </template>

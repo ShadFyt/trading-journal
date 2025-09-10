@@ -4,6 +4,9 @@ import { Icon } from '@iconify/vue'
 import type { LiveTrade } from '@/interfaces'
 import { ScalePlanTypeEnum } from '@/enums'
 import TradeSideBarHeader from '@/components/live-trades/watchlist/TradeSideBarHeader.vue'
+import { useToggle } from '@vueuse/core'
+const [isExecutionFormOpen, toggleExecutionFormExpanded] = useToggle(false)
+const [isTradeFormOpen, toggleTradeFormExpanded] = useToggle(false)
 
 const props = defineProps<{
   isOpen?: boolean
@@ -11,8 +14,6 @@ const props = defineProps<{
 
 const { watchlist } = useLiveTradeFetchingService()
 const selectedTrade = ref<LiveTrade | null>(null)
-const isExecutionFormOpen = ref(false)
-const isTradeFormOpen = ref(false)
 
 const entryPlan = computed(() => {
   return selectedTrade.value?.scalePlans.find((p) => p.planType === ScalePlanTypeEnum.enum.ENTRY)
@@ -21,8 +22,6 @@ const entryPlan = computed(() => {
 const handleTradeSelect = (trade: LiveTrade) => {
   selectedTrade.value = trade
 }
-
-const openExecutionForm = () => (isExecutionFormOpen.value = true)
 </script>
 
 <template>
@@ -33,7 +32,7 @@ const openExecutionForm = () => (isExecutionFormOpen.value = true)
     ]"
   >
     <template v-if="isTradeFormOpen">
-      <TradeCreateForm @cancel="isTradeFormOpen = false" />
+      <TradeCreateForm @close="() => toggleTradeFormExpanded(false)" />
     </template>
     <template v-else>
       <TradeSideBarHeader @open-trade-form="isTradeFormOpen = true" />
@@ -63,6 +62,7 @@ const openExecutionForm = () => (isExecutionFormOpen.value = true)
         v-if="isExecutionFormOpen && entryPlan"
         :scalePlan="entryPlan"
         :extraClass="'p-3 m-2 bg-gray-800/50 border-none text-gray-100'"
+        @close="() => toggleExecutionFormExpanded(false)"
       >
         <template #header>
           <div class="flex justify-between">
@@ -82,7 +82,7 @@ const openExecutionForm = () => (isExecutionFormOpen.value = true)
       <TradeDetails
         v-if="selectedTrade && !isExecutionFormOpen"
         :selected-trade="selectedTrade"
-        @open-execution-form="openExecutionForm"
+        @open-execution-form="toggleExecutionFormExpanded"
       />
     </template>
   </aside>

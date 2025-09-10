@@ -2,6 +2,7 @@
 import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import type { LiveTradeCreate } from '@/interfaces'
 import type { FormActions, GenericObject } from 'vee-validate'
+import { nextTick } from 'vue'
 
 const { setFieldValue, isFieldDirty } = defineProps<{
   setFieldValue: FormActions<GenericObject>['setFieldValue']
@@ -22,7 +23,7 @@ const { setFieldValue, isFieldDirty } = defineProps<{
         <FormMessage class="text-red-500" />
       </FormItem>
     </FormField>
-    <FormField v-slot="{ value }" name="rating" :validate-on-blur="!isFieldDirty">
+    <FormField v-slot="{ componentField }" name="rating" :validate-on-blur="!isFieldDirty">
       <FormItem>
         <FormLabel for="rating" class="text-slate-200">Rating</FormLabel>
         <FormControl>
@@ -35,16 +36,7 @@ const { setFieldValue, isFieldDirty } = defineProps<{
               style: 'decimal',
               minimumFractionDigits: 1,
             }"
-            :model-value="value"
-            @update:model-value="
-              (v) => {
-                if (v) {
-                  setFieldValue('rating', v)
-                } else {
-                  setFieldValue('rating', undefined)
-                }
-              }
-            "
+            v-bind="componentField"
             class="border-slate-600"
           >
             <NumberFieldContent>

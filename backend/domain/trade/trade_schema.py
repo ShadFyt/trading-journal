@@ -36,7 +36,6 @@ class TradeResponse(TradeBase):
 
 
 class TradeCreate(TradeBase):
-    idea_date: datetime
     scale_plans: List[ScalePlanCreate]
 
 
