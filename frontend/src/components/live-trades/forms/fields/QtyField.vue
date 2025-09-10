@@ -20,7 +20,7 @@ const { planId } = defineProps<{ planId: string }>()
         @update:model-value="setValue"
         min="1"
         placeholder="Shares"
-        class="w-full bg-slate-800 border border-slate-600 text-slate-200 placeholder:text-slate-400 focus-visible:ring-emerald-500 focus-visible:border-emerald-500"
+        class="w-full bg-slate-800 border border-slate-600 placeholder:text-slate-400"
       />
       <FormMessage class="text-red-500" />
     </FormItem>

@@ -32,7 +32,7 @@ const planId = computed(() => `scalePlans.${idx}`)
             min="0"
             step="0.01"
             placeholder="0.00"
-            class="bg-slate-800 border border-slate-600 text-slate-200 placeholder:text-slate-400 focus-visible:ring-emerald-500 focus-visible:border-emerald-500"
+            class="bg-slate-800 border border-slate-600 text-slate-200 placeholder:text-slate-400"
           />
           <FormMessage class="text-red-500" />
         </FormItem>
@@ -53,7 +53,7 @@ const planId = computed(() => `scalePlans.${idx}`)
             min="0"
             step="0.01"
             placeholder="0.00"
-            class="bg-slate-800 border border-slate-600 text-slate-200 placeholder:text-slate-400 focus-visible:ring-emerald-500 focus-visible:border-emerald-500"
+            class="bg-slate-800 border border-slate-600 text-slate-200 placeholder:text-slate-400"
           />
           <FormMessage class="text-red-500" />
         </FormItem>

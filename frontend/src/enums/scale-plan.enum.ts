@@ -4,7 +4,6 @@ export const ORDER_TYPES = {
   MARKET: 'market',
   LIMIT: 'limit',
   STOP: 'stop',
-  STOP_LIMIT: 'stop_limit',
 } as const
 export const OrderTypeEnum = z.nativeEnum(ORDER_TYPES)
 
