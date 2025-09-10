@@ -10,6 +10,7 @@ export const useTradeFormCreate = (close?: (v: boolean) => void) => {
 
   const getInitialValues = () => {
     return {
+      rating: 5,
       scalePlans: [entryPlanFactory()],
     }
   }

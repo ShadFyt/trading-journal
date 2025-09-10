@@ -7,7 +7,6 @@ import { TradeStatusEnum } from '@/enums/trade.enum.ts'
 
 export const tradeCreateSchema = baseTradeSchema.extend({
   scalePlans: ScalePlanCreateSchema.array(),
-  ideaDate: z.date().optional(),
 })
 
 export const LiveTradeSchema = tradeCreateSchema.extend({
