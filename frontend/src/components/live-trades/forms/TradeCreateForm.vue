@@ -71,7 +71,7 @@ watch(
           </CardTitle>
         </CardHeader>
         <CardContent class="space-y-4 p-0">
-          <EntryPlanForm v-model="entryPlan" :idx="0" />
+          <EntryPlanForm :idx="0" />
         </CardContent>
       </Card>
       <Card class="border border-slate-600 rounded-lg p-4 bg-slate-800/50 m-2">

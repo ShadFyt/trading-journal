@@ -6,8 +6,8 @@ const { planId } = defineProps<{ planId: string }>()
   <FormField :name="`${planId}.orderType`" class="space-y-2" v-slot="{ value, setValue }">
     <FormItem>
       <FormLabel :for="`${planId}.orderType`" class="text-xs font-medium text-slate-300"
-        >Order Type</FormLabel
-      >
+        >Order Type
+      </FormLabel>
       <Select :model-value="value" @update:model-value="setValue">
         <SelectTrigger class="w-full bg-slate-800 border border-slate-600 text-slate-200">
           <SelectValue placeholder="Market" />

@@ -1,19 +1,17 @@
 <script lang="ts" setup>
 import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-const plan = defineModel<ScalePlanCreate>()
 
 import { Icon } from '@iconify/vue'
-import type { ScalePlanCreate } from '@/interfaces'
 
 const { idx } = defineProps<{ idx: string | number }>()
 const planId = computed(() => `scalePlans.${idx}`)
 </script>
 
 <template>
-  <div v-if="plan" class="space-y-4">
+  <div class="space-y-4">
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <OrderTypeField plan-id="planId" />
-      <TradeTypeField plan-id="planId" />
+      <OrderTypeField :plan-id="planId" />
+      <TradeTypeField :plan-id="planId" />
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
       <FormField class="space-y-2" :name="`${planId}.limitPrice`" v-slot="{ value, setValue }">
