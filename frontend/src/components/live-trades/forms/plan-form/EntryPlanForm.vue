@@ -10,10 +10,10 @@ import type { ScalePlanCreate } from '@/interfaces'
   <div v-if="plan" class="space-y-4">
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <OrderTypeField v-model="plan.orderType" />
-      <TradeTypeField />
+      <TradeTypeField v-model="plan.tradeType" />
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-      <FormField class="space-y-2" name="limitPrice" v-slot="{ componentField }">
+      <FormField class="space-y-2" name="limitPrice">
         <FormItem>
           <FormLabel
             for="limitPrice"
@@ -24,7 +24,7 @@ import type { ScalePlanCreate } from '@/interfaces'
           </FormLabel>
           <Input
             type="number"
-            v-bind="componentField"
+            v-model="plan.limitPrice"
             min="0"
             step="0.01"
             placeholder="0.00"
@@ -33,7 +33,7 @@ import type { ScalePlanCreate } from '@/interfaces'
           <FormMessage class="text-red-500" />
         </FormItem>
       </FormField>
-      <FormField class="space-y-2" v-slot="{ componentField }" name="stopPrice">
+      <FormField class="space-y-2" name="stopPrice">
         <FormItem>
           <FormLabel
             for="stopPrice"
@@ -44,7 +44,7 @@ import type { ScalePlanCreate } from '@/interfaces'
           </FormLabel>
           <Input
             type="number"
-            v-bind="componentField"
+            v-model="plan.stopPrice"
             min="0"
             step="0.01"
             placeholder="0.00"
@@ -53,7 +53,7 @@ import type { ScalePlanCreate } from '@/interfaces'
           <FormMessage class="text-red-500" />
         </FormItem>
       </FormField>
-      <QtyField />
+      <QtyField v-model="plan.qty" />
     </div>
 
     <NoteField />

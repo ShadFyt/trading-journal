@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import { Icon } from '@iconify/vue'
 import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import type { ScalePlanCreate } from '@/interfaces'
 
-const qty = defineModel<number>()
+const qty = defineModel<ScalePlanCreate['qty']>()
 </script>
 <template>
   <FormField class="space-y-2" name="qty">

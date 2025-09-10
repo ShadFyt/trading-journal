@@ -53,6 +53,6 @@ const emit = defineEmits<{
       </FormField>
     </div>
 
-    <NoteField />
+    <NoteField v-model="plan.notes" />
   </div>
 </template>

@@ -27,14 +27,14 @@ const removeTargetPlan = (plan: FieldEntry<ScalePlanCreate>) => {
 </script>
 
 <template>
-  <form :validation-schema="schema" class="h-screen w-96 flex flex-col">
+  <form :validation-schema="schema" class="h-screen w-96 flex flex-col" @submit="onSubmit">
     <header class="p-4 border-b border-slate-700 flex items-center justify-between">
       <h2 class="text-lg font-semibold">New Trade Idea</h2>
       <div class="flex gap-2">
         <Button variant="ghost" class="text-slate-400 hover:text-white" @click="$emit('cancel')">
           Cancel
         </Button>
-        <Button :disabled="!isFormValid" class="gap-1" @click="onSubmit">
+        <Button class="gap-1" type="submit">
           <Icon icon="lucide:check" width="24" height="24" /> Save Trade
         </Button>
       </div>
