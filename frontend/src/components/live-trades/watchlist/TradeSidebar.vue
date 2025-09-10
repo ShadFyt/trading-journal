@@ -38,6 +38,11 @@ const openExecutionForm = () => (isExecutionFormOpen.value = true)
     <template v-else>
       <TradeSideBarHeader @open-trade-form="isTradeFormOpen = true" />
       <div class="flex-1 flex flex-col min-h-0">
+        <div v-if="!watchlist?.length" class="text-center py-12">
+          <div class="text-6xl mb-4">📈</div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">No Watchlist Trades</h3>
+          <p class="text-gray-600">Add trades to your watchlist to see them here.</p>
+        </div>
         <ScrollArea class="flex-1">
           <div class="p-2">
             <div
