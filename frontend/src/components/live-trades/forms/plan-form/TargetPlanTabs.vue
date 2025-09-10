@@ -2,7 +2,6 @@
 import { Icon } from '@iconify/vue'
 import { type FieldEntry } from 'vee-validate'
 import type { ScalePlanCreate } from '@/interfaces'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import TargetPlanForm from './TargetPlanForm.vue'
 
 const props = defineProps<{
@@ -16,7 +15,6 @@ const emit = defineEmits<{
 
 const activeTab = ref('0')
 
-// Watch for changes in target plans to handle tab management
 watch(
   () => props.targetPlans.length,
   (newLength, oldLength) => {
@@ -25,7 +23,6 @@ watch(
     if (newLength < oldLength && currentIndex >= newLength) {
       activeTab.value = Math.max(0, newLength - 1).toString()
     }
-    // If we added a new tab, switch to it
     if (newLength > oldLength) {
       activeTab.value = (newLength - 1).toString()
     }
@@ -48,7 +45,6 @@ const handleRemovePlan = (plan: FieldEntry<ScalePlanCreate>) => {
       </div>
     </div>
 
-    <!-- Tabs Interface -->
     <Tabs v-else v-model="activeTab" class="w-full">
       <TabsList
         class="grid w-full bg-slate-800/50 border border-slate-600"

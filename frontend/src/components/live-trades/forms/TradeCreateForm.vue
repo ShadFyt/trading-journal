@@ -5,12 +5,13 @@ import { ScalePlanTypeEnum } from '@/enums'
 import { targetPlanFactory } from '@/utils'
 import { type FieldEntry, useFieldArray } from 'vee-validate'
 import type { ScalePlanCreate } from '@/interfaces'
+import TargetPlanTabs from './plan-form/TargetPlanTabs.vue'
 
 const $emit = defineEmits<{
   (e: 'close'): []
 }>()
 
-const { onSubmit, schema, setFieldValue, isFieldDirty, trade, meta } = useTradeFormCreate(() =>
+const { onSubmit, schema, setFieldValue, isFieldDirty, meta } = useTradeFormCreate(() =>
   $emit('close'),
 )
 const { fields, push, remove } = useFieldArray<ScalePlanCreate>('scalePlans')
@@ -85,16 +86,10 @@ watch(
           </Button>
         </CardHeader>
         <CardContent class="space-y-4 p-0">
-          <div v-if="targetPlans.length === 0" class="text-slate-500 text-sm text-center py-8">
-            <p>No target plans yet.</p>
-            <p>Click "Add Target" to create exit strategies.</p>
-          </div>
-          <TargetPlanForm
-            v-for="plan in targetPlans"
-            v-model="plan.value"
-            :key="plan.key"
-            :idx="plan.key"
-            @remove-plan="removeTargetPlan(plan)"
+          <TargetPlanTabs
+            :target-plans="targetPlans"
+            @add-target="addTargetPlan"
+            @remove-plan="removeTargetPlan"
           />
         </CardContent>
       </Card>

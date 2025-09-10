@@ -30,7 +30,7 @@ export const useLiveTradeFetchingService = () => {
     () => data.value?.filter((trade) => trade.status === TradeStatusEnum.enum.WATCHING) ?? [],
   )
 
-  return { liveTrades, isLoading, refetchLiveTrades: refetch, watchlist: data.value }
+  return { liveTrades, isLoading, refetchLiveTrades: refetch, watchlist }
 }
 
 export const useLiveTradeMutationService = () => {

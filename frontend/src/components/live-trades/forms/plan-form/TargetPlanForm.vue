@@ -2,20 +2,12 @@
 import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 
 import { Icon } from '@iconify/vue'
-import type { ScalePlanCreate } from '@/interfaces'
 const { idx } = defineProps<{ idx: string | number }>()
 const planId = computed(() => `scalePlans.${idx}`)
-
-const plan = defineModel<ScalePlanCreate>()
-
-const emit = defineEmits<{
-  (e: 'remove-plan'): []
-}>()
 </script>
 
 <template>
-  <PlanFormHeader @remove-plan="emit('remove-plan')" />
-  <div class="space-y-4" v-if="plan">
+  <div class="space-y-4">
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <OrderTypeField :plan-id="planId" />
       <FormField class="space-y-2" :name="`${planId}.label`" v-slot="{ value, setValue }">

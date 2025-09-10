@@ -8,12 +8,10 @@ export const getLiveTrades = () => {
 }
 
 export const createLiveTrade = (data: LiveTradeCreate) => {
-  const { notes, catalysts, ...rest } = data
+  const { ...rest } = data
 
   return apiClient.post<LiveTrade>(LIVE_TRADE_API_URL, {
     ...rest,
-    notes: notes ? [notes] : [],
-    catalysts: catalysts ? [catalysts] : [],
   })
 }
 
