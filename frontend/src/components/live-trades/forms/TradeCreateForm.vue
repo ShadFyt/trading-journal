@@ -34,7 +34,7 @@ const removeTargetPlan = (plan: FieldEntry<ScalePlanCreate>) => {
         <Button variant="ghost" class="text-slate-400 hover:text-white" @click="$emit('cancel')">
           Cancel
         </Button>
-        <Button class="gap-1" type="submit">
+        <Button class="gap-1" type="submit" :disabled="!isFormValid">
           <Icon icon="lucide:check" width="24" height="24" /> Save Trade
         </Button>
       </div>

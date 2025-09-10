@@ -16,6 +16,7 @@ class ScalePlanBase(BaseSchema):
     stop_price: Optional[float] = None
     limit_price: Optional[float] = None
     plan_type: PlanType
+    trade_type: TradeType
 
 
 class ScalePlanCreate(ScalePlanBase):

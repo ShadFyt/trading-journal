@@ -29,7 +29,7 @@ export const useTradeFormCreate = (close?: (v: boolean) => void) => {
     }
   })
 
-  const isFormValid = computed(() => tradeCreateSchema.safeParse(values).success)
+  const isFormValid = computed(() => meta.value.valid)
 
   return {
     isFieldDirty,
