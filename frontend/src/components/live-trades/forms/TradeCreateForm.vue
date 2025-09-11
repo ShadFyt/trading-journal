@@ -11,9 +11,7 @@ const $emit = defineEmits<{
   (e: 'close'): []
 }>()
 
-const { onSubmit, schema, setFieldValue, isFieldDirty, meta } = useTradeFormCreate(() =>
-  $emit('close'),
-)
+const { onSubmit, schema, meta } = useTradeFormCreate(() => $emit('close'))
 const { fields, push, remove } = useFieldArray<ScalePlanCreate>('scalePlans')
 
 const entryPlan = computed(
@@ -54,7 +52,7 @@ const removeTargetPlan = (plan: FieldEntry<ScalePlanCreate>) => {
           <CardTitle class="text-base text-slate-100">Basic Details</CardTitle>
         </CardHeader>
         <CardContent class="space-y-4">
-          <BasicTradeField :set-field-value="setFieldValue" :is-field-dirty="isFieldDirty" />
+          <BasicTradeField />
         </CardContent>
       </Card>
       <Card class="border border-slate-600 rounded-lg p-4 bg-slate-800/50 m-2">

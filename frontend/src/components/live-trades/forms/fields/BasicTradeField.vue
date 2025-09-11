@@ -1,13 +1,5 @@
 <script lang="ts" setup>
 import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import type { LiveTradeCreate } from '@/interfaces'
-import type { FormActions, GenericObject } from 'vee-validate'
-import { nextTick } from 'vue'
-
-const { setFieldValue, isFieldDirty } = defineProps<{
-  setFieldValue: FormActions<GenericObject>['setFieldValue']
-  isFieldDirty: (path: keyof LiveTradeCreate) => boolean
-}>()
 </script>
 
 <template>
@@ -23,7 +15,7 @@ const { setFieldValue, isFieldDirty } = defineProps<{
         <FormMessage class="text-red-500" />
       </FormItem>
     </FormField>
-    <FormField v-slot="{ componentField }" name="rating" :validate-on-blur="!isFieldDirty">
+    <FormField v-slot="{ value, setValue }" name="rating">
       <FormItem>
         <FormLabel for="rating" class="text-slate-200">Rating</FormLabel>
         <FormControl>
@@ -36,7 +28,8 @@ const { setFieldValue, isFieldDirty } = defineProps<{
               style: 'decimal',
               minimumFractionDigits: 1,
             }"
-            v-bind="componentField"
+            :model-value="value"
+            @update:model-value="(value) => setValue(Number(value))"
             class="border-slate-600"
           >
             <NumberFieldContent>

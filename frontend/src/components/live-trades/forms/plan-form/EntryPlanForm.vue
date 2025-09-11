@@ -56,7 +56,7 @@ const planId = computed(() => `scalePlans.${idx}`)
           <FormMessage class="text-red-500" />
         </FormItem>
       </FormField>
-      <QtyField plan-id="planId" />
+      <QtyField :plan-id="planId" />
     </div>
 
     <NoteField :plan-id="planId" />
