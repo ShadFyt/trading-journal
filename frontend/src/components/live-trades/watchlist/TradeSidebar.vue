@@ -5,6 +5,8 @@ import type { LiveTrade } from '@/interfaces'
 import { ScalePlanTypeEnum } from '@/enums'
 import TradeSideBarHeader from '@/components/live-trades/watchlist/TradeSideBarHeader.vue'
 import { useToggle } from '@vueuse/core'
+import { useFuse } from '@vueuse/integrations/useFuse'
+
 const [isExecutionFormOpen, toggleExecutionFormExpanded] = useToggle(false)
 const [isTradeFormOpen, toggleTradeFormExpanded] = useToggle(false)
 
@@ -14,6 +16,21 @@ const props = defineProps<{
 
 const { watchlist } = useLiveTradeFetchingService()
 const selectedTrade = ref<LiveTrade | null>(null)
+
+const searchQuery = ref('')
+
+const { results } = useFuse(searchQuery, watchlist, {
+  fuseOptions: {
+    keys: ['symbol'],
+    threshold: 0.3,
+    includeScore: true,
+  },
+  matchAllWhenSearchEmpty: true,
+})
+
+const filteredWatchlist = computed(() => {
+  return results.value.map((result) => result.item)
+})
 
 const entryPlan = computed(() => {
   return selectedTrade.value?.scalePlans.find((p) => p.planType === ScalePlanTypeEnum.enum.ENTRY)
@@ -35,10 +52,13 @@ const handleTradeSelect = (trade: LiveTrade) => {
       <TradeCreateForm @close="() => toggleTradeFormExpanded(false)" />
     </template>
     <template v-else>
-      <TradeSideBarHeader @open-trade-form="isTradeFormOpen = true" />
+      <TradeSideBarHeader
+        @open-trade-form="isTradeFormOpen = true"
+        v-model:search-query="searchQuery"
+      />
 
       <div class="flex-1 flex flex-col min-h-0">
-        <div v-if="!watchlist?.length" class="text-center py-12">
+        <div v-if="!filteredWatchlist?.length" class="text-center py-12">
           <div class="text-6xl mb-4">📈</div>
           <h3 class="text-xl font-semibold text-gray-900 mb-2">No Watchlist Trades</h3>
           <p class="text-gray-600">Add trades to your watchlist to see them here.</p>
@@ -49,7 +69,7 @@ const handleTradeSelect = (trade: LiveTrade) => {
         >
           <div class="p-2">
             <div
-              v-for="trade in watchlist"
+              v-for="trade in filteredWatchlist"
               :key="trade.id"
               :class="[
                 'p-3 rounded-lg cursor-pointer transition-all hover:bg-gray-800 mb-1',

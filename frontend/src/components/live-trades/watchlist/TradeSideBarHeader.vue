@@ -3,6 +3,8 @@ import { Icon } from '@iconify/vue'
 const emit = defineEmits<{
   (e: 'open-trade-form'): []
 }>()
+
+const searchQuery = defineModel<string>('search-query')
 </script>
 
 <template>
@@ -11,6 +13,7 @@ const emit = defineEmits<{
     <div class="flex justify-between gap-2 w-full">
       <div class="relative w-full">
         <Input
+          v-model="searchQuery"
           placeholder="Search symbols..."
           class="pl-10 bg-gray-800 border-gray-700 text-white placeholder-gray-400"
         />
