@@ -4,53 +4,40 @@ import { AnnotationSchema } from './annotation.schema'
 import { ScalePlanCreateSchema, ScalePlanSchema } from './scale-plan.schema'
 import { ExecutionSchema } from '@/schemas/execution.schema.ts'
 import { TradeStatusEnum } from '@/enums/trade.enum.ts'
-import { ScaleTradeTypeEnum } from '@/enums'
+import { ScalePlanTypeEnum } from '@/enums'
+import {
+  addScalePlanLimitIssue,
+  validateEntryPlanCount,
+  validateEntryPlanPrices,
+  validateTargetPlan,
+} from '@/utils'
 
 export const tradeCreateSchema = baseTradeSchema.extend({
   scalePlans: ScalePlanCreateSchema.array(),
 })
 
-const hasPricesForValidation = (
-  plan: any,
-): plan is { limitPrice: number; stopPrice: number; tradeType: string } => {
-  return typeof plan.limitPrice === 'number' && typeof plan.stopPrice === 'number'
-}
-
 export const extendedTradeCreateSchema = tradeCreateSchema.superRefine((data, ctx) => {
-  const entryPlans = data.scalePlans.filter((plan) => plan.planType === 'entry')
-  if (entryPlans.length === 0) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ['scalePlans'],
-      message: 'At least one entry plan is required',
-    })
-    return
-  }
+  const entryPlans = data.scalePlans.filter(
+    (plan) => plan.planType === ScalePlanTypeEnum.enum.ENTRY,
+  )
 
-  entryPlans.forEach((plan) => {
-    const planIndex = data.scalePlans.findIndex((p) => p === plan)
+  if (!validateEntryPlanCount(entryPlans, ctx)) return
 
-    if (!hasPricesForValidation(plan)) {
-      return
-    }
+  const entryPlan = entryPlans[0]
+  const entryPlanIndex = data.scalePlans.findIndex((p) => p === entryPlan)
 
-    if (plan.tradeType === ScaleTradeTypeEnum.enum.LONG) {
-      if (plan.limitPrice <= plan.stopPrice) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['scalePlans', planIndex, 'limitPrice'],
-          message: 'For long trades, limit price must be greater than stop price',
-        })
-      }
-    } else if (plan.tradeType === ScaleTradeTypeEnum.enum.SHORT) {
-      if (plan.limitPrice >= plan.stopPrice) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['scalePlans', planIndex, 'limitPrice'],
-          message: 'For short trades, limit price must be less than stop price',
-        })
-      }
-    }
+  validateEntryPlanPrices(entryPlan, entryPlanIndex, ctx)
+
+  const targetPlans = data.scalePlans.filter(
+    (plan) => plan.planType === ScalePlanTypeEnum.enum.TARGET,
+  )
+  const existingTotal = targetPlans.reduce((sum, p) => sum + (p.qty ?? 0), 0)
+
+  targetPlans.forEach((targetPlan) => {
+    const planIndex = data.scalePlans.findIndex((p) => p === targetPlan)
+
+    addScalePlanLimitIssue(ctx, entryPlan.qty ?? 0, existingTotal, `scalePlans.${planIndex}.qty`)
+    validateTargetPlan(targetPlan, entryPlan, planIndex, ctx)
   })
 })
 

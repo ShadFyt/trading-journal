@@ -3,7 +3,7 @@ import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/for
 </script>
 
 <template>
-  <div class="grid grid-cols-2 gap-4">
+  <div class="grid grid-cols-2 gap-4 items-start">
     <FormField v-slot="{ componentField }" name="symbol" class="space-y-2">
       <FormItem>
         <FormLabel for="symbol">Symbol *</FormLabel>
