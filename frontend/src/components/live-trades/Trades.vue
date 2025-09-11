@@ -3,7 +3,7 @@ import { Icon } from '@iconify/vue'
 import LiveTradeCard from './trade-view/LiveTradeCard.vue'
 import { useLiveTradeFetchingService, useMediaQuery } from '@/composables'
 
-import type { LiveTrade } from '@/interfaces/live-trade.type'
+import type { LiveTrade } from '@/interfaces/trade.type.ts'
 import { useToggle } from '@vueuse/core'
 
 const { liveTrades: activeTrades, refetchLiveTrades } = useLiveTradeFetchingService()

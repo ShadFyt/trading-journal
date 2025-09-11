@@ -1,5 +1,5 @@
 export * from './useFormatters'
-export * from './useLiveTradeService'
+export * from './useTradeService.ts'
 export * from './forms/useTradeFormCreate.ts'
 export * from './forms/useLiveTradeFormEdit.ts'
 export * from './useAnnotationService'

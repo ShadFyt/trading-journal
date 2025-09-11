@@ -1,23 +1,6 @@
-export type TradeStatus = 'open' | 'closed'
+import { z } from 'zod'
+import { tradeCreateSchema, TradeSchema, LiveTradeUpdateSchema } from '@/schemas/trade.schema.ts'
 
-export interface Trade {
-  symbol: string
-  status: TradeStatus
-  setupType: string
-  rating: number
-  entry: number
-  stop: number
-  shares: number
-  targetPrices: number[]
-  rr: number
-  catalyst?: string
-  entryDate: string
-  exitDate?: string
-  exitReason?: string
-  entryReason?: string
-  notes?: string
-  pnl?: number
-  estimatedDuration?: string
-}
-
-export type Trades = Trade[]
+export type LiveTradeCreate = z.infer<typeof tradeCreateSchema>
+export type LiveTrade = z.infer<typeof TradeSchema>
+export type LiveTradeUpdate = z.infer<typeof LiveTradeUpdateSchema>

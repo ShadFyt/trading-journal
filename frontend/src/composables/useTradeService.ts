@@ -3,7 +3,7 @@ import {
   deleteLiveTrade,
   getLiveTrades,
   updateLiveTrade,
-} from '@/api/live-trade.api'
+} from '@/api/trade.api.ts'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue-sonner'
 import { AxiosError } from 'axios'

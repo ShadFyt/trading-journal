@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useToggle } from '@vueuse/core'
 
-import type { LiveTrade } from '@/interfaces/live-trade.type.ts'
+import type { LiveTrade } from '@/interfaces/trade.type.ts'
 import { TRADE_METRICS_KEY, useTradeMetrics } from '@/composables'
 
 interface Props {

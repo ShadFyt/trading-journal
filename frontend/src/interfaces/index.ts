@@ -1,4 +1,4 @@
-export * from './live-trade.type'
+export * from './trade.type.ts'
 export * from './annotation.type'
 export * from './scale-plan.type'
 export * from './execution.type'

@@ -41,7 +41,7 @@ export const extendedTradeCreateSchema = tradeCreateSchema.superRefine((data, ct
   })
 })
 
-export const LiveTradeSchema = tradeCreateSchema.extend({
+export const TradeSchema = tradeCreateSchema.extend({
   id: z.string().uuid(),
   rrRatio: z.number().optional(),
   outcome: z
@@ -60,7 +60,7 @@ export const LiveTradeSchema = tradeCreateSchema.extend({
   executions: z.array(ExecutionSchema),
 })
 
-export const LiveTradeUpdateSchema = LiveTradeSchema.omit({
+export const LiveTradeUpdateSchema = TradeSchema.omit({
   id: true,
   annotations: true,
   priceChange: true,

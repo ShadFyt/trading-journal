@@ -1,5 +1,5 @@
 import { apiClient } from './client'
-import type { LiveTrade, LiveTradeCreate, LiveTradeUpdate } from '@/interfaces/live-trade.type'
+import type { LiveTrade, LiveTradeCreate, LiveTradeUpdate } from '@/interfaces/trade.type.ts'
 
 const LIVE_TRADE_API_URL = '/trades'
 
