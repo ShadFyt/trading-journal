@@ -13,7 +13,7 @@ const planId = computed(() => `scalePlans.${idx}`)
       <OrderTypeField :plan-id="planId" />
       <TradeTypeField :plan-id="planId" />
     </div>
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 items-start">
       <FormField class="space-y-2" :name="`${planId}.limitPrice`" v-slot="{ value, setValue }">
         <FormItem>
           <FormLabel

@@ -10,7 +10,7 @@ import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/for
         <Input
           v-bind="componentField"
           placeholder="e.g. AAPL"
-          class="uppercase border-slate-600 bg-slate-800"
+          class="uppercase border-slate-600 bg-slate-800 text-slate-200 placeholder:text-slate-400"
         />
         <FormMessage class="text-red-500" />
       </FormItem>
