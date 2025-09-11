@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Optional
+from pydantic import Field
 
 from core.base_schema import BaseSchema
 from database.models import ScalePlanStatus, OrderType, PlanType, TradeType
@@ -16,6 +17,7 @@ class ScalePlanBase(BaseSchema):
     stop_price: Optional[float] = None
     limit_price: Optional[float] = None
     plan_type: PlanType
+    trade_type: TradeType
 
 
 class ScalePlanCreate(ScalePlanBase):
@@ -31,7 +33,7 @@ class ScalePlanRead(ScalePlanBase):
     trade_id: str
     trade_type: TradeType
     status: ScalePlanStatus
-    executions: list[ExecutionRead] = []
+    executions: list[ExecutionRead] = Field(default_factory=list)
 
 
 class ScalePlanCreateResponse(ScalePlanBase):

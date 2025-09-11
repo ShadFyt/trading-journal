@@ -26,7 +26,7 @@ const statusBadgeClass = computed(() => {
   <header class="flex justify-between items-center mb-3">
     <div class="flex items-center gap-2">
       <span class="text-base md:text-2xl">📈</span>
-      <h2 class="text-lg md:text-2xl font-bold text-blue-700 tracking-wide">
+      <h2 class="text-lg md:text-2xl font-bold text-blue-400 tracking-wide">
         {{ trade.symbol.toUpperCase() }}
       </h2>
     </div>

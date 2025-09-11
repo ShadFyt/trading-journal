@@ -18,7 +18,7 @@ class ScalePlanRepo(BaseRepo[ScalePlan]):
     async def get_scale_plans_by_trade(self, trade_id: str) -> list[ScalePlan]:
         stmt = (
             select(ScalePlan)
-            .where(ScalePlan.live_trade_id == trade_id)
+            .where(ScalePlan.trade_id == trade_id)
             .order_by(ScalePlan.status, ScalePlan.label)
         )
         result = await self.session.exec(stmt)

@@ -9,7 +9,7 @@ const emit = defineEmits<{
 <template>
   <header class="mb-">
     <div class="flex justify-between items-center mb-2">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">Live Trades</h1>
+      <h1 class="text-3xl font-bold text-blue-200">Live Trades</h1>
       <DataRefreshTimer @refetch-live-trades="emit('refetch-live-trades')" />
     </div>
 

@@ -6,8 +6,8 @@ withDefaults(
     valueClass?: string
   }>(),
   {
-    labelClass: 'font-semibold text-gray-600',
-    valueClass: 'ml-1',
+    labelClass: 'font-semibold text-gray-400',
+    valueClass: 'ml-1 text-gray-100',
   },
 )
 </script>

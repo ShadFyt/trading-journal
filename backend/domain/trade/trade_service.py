@@ -44,7 +44,7 @@ class TradeService:
 
         # Fetch current prices for all symbols
         try:
-            price_map = self._get_price_map(symbols)
+            price_map = await self._get_price_map(symbols)
             # Merge current price data with live trades
             for trade in trades:
                 if trade.symbol in price_map:
@@ -52,6 +52,8 @@ class TradeService:
                     trade.current_price = quote.current_price
                     trade.price_change = quote.change
                     trade.percent_change = quote.percent_change
+                    trade.open_price = quote.open_price
+                    trade.previous_close = quote.previous_close
         except Exception as e:
             # Log error but don't fail the entire request
             print(f"Warning: Could not fetch current prices: {e}")
@@ -79,8 +81,8 @@ class TradeService:
     async def delete_trade(self, trade_id: str) -> None:
         return await self.repo.delete_trade(trade_id)
 
-    def _get_price_map(self, symbols: list[str]):
-        quotes = self.stock_price_service.get_stock_price_batch(symbols)
+    async def _get_price_map(self, symbols: list[str]):
+        quotes = await self.stock_price_service.get_stock_price_batch(symbols)
         return {quote.symbol: quote for quote in quotes}
 
     def _build_watchlist_payload(self, trade: TradeCreate):

@@ -7,7 +7,7 @@ export const ExecutionSchema = z.object({
   scalePlanId: z.string().uuid(),
   price: z.number().min(1, 'Price is required'),
   qty: z.number().min(1, 'Quantity is required'),
-  commission: z.number().min(1, 'Cost is required'),
+  commission: z.number(),
   notes: z.string().optional(),
   executedAt: z.date(),
   side: ExecutionSideEnum,

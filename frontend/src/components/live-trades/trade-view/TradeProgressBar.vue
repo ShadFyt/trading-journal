@@ -29,7 +29,7 @@ const ariaValueText = computed(() => `${Math.round(priceProgress.value)} percent
 
 <template>
   <div class="mb-3">
-    <div class="flex justify-between text-xs text-gray-600 mb-1">
+    <div class="flex justify-between text-xs text-gray-300 mb-1">
       <slot name="labels">
         <span>Stop</span>
         <span>Current Position</span>

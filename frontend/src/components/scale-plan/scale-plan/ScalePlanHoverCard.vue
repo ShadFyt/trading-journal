@@ -85,7 +85,7 @@ const actionMenuBind = computed(() => {
   <HoverCard :open="cardOpen" :open-delay="150" :close-delay="100" @update:open="onUpdateHover">
     <ShowScalePlan :plan :idx="idx" :is-reached="isReached" />
 
-    <HoverCardContent class="relative w-80 max-w-[90vw] p-2.5" align="start">
+    <HoverCardContent class="relative w-80 max-w-[90vw] p-2.5 bg-slate-800" align="start">
       <ActionMenu v-bind="actionMenuBind">
         <template v-if="!isReached" #extra-actions>
           <DropdownMenuItem @select="emit('open-form', plan, 'execute')">

@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import type { LiveTrade } from '@/interfaces/live-trade.type'
+import type { LiveTrade } from '@/interfaces/trade.type.ts'
 /**
  * Mock data for live trades - realistic swing trading scenarios
  */

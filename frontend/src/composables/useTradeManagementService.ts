@@ -1,6 +1,6 @@
 import { toast } from 'vue-sonner'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
-import { liveTradeKeys } from '@/composables/useLiveTradeService.ts'
+import { liveTradeKeys } from '@/composables/useTradeService.ts'
 import { createScalePlan, deleteScalePlan, updateScalePlan } from '@/api/scale-plan.api.ts'
 import type { ExecutionCreateDto, ScalePlanCreate, ScalePlanUpdate } from '@/interfaces'
 import { handleErrorDisplay } from '@/api/api-error.util.ts'

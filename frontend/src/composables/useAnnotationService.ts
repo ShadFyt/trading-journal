@@ -3,7 +3,7 @@ import type { AnnotationCreate } from '@/interfaces'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue-sonner'
 import { AxiosError } from 'axios'
-import { liveTradeKeys } from '@/composables/useLiveTradeService'
+import { liveTradeKeys } from '@/composables/useTradeService.ts'
 
 export const annotationKeys = {
   all: ['annotations'] as const,

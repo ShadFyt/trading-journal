@@ -1,64 +1,68 @@
 from dotenv import load_dotenv
+import logging
 import os
-import requests
+import asyncio
+import httpx
 from typing import List
 from .stock_price_schema import StockQuote
 
 load_dotenv()
+logger = logging.getLogger(__name__)
 
 
 class StockPriceService:
     def __init__(self):
-        self.api_key = os.getenv('FINHUB_API_KEY')
-        self.base_url = os.getenv('FINHUB_BASE_URL')
+        self.api_key = os.getenv("FINHUB_API_KEY")
+        self.base_url = os.getenv("FINHUB_BASE_URL")
+        self.client = httpx.AsyncClient()
 
-    def get_stock_price(self, symbol: str) -> StockQuote:
+    async def close(self):
+        await self.client.aclose()
+
+    async def get_stock_price(self, symbol: str) -> StockQuote:
         """Fetch current stock price for a given symbol."""
         if not self.api_key:
             raise ValueError("FINHUB_API_KEY not found in environment variables")
         if not self.base_url:
             raise ValueError("FINHUB_BASE_URL not found in environment variables")
-    
+
         url = f"{self.base_url}/quote?symbol={symbol.upper()}"
-        headers = {
-            'Content-Type': 'application/json',
-            'X-Finnhub-Token': self.api_key
-        }
-    
+        headers = {"Content-Type": "application/json", "X-Finnhub-Token": self.api_key}
+
         try:
-            response = requests.get(url, headers=headers, timeout=10)
+            response = await self.client.get(url, headers=headers, timeout=10)
             response.raise_for_status()
             data = response.json()
-            return StockQuote(**data, symbol=symbol)
-        except requests.exceptions.RequestException as e:
-            print(f"Error fetching stock price: {e}")
+            data["symbol"] = symbol
+            return StockQuote(**data)
+        except httpx.HTTPError as e:
+            logger.error(f"Error fetching stock price: {e}")
             raise
 
-    def get_stock_price_batch(self, symbols: List[str]) -> List[StockQuote]:
+    async def get_stock_price_batch(self, symbols: List[str]) -> List[StockQuote]:
         """Fetch current stock prices for a list of symbols using individual API calls."""
         if not self.api_key:
             raise ValueError("FINHUB_API_KEY not found in environment variables")
         if not self.base_url:
             raise ValueError("FINHUB_BASE_URL not found in environment variables")
-        
-        quotes = []
-        for symbol in symbols:
-            try:
-                quote = self.get_stock_price(symbol)
-                quotes.append(quote)
-            except Exception as e:
-                print(f"Error fetching price for {symbol}: {e}")
-                # Optionally skip failed symbols or re-raise
+
+        tasks = [self.get_stock_price(symbol) for symbol in symbols]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        quotes: List[StockQuote] = []
+        for symbol, result in zip(symbols, results):
+            if isinstance(result, Exception):
+                print(f"Error fetching price for {symbol}: {result}")
                 continue
-        
+
+            quotes.append(result)
         return quotes
 
 
 # Usage example
-if __name__ == "__main__":  
+async def main():
     try:
         stock_price_service = StockPriceService()
-        quotes = stock_price_service.get_stock_price_batch(['AMSC', 'AAPL', 'MSFT'])
+        quotes = await stock_price_service.get_stock_price_batch(["AMSC", "AAPL", "MSFT"])
         for quote in quotes:
             print(f"Stock: {quote.symbol}")
             print(f"Current price: ${quote.current_price}")
@@ -66,6 +70,9 @@ if __name__ == "__main__":
             print(f"Percent change: {quote.percent_change}%")
             print(f"Day range: ${quote.low} - ${quote.high}")
         print(f"Previous close: ${quote.previous_close}")
+        await stock_price_service.close()
     except Exception as e:
         print(f"Failed to get price: {e}")
 
+if __name__ == "__main__":
+    asyncio.run(main())

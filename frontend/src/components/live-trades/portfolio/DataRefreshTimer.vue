@@ -36,15 +36,15 @@ onUnmounted(() => {
 </script>
 <template>
   <div class="w-1/3">
-    <span class="text-sm text-gray-500">Data Refresh Timer</span>
+    <span class="text-sm text-gray-100">Data Refresh Timer</span>
     <div class="flex items-center gap-3">
-      <Progress v-model="refetchProgress" class="w-5/5 h-3" />
+      <Progress v-model="refetchProgress" class="w-5/5 h-3 bg-gray-900" />
       <Icon
         icon="lucide:refresh-cw"
         width="24"
         height="24"
         @click="handleRefresh"
-        class="cursor-pointer hover:opacity-75"
+        class="cursor-pointer hover:opacity-75 text-blue-200"
       />
     </div>
   </div>

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { FormField, FormItem, FormLabel } from '../../ui/form'
 import { useLiveTradeFormEdit } from '@/composables/forms/useLiveTradeFormEdit.ts'
-import type { LiveTrade, LiveTradeUpdate } from '@/interfaces/live-trade.type.ts'
+import type { LiveTrade, LiveTradeUpdate } from '@/interfaces/trade.type.ts'
 import { typedDateField } from '@/utils/typed-component.util.ts'
 const { trade, isOpen, close, formType } = defineProps<{
   trade: LiveTrade

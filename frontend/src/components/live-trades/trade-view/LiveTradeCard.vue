@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useToggle } from '@vueuse/core'
 
-import type { LiveTrade } from '@/interfaces/live-trade.type.ts'
+import type { LiveTrade } from '@/interfaces/trade.type.ts'
 import { TRADE_METRICS_KEY, useTradeMetrics } from '@/composables'
 
 interface Props {
@@ -35,7 +35,7 @@ provide(TRADE_METRICS_KEY, tradeMetrics)
 
 <template>
   <Card
-    class="relative transition-shadow hover:shadow-2xl border bg-white shadow-sm overflow-hidden group animate-fadein"
+    class="relative transition-shadow hover:shadow-2xl border-gray-700/40 bg-slate-800 shadow-md shadow-black/20 overflow-hidden group animate-fadein"
     :class="pnlStyling"
   >
     <CardHeader>

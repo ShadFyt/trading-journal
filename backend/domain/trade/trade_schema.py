@@ -1,5 +1,6 @@
 from core.base_schema import BaseSchema
 from typing import List, Optional
+from pydantic import Field
 from datetime import datetime
 
 from database.models import TradeStatus
@@ -30,15 +31,12 @@ class TradeResponse(TradeBase):
     current_price: Optional[float] = None
     price_change: Optional[float] = None
     percent_change: Optional[float] = None
-    # remaining_shares: float
-    # risk_per_share: float
-    # realized_pnl: Optional[float]
-    # realized_r: Optional[float]
-    executions: list[ExecutionRead] = []
+    open_price: Optional[float] = None
+    previous_close: Optional[float] = None
+    executions: list[ExecutionRead] = Field(default_factory=list)
 
 
 class TradeCreate(TradeBase):
-    idea_date: datetime
     scale_plans: List[ScalePlanCreate]
 
 

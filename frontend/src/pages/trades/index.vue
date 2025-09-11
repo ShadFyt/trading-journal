@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import LiveTrades from '@/components/live-trades/LiveTrades.vue'
+import Trades from '@/components/live-trades/Trades.vue'
 </script>
 <template>
-  <LiveTrades />
+  <Trades />
 </template>

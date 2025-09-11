@@ -24,7 +24,7 @@ const emit = defineEmits<{
         size="sm"
         aria-label="Open trade menu"
         aria-haspopup="menu"
-        class="h-11 w-11 min-w-[44px] min-h-[44px] p-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+        class="h-11 w-11 min-w-[44px] min-h-[44px] p-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 hover:bg-gray-400"
       >
         ⋯
       </Button>
