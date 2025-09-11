@@ -8,7 +8,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue-sonner'
 import { AxiosError } from 'axios'
 import type { crudType, LiveTradeCreate, LiveTradeUpdate } from '@/interfaces'
-import { tradeIdeaKeys } from '@/composables/useTradeIdeaService'
 import { handleErrorDisplay } from '@/api/api-error.util.ts'
 import { TradeStatusEnum } from '@/enums/trade.enum.ts'
 
@@ -39,7 +38,6 @@ export const useLiveTradeMutationService = () => {
 
   const handleSuccess = (type: crudType, message?: string) => {
     queryClient.invalidateQueries({ queryKey: liveTradeKeys.list() })
-    queryClient.invalidateQueries({ queryKey: tradeIdeaKeys.list() })
 
     toast.success(message ?? `Live trade ${type}d successfully`)
   }
