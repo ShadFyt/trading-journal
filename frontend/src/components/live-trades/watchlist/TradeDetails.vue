@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import type { LiveTrade } from '@/interfaces'
+import type { Trade } from '@/interfaces'
 import { useFormatters, useTradeMetrics } from '@/composables'
 
 const { formatCurrency } = useFormatters()
-const { selectedTrade } = defineProps<{ selectedTrade: LiveTrade }>()
+const { selectedTrade } = defineProps<{ selectedTrade: Trade }>()
 const emit = defineEmits<{
   'open-execution-form': []
 }>()

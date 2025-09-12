@@ -1,8 +1,8 @@
 import type { InjectionKey } from 'vue'
-import type { LiveTrade } from '@/interfaces'
+import type { Trade } from '@/interfaces'
 import { ScalePlanStatusEnum, ScalePlanTypeEnum } from '@/enums'
 
-export const useTradeMetrics = (trade: LiveTrade) => {
+export const useTradeMetrics = (trade: Trade) => {
   const executions = computed(() =>
     trade.scalePlans
       .filter((plan) => plan.planType === ScalePlanTypeEnum.enum.TARGET)

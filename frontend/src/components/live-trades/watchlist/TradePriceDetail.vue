@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import type { LiveTrade } from '@/interfaces'
+import type { Trade } from '@/interfaces'
 import { useFormatters, useTradeMetrics } from '@/composables'
 const { formatCurrency, formatPercentage } = useFormatters()
 
 const { trade } = defineProps<{
-  trade: LiveTrade
+  trade: Trade
 }>()
 
 const { entryPrice } = useTradeMetrics(trade)

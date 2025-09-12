@@ -1,12 +1,12 @@
 import { useLiveTradeMutationService } from '@/composables'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
-import type { LiveTrade, LiveTradeUpdate } from '@/interfaces/trade.type.ts'
+import type { Trade, TradeUpdate } from '@/interfaces/trade.type.ts'
 import { LiveTradeUpdateSchema } from '@/schemas'
 import { useFormatters } from '@/composables'
 
 export const useLiveTradeFormEdit = (
-  trade: LiveTrade,
+  trade: Trade,
   formType: 'edit' | 'close',
   close?: (v: boolean) => void,
 ) => {
@@ -25,11 +25,10 @@ export const useLiveTradeFormEdit = (
     }
   }
 
-  const { isFieldDirty, handleSubmit, setFieldValue, isSubmitting, meta } =
-    useForm<LiveTradeUpdate>({
-      validationSchema: liveTradeFormSchema,
-      initialValues: getInitialValues(),
-    })
+  const { isFieldDirty, handleSubmit, setFieldValue, isSubmitting, meta } = useForm<TradeUpdate>({
+    validationSchema: liveTradeFormSchema,
+    initialValues: getInitialValues(),
+  })
 
   const onSubmit = handleSubmit(async (values) => {
     try {

@@ -2,11 +2,11 @@
 import { FormField, FormItem, FormLabel } from '@/components/ui/form'
 import type { FormActions, GenericObject } from 'vee-validate'
 import { typedDateField } from '@/utils/typed-component.util.ts'
-import type { LiveTradeUpdate } from '@/interfaces'
+import type { TradeUpdate } from '@/interfaces'
 
 defineProps<{
   setFieldValue: FormActions<GenericObject>['setFieldValue']
-  isFieldDirty: (path: keyof LiveTradeUpdate) => boolean
+  isFieldDirty: (path: keyof TradeUpdate) => boolean
 }>()
 
 const statusOptions = [
@@ -17,7 +17,7 @@ const statusOptions = [
   { value: 'big loss', label: 'Big Loser' },
   { value: 'pending', label: 'Pending' },
 ]
-const LiveTradeDateField = typedDateField<LiveTradeUpdate>()
+const LiveTradeDateField = typedDateField<TradeUpdate>()
 </script>
 
 <template>

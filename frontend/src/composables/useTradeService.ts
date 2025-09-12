@@ -7,7 +7,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue-sonner'
 import { AxiosError } from 'axios'
-import type { crudType, LiveTradeCreate, LiveTradeUpdate } from '@/interfaces'
+import type { crudType, TradeCreate, TradeUpdate } from '@/interfaces'
 import { handleErrorDisplay } from '@/api/api-error.util.ts'
 import { TradeStatusEnum } from '@/enums/trade.enum.ts'
 
@@ -43,7 +43,7 @@ export const useLiveTradeMutationService = () => {
   }
 
   const createMutation = useMutation({
-    mutationFn: (data: LiveTradeCreate) => createLiveTrade(data),
+    mutationFn: (data: TradeCreate) => createLiveTrade(data),
     onSuccess: () => handleSuccess('create'),
     onError: (e) => handleErrorDisplay(e, 'create', domain),
   })
@@ -51,7 +51,7 @@ export const useLiveTradeMutationService = () => {
   const updateMutation = useMutation<
     Awaited<ReturnType<typeof updateLiveTrade>>,
     AxiosError,
-    { id: string; data: LiveTradeUpdate; message?: string }
+    { id: string; data: TradeUpdate; message?: string }
   >({
     mutationFn: ({ id, data }) => updateLiveTrade(id, data),
     onSuccess: (_data, variables) => handleSuccess('update', variables?.message),

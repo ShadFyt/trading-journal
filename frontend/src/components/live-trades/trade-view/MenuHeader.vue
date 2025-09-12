@@ -6,9 +6,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
-import type { LiveTrade } from '@/interfaces'
+import type { Trade } from '@/interfaces'
 
-defineProps<{ trade: LiveTrade }>()
+defineProps<{ trade: Trade }>()
 
 const emit = defineEmits<{
   'close-trade': []

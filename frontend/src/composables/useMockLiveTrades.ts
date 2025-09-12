@@ -1,10 +1,10 @@
 import { ref } from 'vue'
-import type { LiveTrade } from '@/interfaces/trade.type.ts'
+import type { Trade } from '@/interfaces/trade.type.ts'
 /**
  * Mock data for live trades - realistic swing trading scenarios
  */
 export function useMockLiveTrades() {
-  const mockTrades = ref<LiveTrade[]>([
+  const mockTrades = ref<Trade[]>([
     {
       id: 'trade-001-aapl',
       symbol: 'AAPL',
@@ -243,4 +243,4 @@ export function useMockLiveTrades() {
   }
 }
 
-export type { LiveTrade }
+export type { Trade }

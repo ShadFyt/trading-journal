@@ -1,13 +1,13 @@
 <script lang="ts" setup>
 import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover'
-import type { LiveTrade, ScalePlan } from '@/interfaces'
+import type { Trade, ScalePlan } from '@/interfaces'
 import { ref } from 'vue'
 import ScalePlanHoverCard from '@/components/scale-plan/scale-plan/ScalePlanHoverCard.vue'
 import { useSorted } from '@vueuse/core'
 import { ScalePlanStatusEnum, ScalePlanTypeEnum } from '@/enums'
 
 const { trade } = defineProps<{
-  trade: LiveTrade
+  trade: Trade
 }>()
 
 const selectedPlan = ref<null | ScalePlan>(null)

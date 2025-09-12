@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { LiveTrade, ScalePlan } from '@/interfaces'
+import type { Trade, ScalePlan } from '@/interfaces'
 import { computed, ref } from 'vue'
 import { useScalePlanMutations, useTradeExecutionMutations } from '@/composables'
 import { Icon } from '@iconify/vue'
@@ -9,7 +9,7 @@ const { deletePlanMutation } = useScalePlanMutations()
 const { deleteExecutionMutation } = useTradeExecutionMutations()
 
 const { plan, trade, idx } = defineProps<{
-  trade: LiveTrade
+  trade: Trade
   plan: ScalePlan
   idx: number
 }>()

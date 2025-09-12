@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import type { LiveTrade, ScalePlan } from '@/interfaces'
+import type { Trade, ScalePlan } from '@/interfaces'
 import { useFormatters } from '@/composables'
 
 const { plan } = defineProps<{
-  trade: LiveTrade
+  trade: Trade
   plan: ScalePlan
   idx: number
 }>()

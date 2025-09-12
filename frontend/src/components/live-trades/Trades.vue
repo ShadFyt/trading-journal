@@ -3,13 +3,13 @@ import { Icon } from '@iconify/vue'
 import LiveTradeCard from './trade-view/LiveTradeCard.vue'
 import { useLiveTradeFetchingService, useMediaQuery } from '@/composables'
 
-import type { LiveTrade } from '@/interfaces/trade.type.ts'
+import type { Trade } from '@/interfaces/trade.type.ts'
 import { useToggle } from '@vueuse/core'
 
 const { liveTrades: activeTrades, refetchLiveTrades } = useLiveTradeFetchingService()
 const { isDesktop } = useMediaQuery()
 
-const selectedTrade = ref<LiveTrade | null>(null)
+const selectedTrade = ref<Trade | null>(null)
 const isEditFormOpen = ref(false)
 const formType = ref<'edit' | 'close'>('edit')
 const [isSidebarOpen, toggleSidebar] = useToggle(false)

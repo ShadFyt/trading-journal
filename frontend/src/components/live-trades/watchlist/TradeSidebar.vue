@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useLiveTradeFetchingService } from '@/composables'
 import { Icon } from '@iconify/vue'
-import type { LiveTrade } from '@/interfaces'
+import type { Trade } from '@/interfaces'
 import { ScalePlanTypeEnum } from '@/enums'
 import TradeSideBarHeader from '@/components/live-trades/watchlist/TradeSideBarHeader.vue'
 import { useToggle } from '@vueuse/core'
@@ -15,7 +15,7 @@ const props = defineProps<{
 }>()
 
 const { watchlist } = useLiveTradeFetchingService()
-const selectedTrade = ref<LiveTrade | null>(null)
+const selectedTrade = ref<Trade | null>(null)
 
 const searchQuery = ref('')
 
@@ -36,7 +36,7 @@ const entryPlan = computed(() => {
   return selectedTrade.value?.scalePlans.find((p) => p.planType === ScalePlanTypeEnum.enum.ENTRY)
 })
 
-const handleTradeSelect = (trade: LiveTrade) => {
+const handleTradeSelect = (trade: Trade) => {
   selectedTrade.value = trade
 }
 </script>

@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import { FormField, FormItem, FormLabel } from '../../ui/form'
 import { useLiveTradeFormEdit } from '@/composables/forms/useLiveTradeFormEdit.ts'
-import type { LiveTrade, LiveTradeUpdate } from '@/interfaces/trade.type.ts'
+import type { Trade, TradeUpdate } from '@/interfaces/trade.type.ts'
 import { typedDateField } from '@/utils/typed-component.util.ts'
 const { trade, isOpen, close, formType } = defineProps<{
-  trade: LiveTrade
+  trade: Trade
   isOpen: boolean
   close: (v: boolean) => void
   formType: 'edit' | 'close'
@@ -13,7 +13,7 @@ const { trade, isOpen, close, formType } = defineProps<{
 const { isFieldDirty, onSubmit, setFieldValue, isSubmitting, schema, onDelete } =
   useLiveTradeFormEdit(trade, formType, close)
 
-const LiveTradeDateField = typedDateField<LiveTradeUpdate>()
+const LiveTradeDateField = typedDateField<TradeUpdate>()
 
 const isCloseForm = computed(() => {
   if (formType === 'close') return true

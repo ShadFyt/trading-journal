@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import type { LiveTrade } from '@/interfaces'
+import type { Trade } from '@/interfaces'
 import AnnotationsList from './AnnotationsList.vue'
 
-const { trade } = defineProps<{ trade: LiveTrade }>()
+const { trade } = defineProps<{ trade: Trade }>()
 </script>
 
 <template>

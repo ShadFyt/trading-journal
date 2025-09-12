@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { LiveTrade } from '@/interfaces'
+import type { Trade } from '@/interfaces'
 
-const { trade } = defineProps<{ trade: LiveTrade }>()
+const { trade } = defineProps<{ trade: Trade }>()
 /**
  * Status badge styling based on trade status
  */

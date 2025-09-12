@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import type { LiveTrade } from '@/interfaces'
+import type { Trade } from '@/interfaces'
 import { useFormatters } from '@/composables'
 const { convertStringToDate } = useFormatters()
 
 defineProps<{
-  trade: LiveTrade
+  trade: Trade
   isExpanded: boolean
   detailsId: string
 }>()
