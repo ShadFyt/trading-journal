@@ -20,6 +20,11 @@ async def create_live_trade(service: TradeServiceDep, live_trade: TradeCreate):
     return await service.create_trade(live_trade)
 
 
+@router.put("/{trade_id}", response_model=TradeResponse, status_code=status.HTTP_200_OK)
+async def replace_trade(service: TradeServiceDep, trade_id: str, payload: TradeCreate):
+    return await service.replace_trade(trade_id, payload)
+
+
 @router.patch("/{id}", response_model=TradeResponse, status_code=status.HTTP_200_OK)
 async def update_live_trade(service: TradeServiceDep, id: str, payload: TradeUpdate):
     return await service.update_trade(id, payload)

@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 
 from database.session import SessionDep
-from database.models import Trade, ScalePlan, TradeStatus
+from database.models import Trade, ScalePlan, TradeStatus, Annotation
 from core.base_repo import BaseRepo
 from domain.trade.trade_schema import TradeUpdate
 from fastapi import HTTPException
@@ -26,7 +26,7 @@ class TradeRepo(BaseRepo[Trade]):
         result = await self.session.exec(stmt)
         return result.all()
 
-    async def get_trade_by_id(self, id: str, include_annotations: bool = True):
+    async def get_trade_by_id(self, trade_id: str, include_annotations: bool = True):
         options = [
             selectinload(Trade.executions),
             selectinload(Trade.scale_plans).selectinload(ScalePlan.executions),
@@ -34,11 +34,11 @@ class TradeRepo(BaseRepo[Trade]):
         if include_annotations:
             options.append(selectinload(Trade.annotations))
 
-        return await self.session.get(Trade, id, options=options)
+        return await self.session.get(Trade, trade_id, options=options)
 
-    async def update_trade(self, id: str, payload: TradeUpdate):
+    async def update_trade(self, trade_id: str, payload: TradeUpdate):
         try:
-            db_trade = await self.get_trade_by_id(id)
+            db_trade = await self.get_trade_by_id(trade_id)
             if not db_trade:
                 raise HTTPException(status_code=404, detail="Live trade not found")
             # Update only provided fields (exclude_unset=True)
@@ -71,9 +71,74 @@ class TradeRepo(BaseRepo[Trade]):
         fresh_result = await self.session.exec(stmt)
         return fresh_result.first()
 
-    async def delete_trade(self, id: str):
+    async def replace_trade(self, trade_id: str, trade_update: TradeUpdate) -> Trade:
+        # Get existing trade with relationships
+        trade = await self.get_trade_by_id(trade_id)
+        if not trade:
+            raise HTTPException(status_code=404, detail="Trade not found")
+
+        if trade.status != TradeStatus.WATCHING:
+            raise HTTPException(
+                status_code=400, detail="Can only replace trades in watching status"
+            )
+
+        # Get update data, excluding unset fields for partial updates
+        update_data = trade_update.model_dump(exclude_unset=True)
+
+        # Handle relationships separately
+        scale_plans_data = update_data.pop("scale_plans", None)
+        annotations_data = update_data.pop("annotations", None)
+
+        for field, value in update_data.items():
+            if hasattr(trade, field) and field not in {"id", "idea_date", "status"}:
+                setattr(trade, field, value)
+
+        if scale_plans_data is not None:
+            trade.scale_plans.clear()
+
+            for plan_data in scale_plans_data:
+                plan_dict = (
+                    plan_data.model_dump()
+                    if hasattr(plan_data, "model_dump")
+                    else plan_data
+                )
+                scale_plan = ScalePlan(**plan_dict)
+                trade.scale_plans.append(scale_plan)
+
+        if annotations_data is not None:
+            # Clear existing relationships
+            trade.annotations.clear()
+
+            # Create new annotations
+            for ann_data in annotations_data:
+                ann_dict = (
+                    ann_data.model_dump()
+                    if hasattr(ann_data, "model_dump")
+                    else ann_data
+                )
+                annotation = Annotation(**ann_dict)
+                trade.annotations.append(annotation)
+
+        self.session.add(trade)
+        await self.session.commit()
+        await self.session.refresh(trade)
+
+        # Return the fresh trade with all relationships loaded to avoid lazy loading issues
+        stmt = (
+            select(Trade)
+            .options(
+                selectinload(Trade.executions),
+                selectinload(Trade.annotations),
+                selectinload(Trade.scale_plans).selectinload(ScalePlan.executions),
+            )
+            .where(Trade.id == trade_id)
+        )
+        fresh_result = await self.session.exec(stmt)
+        return fresh_result.first()
+
+    async def delete_trade(self, trade_id: str):
         try:
-            db_live_trade = await self.get_trade_by_id(id)
+            db_live_trade = await self.get_trade_by_id(trade_id)
             if not db_live_trade:
                 raise HTTPException(status_code=404, detail="Live trade not found")
             await self.session.delete(db_live_trade)

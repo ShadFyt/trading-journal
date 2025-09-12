@@ -4,7 +4,7 @@ from pydantic import Field
 from datetime import datetime
 
 from database.models import TradeStatus
-from domain.annotation.annotation_schema import AnnotationRead
+from domain.annotation.annotation_schema import AnnotationRead, AnnotationCreate
 from domain.execution.execution_schema import ExecutionRead
 from domain.scale_plan.scale_plan_schema import ScalePlanCreate, ScalePlanRead
 
@@ -38,6 +38,7 @@ class TradeResponse(TradeBase):
 
 class TradeCreate(TradeBase):
     scale_plans: List[ScalePlanCreate]
+    annotations: Optional[List[AnnotationCreate]] = None
 
 
 class TradeUpdate(TradeBase):
@@ -47,3 +48,5 @@ class TradeUpdate(TradeBase):
     enter_date: Optional[datetime] = None
     idea_date: Optional[datetime] = None
     status: Optional[TradeStatus] = None
+    scale_plans: Optional[List[ScalePlanCreate]] = None
+    annotations: Optional[List[AnnotationCreate]] = None

@@ -3,12 +3,15 @@ from typing import Optional
 from core.base_schema import BaseSchema
 from typing import Literal
 
+
 class AnnotationBase(BaseSchema):
     content: str
-    annotation_type: Literal['catalyst', 'note', 'managementNote']
+    annotation_type: Literal["catalyst", "note", "managementNote"]
+
 
 class AnnotationCreate(AnnotationBase):
-    live_trade_id: str
+    trade_id: str
+
 
 class AnnotationRead(AnnotationCreate):
     id: str
@@ -16,6 +19,6 @@ class AnnotationRead(AnnotationCreate):
 
 
 class AnnotationUpdate(AnnotationBase):
-    annotation_type: Optional[Literal['catalyst', 'note', 'managementNote']] = None
+    annotation_type: Optional[Literal["catalyst", "note", "managementNote"]] = None
     content: Optional[str] = None
     date: Optional[datetime] = None

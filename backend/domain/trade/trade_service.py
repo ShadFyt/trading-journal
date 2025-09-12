@@ -78,6 +78,18 @@ class TradeService:
     ) -> TradeResponse | None:
         return await self.repo.update_trade(trade_id, payload)
 
+    async def replace_trade(self, trade_id: str, payload: TradeCreate) -> Trade:
+        """Replace an existing trade with new data while preserving certain fields."""
+        # Convert TradeCreate to TradeUpdate for the repository method
+        # TradeUpdate should have all the same fields as TradeCreate but as optional
+        trade_update_data = payload.model_dump()
+        trade_update = TradeUpdate(**trade_update_data)
+
+        # Replace the trade in the repository using SQLModel patterns
+        result = await self.repo.replace_trade(trade_id, trade_update)
+
+        return result
+
     async def delete_trade(self, trade_id: str) -> None:
         return await self.repo.delete_trade(trade_id)
 
