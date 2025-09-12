@@ -109,18 +109,20 @@ useProvideTradeActions({
           @close="() => toggleExecutionFormExpanded(false)"
         >
           <template #header>
-            <div class="flex justify-between">
-              <p class="text-xs font-semibold text-center mb-3">
-                Execute Entry Plan for {{ selectedTrade?.symbol }}
-              </p>
-              <Icon
-                icon="lucide:square-x"
-                width="24"
-                height="24"
-                class="cursor-pointer text-red-400 hover:text-red-300"
-                @click="isExecutionFormOpen = false"
-              />
-            </div>
+            <CardHeader class="bg-emerald-900 px-4 py-3 -m-3 mb-3 rounded-t-lg">
+              <CardTitle class="text-base text-slate-100 flex justify-between">
+                <p class="font-medium text-md text-emerald-300">
+                  Execute Entry Plan for {{ selectedTrade?.symbol }}
+                </p>
+                <Icon
+                  icon="lucide:square-x"
+                  width="24"
+                  height="24"
+                  class="cursor-pointer text-red-400 hover:text-red-300"
+                  @click="isExecutionFormOpen = false"
+                />
+              </CardTitle>
+            </CardHeader>
           </template>
         </TradeExecutionForm>
         <TradeDetails
