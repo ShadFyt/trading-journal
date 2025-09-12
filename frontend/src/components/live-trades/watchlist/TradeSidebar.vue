@@ -43,6 +43,7 @@ const entryPlan = computed(() => {
 })
 
 const handleTradeSelect = (trade: Trade) => {
+  if (isExecutionFormOpen.value) return
   selectedTrade.value = trade
 }
 
@@ -88,7 +89,8 @@ useProvideTradeActions({
               v-for="trade in filteredWatchlist"
               :key="trade.id"
               :class="[
-                'p-3 rounded-lg cursor-pointer transition-all hover:bg-gray-800 mb-1',
+                'p-3 rounded-lg transition-all mb-1',
+                !isExecutionFormOpen ? 'cursor-pointer hover:bg-gray-800' : '',
                 selectedTrade?.id === trade.id ? 'bg-gray-800 ring-1 ring-blue-500' : '',
               ]"
               @click="handleTradeSelect(trade)"
@@ -99,34 +101,32 @@ useProvideTradeActions({
         </ScrollArea>
       </div>
 
-      <!-- Execution Form Section -->
-      <TradeExecutionForm
-        v-if="isExecutionFormOpen && entryPlan"
-        :scalePlan="entryPlan"
-        :extraClass="'p-3 m-2 bg-gray-800/50 border-none text-gray-100'"
-        @close="() => toggleExecutionFormExpanded(false)"
-      >
-        <template #header>
-          <div class="flex justify-between">
-            <p class="text-xs font-semibold text-center mb-3">
-              Execute Entry Plan for {{ selectedTrade?.symbol }}
-            </p>
-            <Icon
-              icon="lucide:square-x"
-              width="24"
-              height="24"
-              class="cursor-pointer text-red-400 hover:text-red-300"
-              @click="isExecutionFormOpen = false"
-            />
-          </div>
-        </template>
-      </TradeExecutionForm>
-
-      <div
-        v-if="selectedTrade && !isExecutionFormOpen"
-        class="flex-1 max-h-[50vh] border-t border-gray-700"
-      >
-        <TradeDetails :selected-trade="selectedTrade" />
+      <div class="flex-1 max-h-[50vh] border-t border-gray-700">
+        <TradeExecutionForm
+          v-if="isExecutionFormOpen && entryPlan"
+          :scalePlan="entryPlan"
+          :extraClass="'p-3 m-2 bg-gray-800/50 border-none flex flex-col flex-1 min-h-0'"
+          @close="() => toggleExecutionFormExpanded(false)"
+        >
+          <template #header>
+            <div class="flex justify-between">
+              <p class="text-xs font-semibold text-center mb-3">
+                Execute Entry Plan for {{ selectedTrade?.symbol }}
+              </p>
+              <Icon
+                icon="lucide:square-x"
+                width="24"
+                height="24"
+                class="cursor-pointer text-red-400 hover:text-red-300"
+                @click="isExecutionFormOpen = false"
+              />
+            </div>
+          </template>
+        </TradeExecutionForm>
+        <TradeDetails
+          v-if="selectedTrade && !isExecutionFormOpen"
+          :selected-trade="selectedTrade"
+        />
       </div>
     </template>
   </aside>
