@@ -6,6 +6,7 @@ const { formatCurrency } = useFormatters()
 const { selectedTrade } = defineProps<{ selectedTrade: Trade }>()
 const emit = defineEmits<{
   'open-execution-form': []
+  'open-trade-form': []
 }>()
 const { entryPrice, stopLoss } = useTradeMetrics(selectedTrade)
 </script>
@@ -22,6 +23,13 @@ const { entryPrice, stopLoss } = useTradeMetrics(selectedTrade)
             class="h-7 px-3 text-xs bg-blue-600 hover:bg-blue-700"
           >
             Trade
+          </Button>
+          <Button
+            @click="emit('open-trade-form')"
+            size="sm"
+            class="h-7 px-3 text-xs bg-blue-600 hover:bg-blue-700"
+          >
+            Edit
           </Button>
         </div>
       </CardHeader>

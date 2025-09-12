@@ -39,6 +39,11 @@ const entryPlan = computed(() => {
 const handleTradeSelect = (trade: Trade) => {
   selectedTrade.value = trade
 }
+
+const handleTradeFormOpen = () => {
+  selectedTrade.value = null
+  toggleTradeFormExpanded(true)
+}
 </script>
 
 <template>
@@ -49,11 +54,11 @@ const handleTradeSelect = (trade: Trade) => {
     ]"
   >
     <template v-if="isTradeFormOpen">
-      <TradeForm @close="() => toggleTradeFormExpanded(false)" />
+      <TradeForm :trade="selectedTrade" @close="() => toggleTradeFormExpanded(false)" />
     </template>
     <template v-else>
       <TradeSideBarHeader
-        @open-trade-form="isTradeFormOpen = true"
+        @open-trade-form="handleTradeFormOpen"
         v-model:search-query="searchQuery"
       />
 
@@ -113,6 +118,7 @@ const handleTradeSelect = (trade: Trade) => {
         <TradeDetails
           :selected-trade="selectedTrade"
           @open-execution-form="toggleExecutionFormExpanded"
+          @open-trade-form="toggleTradeFormExpanded"
         />
       </div>
     </template>

@@ -4,14 +4,17 @@ import { useTradeForm } from '@/composables'
 import { ScalePlanTypeEnum } from '@/enums'
 import { targetPlanFactory } from '@/utils'
 import { type FieldEntry, useFieldArray } from 'vee-validate'
-import type { ScalePlanCreate } from '@/interfaces'
+import type { ScalePlanCreate, Trade } from '@/interfaces'
 import TargetPlanTabs from './plan-form/TargetPlanTabs.vue'
 
+const { trade } = defineProps<{
+  trade?: Trade | null
+}>()
 const $emit = defineEmits<{
   (e: 'close'): []
 }>()
 
-const { onSubmit, schema, meta } = useTradeForm(() => $emit('close'))
+const { onSubmit, schema, meta } = useTradeForm(() => $emit('close'), trade)
 const { fields, push, remove } = useFieldArray<ScalePlanCreate>('scalePlans')
 
 const entryPlan = computed(
@@ -20,6 +23,8 @@ const entryPlan = computed(
 const targetPlans = computed(
   () => fields.value.filter((p) => p.value.planType === ScalePlanTypeEnum.enum.TARGET) ?? [],
 )
+
+const title = computed(() => (trade ? `Update Trade ${trade.symbol}` : 'New Trade Idea'))
 
 const addTargetPlan = () => {
   const idx = targetPlans.value.length + 1
@@ -35,7 +40,7 @@ const removeTargetPlan = (plan: FieldEntry<ScalePlanCreate>) => {
 <template>
   <form :validation-schema="schema" class="h-screen w-96 flex flex-col" @submit="onSubmit">
     <header class="p-4 border-b border-slate-700 flex items-center justify-between">
-      <h2 class="text-lg font-semibold">New Trade Idea</h2>
+      <h2 class="text-lg font-semibold">{{ title }}</h2>
       <div class="flex gap-2">
         <Button variant="ghost" class="text-slate-400 hover:text-white" @click="$emit('close')">
           Cancel
