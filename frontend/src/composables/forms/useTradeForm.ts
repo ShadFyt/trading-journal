@@ -5,13 +5,13 @@ import { useForm } from 'vee-validate'
 import { entryPlanFactory } from '@/utils'
 import type { Trade } from '@/interfaces'
 
-export const useTradeForm = (close?: () => void, trade?: Trade) => {
+export const useTradeForm = (close?: () => void, trade?: Trade | null) => {
   const { createMutation, replaceMutation } = useTradeMutationService()
   const tradeFormSchema = toTypedSchema(extendedTradeCreateSchema)
 
   const getInitialValues = () => {
     if (trade) {
-      return trade
+      return { ...trade }
     }
     return {
       rating: 5,
