@@ -60,7 +60,7 @@ const onSubmit = handleSubmit(async (values) => {
     <CardHeader class="flex items-center">
       <CardTitle class="text-base text-slate-100">Scale plan for {{ scalePlan.label }}</CardTitle>
     </CardHeader>
-    <CardContent class="">
+    <CardContent>
       <form
         class="flex flex-col h-full relative"
         :validation-schema="formSchema"
@@ -77,15 +77,4 @@ const onSubmit = handleSubmit(async (values) => {
       </form>
     </CardContent>
   </Card>
-  <!--  <p class="text-xs font-semibold text-center mb-3">Scale plan for {{ scalePlan.label }}</p>
-  <form class="flex flex-col h-full relative" :validation-schema="formSchema" @submit="onSubmit">
-    <FormLoadingSpinner :isSubmitting="isSubmitting" />
-
-    <div class="grid grid-cols-1 gap-3 md:grid-cols-12">
-      <ScalePlanFormFields />
-    </div>
-    <Button type="submit" class="mt-3" :disabled="isSubmitting || !meta.dirty">
-      Edit {{ scalePlan.label }} Scale Plan
-    </Button>
-  </form>-->
 </template>
