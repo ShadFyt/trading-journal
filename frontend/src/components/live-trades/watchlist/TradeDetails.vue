@@ -29,7 +29,7 @@ const { entryPrice, stopLoss } = useTradeMetrics(selectedTrade)
         <CardContent class="pb-4">
           <div class="grid grid-cols-2 gap-x-4 gap-y-3 mb-4">
             <div>
-              <p class="text-gray-400 text-xs mb-1">Current Price</p>
+              <p class="text-gray-400 text-xs mb-1">Last Price</p>
               <p class="text-white font-medium">{{ formatCurrency(selectedTrade.currentPrice) }}</p>
             </div>
             <div>

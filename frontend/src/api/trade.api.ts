@@ -22,3 +22,7 @@ export const updateLiveTrade = (id: string, data: TradeUpdate) => {
 export const deleteLiveTrade = (id: string) => {
   return apiClient.delete(`${LIVE_TRADE_API_URL}/${id}`)
 }
+
+export const replaceTrade = (id: string, data: TradeCreate) => {
+  return apiClient.put<Trade>(`${LIVE_TRADE_API_URL}/${id}`, data)
+}

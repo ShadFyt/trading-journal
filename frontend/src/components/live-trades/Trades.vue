@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
 import LiveTradeCard from './trade-view/LiveTradeCard.vue'
-import { useLiveTradeFetchingService, useMediaQuery } from '@/composables'
+import { useTradeFetchingService, useMediaQuery } from '@/composables'
 
 import type { Trade } from '@/interfaces/trade.type.ts'
 import { useToggle } from '@vueuse/core'
 
-const { liveTrades: activeTrades, refetchLiveTrades } = useLiveTradeFetchingService()
+const { liveTrades: activeTrades, refetchLiveTrades } = useTradeFetchingService()
 const { isDesktop } = useMediaQuery()
 
 const selectedTrade = ref<Trade | null>(null)

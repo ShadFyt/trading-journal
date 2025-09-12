@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useLiveTradeFetchingService } from '@/composables'
+import { useTradeFetchingService } from '@/composables'
 import { Icon } from '@iconify/vue'
 import type { Trade } from '@/interfaces'
 import { ScalePlanTypeEnum } from '@/enums'
@@ -14,7 +14,7 @@ const props = defineProps<{
   isOpen?: boolean
 }>()
 
-const { watchlist } = useLiveTradeFetchingService()
+const { watchlist } = useTradeFetchingService()
 const selectedTrade = ref<Trade | null>(null)
 
 const searchQuery = ref('')
@@ -49,7 +49,7 @@ const handleTradeSelect = (trade: Trade) => {
     ]"
   >
     <template v-if="isTradeFormOpen">
-      <TradeCreateForm @close="() => toggleTradeFormExpanded(false)" />
+      <TradeForm @close="() => toggleTradeFormExpanded(false)" />
     </template>
     <template v-else>
       <TradeSideBarHeader

@@ -2,6 +2,7 @@ import {
   createLiveTrade,
   deleteLiveTrade,
   getLiveTrades,
+  replaceTrade,
   updateLiveTrade,
 } from '@/api/trade.api.ts'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
@@ -17,7 +18,7 @@ export const liveTradeKeys = {
   detail: (id: string) => [...liveTradeKeys.all, 'detail', id] as const,
 }
 
-export const useLiveTradeFetchingService = () => {
+export const useTradeFetchingService = () => {
   const { data, isLoading, refetch } = useQuery({
     queryKey: liveTradeKeys.list(),
     queryFn: () => getLiveTrades(),
@@ -32,7 +33,7 @@ export const useLiveTradeFetchingService = () => {
   return { liveTrades, isLoading, refetchLiveTrades: refetch, watchlist }
 }
 
-export const useLiveTradeMutationService = () => {
+export const useTradeMutationService = () => {
   const queryClient = useQueryClient()
   const domain = 'live trade'
 
@@ -46,6 +47,16 @@ export const useLiveTradeMutationService = () => {
     mutationFn: (data: TradeCreate) => createLiveTrade(data),
     onSuccess: () => handleSuccess('create'),
     onError: (e) => handleErrorDisplay(e, 'create', domain),
+  })
+
+  const replaceMutation = useMutation<
+    Awaited<ReturnType<typeof replaceTrade>>,
+    AxiosError,
+    { id: string; data: TradeCreate }
+  >({
+    mutationFn: ({ id, data }) => replaceTrade(id, data),
+    onSuccess: () => handleSuccess('update'),
+    onError: (e) => handleErrorDisplay(e, 'update', domain),
   })
 
   const updateMutation = useMutation<
@@ -63,5 +74,5 @@ export const useLiveTradeMutationService = () => {
     onError: (e) => handleErrorDisplay(e, 'delete', domain),
   })
 
-  return { createMutation, updateMutation, deleteMutation }
+  return { createMutation, updateMutation, deleteMutation, replaceMutation }
 }

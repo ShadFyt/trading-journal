@@ -42,7 +42,7 @@ const getStatusColor = (status: string) => {
   </div>
 
   <div class="flex justify-between text-xs text-gray-400">
-    <span>Planned Entry: {{ formatCurrency(entryPrice) }}</span>
+    <span>Entry Target: {{ formatCurrency(entryPrice) }}</span>
     <RatingBadge :rating="trade.rating" />
   </div>
 </template>

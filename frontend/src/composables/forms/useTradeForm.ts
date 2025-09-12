@@ -1,14 +1,18 @@
-import { useLiveTradeMutationService } from '@/composables'
+import { useTradeMutationService } from '@/composables'
 import { extendedTradeCreateSchema } from '@/schemas'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
 import { entryPlanFactory } from '@/utils'
+import type { Trade } from '@/interfaces'
 
-export const useTradeFormCreate = (close?: () => void) => {
-  const { createMutation } = useLiveTradeMutationService()
+export const useTradeForm = (close?: () => void, trade?: Trade) => {
+  const { createMutation, replaceMutation } = useTradeMutationService()
   const tradeFormSchema = toTypedSchema(extendedTradeCreateSchema)
 
   const getInitialValues = () => {
+    if (trade) {
+      return trade
+    }
     return {
       rating: 5,
       scalePlans: [entryPlanFactory()],
@@ -22,7 +26,11 @@ export const useTradeFormCreate = (close?: () => void) => {
 
   const onSubmit = handleSubmit(async (values) => {
     try {
-      await createMutation.mutateAsync(values)
+      if (trade) {
+        await replaceMutation.mutateAsync({ id: trade.id, data: values })
+      } else {
+        await createMutation.mutateAsync(values)
+      }
       close?.()
     } catch (error) {
       console.error('Form submission error:', error)

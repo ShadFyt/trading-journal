@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { Icon } from '@iconify/vue'
-import { useTradeFormCreate } from '@/composables'
+import { useTradeForm } from '@/composables'
 import { ScalePlanTypeEnum } from '@/enums'
 import { targetPlanFactory } from '@/utils'
 import { type FieldEntry, useFieldArray } from 'vee-validate'
@@ -11,7 +11,7 @@ const $emit = defineEmits<{
   (e: 'close'): []
 }>()
 
-const { onSubmit, schema, meta } = useTradeFormCreate(() => $emit('close'))
+const { onSubmit, schema, meta } = useTradeForm(() => $emit('close'))
 const { fields, push, remove } = useFieldArray<ScalePlanCreate>('scalePlans')
 
 const entryPlan = computed(
