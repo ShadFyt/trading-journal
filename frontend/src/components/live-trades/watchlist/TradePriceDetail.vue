@@ -32,7 +32,7 @@ const getStatusColor = (status: string) => {
   </div>
 
   <div class="flex justify-between items-center mb-1">
-    <span class="text-white font-medium">{{ formatCurrency(trade.currentPrice) }}</span>
+    <span class="text-white font-medium">Last Price: {{ formatCurrency(trade.currentPrice) }}</span>
     <span
       v-if="trade.percentChange != null"
       class="text-xs"
@@ -42,7 +42,7 @@ const getStatusColor = (status: string) => {
   </div>
 
   <div class="flex justify-between text-xs text-gray-400">
-    <span>Entry: {{ formatCurrency(entryPrice) }}</span>
+    <span>Planned Entry: {{ formatCurrency(entryPrice) }}</span>
     <RatingBadge :rating="trade.rating" />
   </div>
 </template>

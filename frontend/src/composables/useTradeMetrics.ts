@@ -36,6 +36,14 @@ export const useTradeMetrics = (trade: Trade) => {
           plan.status === ScalePlanStatusEnum.enum.PLANNED),
     )
 
+    if (plan?.status === ScalePlanStatusEnum.enum.PLANNED) {
+      return {
+        entryPriceAvg: plan.limitPrice ?? 0,
+        qty: plan.qty ?? 0,
+        stopLoss: plan.stopPrice ?? 0,
+      }
+    }
+
     if (!plan?.executions?.length) {
       return {
         entryPriceAvg: 0,
