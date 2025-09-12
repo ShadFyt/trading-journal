@@ -54,21 +54,13 @@ provide(TRADE_METRICS_KEY, tradeMetrics)
 
       <Transition name="fade">
         <div v-if="isExpanded" :id="detailsId">
-          <!-- Price Information -->
           <PriceInfo />
-
-          <!-- Price Progress Bar -->
           <TradeProgressBar />
-
-          <!-- Trade Metrics -->
           <TradeMetrics />
-
-          <!-- Setup & Notes -->
           <NotesDisplay :trade="trade" />
         </div>
       </Transition>
 
-      <!-- Footer -->
       <TradeFooter
         :trade
         :is-expanded="isExpanded"
