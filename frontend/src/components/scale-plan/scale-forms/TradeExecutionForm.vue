@@ -62,7 +62,7 @@ const onSubmit = handleSubmit(async (values) => {
                 type="number"
                 step="0.01"
                 inputmode="decimal"
-                class="w-full"
+                class="border-slate-600 bg-slate-800 text-slate-200"
                 v-bind="componentField"
                 placeholder="e.g. 160.00"
               />
@@ -79,7 +79,7 @@ const onSubmit = handleSubmit(async (values) => {
                 type="number"
                 step="0.01"
                 inputmode="decimal"
-                class="w-full"
+                class="border-slate-600 bg-slate-800 text-slate-200"
                 v-bind="componentField"
                 placeholder="e.g. 160.00"
               />
@@ -93,11 +93,14 @@ const onSubmit = handleSubmit(async (values) => {
               <FormLabel for="side">Action</FormLabel>
               <Select v-bind="componentField">
                 <FormControl>
-                  <SelectTrigger id="side" class="w-full">
+                  <SelectTrigger
+                    id="side"
+                    class="border-slate-600 bg-slate-800 text-slate-200 w-full"
+                  >
                     <SelectValue placeholder="Select side" />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent>
+                <SelectContent class="bg-slate-900 text-slate-200">
                   <SelectItem v-for="side in EXECUTION_SIDE" :key="side" :value="side">
                     {{ side }}
                   </SelectItem>
@@ -116,7 +119,7 @@ const onSubmit = handleSubmit(async (values) => {
                 type="number"
                 step="1"
                 inputmode="decimal"
-                class="w-full"
+                class="border-slate-600 bg-slate-800 text-slate-200"
                 v-bind="componentField"
                 placeholder="e.g. 1"
               />
@@ -132,11 +135,11 @@ const onSubmit = handleSubmit(async (values) => {
               <Textarea
                 id="notes"
                 rows="2"
-                class="w-full"
+                class="w-full bg-slate-800 border border-slate-600 text-slate-200 placeholder:text-slate-400 resize-none"
                 v-bind="componentField"
                 placeholder="Optional notes for this plan"
               />
-              <FormMessage />
+              <FormMessage class="text-red-500" />
             </FormItem>
           </FormField>
         </div>
