@@ -17,6 +17,7 @@ const confirmOpen = defineModel<boolean>('confirm-open')
         menuOpen = v
       }
     "
+    class="bg-slate-900"
   >
     <DropdownMenuTrigger class="absolute top-1 right-1">
       <Button
@@ -24,12 +25,12 @@ const confirmOpen = defineModel<boolean>('confirm-open')
         size="sm"
         aria-label="Open trade menu"
         aria-haspopup="menu"
-        class="h-11 w-11 p-0 rounded-full min-w-[44px] min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+        class="min-w-[33px] min-h-[33px] p-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 hover:bg-gray-400"
       >
         <slot name="trigger">...</slot>
       </Button>
     </DropdownMenuTrigger>
-    <DropdownMenuContent side="bottom" align="end" :avoidCollisions="false">
+    <DropdownMenuContent side="bottom" align="end" :avoidCollisions="false" class="bg-slate-900">
       <slot name="extra-actions" />
       <AlertDialog
         :open="confirmOpen"

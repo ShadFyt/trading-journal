@@ -26,7 +26,7 @@ const pills = computed(() => [
 
     <ul class="flex flex-wrap gap-2 justify-around" role="list">
       <li v-for="p in pills" :key="p.label">
-        <span class="text-xs rounded-full bg-gray-100 px-2 py-0.5"
+        <span class="text-xs rounded-full bg-slate-700 px-2 py-0.5"
           >{{ p.label }}: {{ p.value }}</span
         >
       </li>

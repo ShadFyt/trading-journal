@@ -29,7 +29,7 @@ const emit = defineEmits<{
         ⋯
       </Button>
     </DropdownMenuTrigger>
-    <DropdownMenuContent side="bottom" align="end" :avoidCollisions="false">
+    <DropdownMenuContent side="bottom" align="end" :avoidCollisions="false" class="bg-slate-900">
       <DropdownMenuItem @click="emit('edit-trade')"> Edit Trade </DropdownMenuItem>
       <DropdownMenuItem class="text-red-600" @click="emit('close-trade')">
         Close Trade

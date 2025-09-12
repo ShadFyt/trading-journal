@@ -50,14 +50,14 @@ const pnlPercentBadgeClass = computed(() => {
 
 <template>
   <div class="grid grid-cols-2 gap-2 text-sm mt-2">
-    <div v-if="plan.targetPrice != null" class="rounded bg-gray-50 p-2">
-      <p class="text-xs text-gray-600">Target</p>
+    <div v-if="plan.targetPrice != null" class="rounded bg-slate-700 p-2">
+      <p class="text-xs text-slate-300">Target</p>
       <p class="font-medium">{{ formatCurrency(plan.targetPrice) }}</p>
     </div>
 
-    <div v-if="projectedPnLAtTarget != null" class="rounded bg-gray-50 p-2">
-      <p class="text-xs text-gray-600">Projected P&amp;L (target)</p>
-      <p class="font-medium">
+    <div v-if="projectedPnLAtTarget != null" class="rounded bg-slate-700 p-2">
+      <p class="text-xs text-slate-300">Projected P&amp;L (target)</p>
+      <p class="font-medium text-gray-200">
         {{ formatCurrency(projectedPnLAtTarget) }}
         <span
           v-if="projectedReturnPct != null"
