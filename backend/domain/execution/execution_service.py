@@ -8,6 +8,8 @@ from domain.execution.execution_schema import (
     ExecutionCreate,
     ExecutionUpdate,
 )
+from domain.scale_plan.scale_plan_schema import ScalePlanUpdate
+
 from domain.trade.trade_repo import TradeRepo
 
 
@@ -64,8 +66,6 @@ class ExecutionService:
 
         # Only update if status changed
         if new_status != scale_plan.status:
-            from domain.scale_plan.scale_plan_schema import ScalePlanUpdate
-
             update_payload = ScalePlanUpdate(status=new_status)
             await self.scale_plan_repo.update_by_id(
                 scale_plan.id, update_payload, commit=False

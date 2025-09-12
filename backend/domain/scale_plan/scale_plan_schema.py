@@ -53,3 +53,4 @@ class ScalePlanUpdate(ScalePlanBase):
     stop_price: Optional[float] = None
     limit_price: Optional[float] = None
     status: Optional[ScalePlanStatus] = None
+    trade_type: Optional[TradeType] = None
