@@ -56,7 +56,28 @@ const onSubmit = handleSubmit(async (values) => {
 </script>
 
 <template>
-  <p class="text-xs font-semibold text-center mb-3">Scale plan for {{ scalePlan.label }}</p>
+  <Card class="border-none bg-slate-900/60">
+    <CardHeader class="flex items-center">
+      <CardTitle class="text-base text-slate-100">Scale plan for {{ scalePlan.label }}</CardTitle>
+    </CardHeader>
+    <CardContent class="">
+      <form
+        class="flex flex-col h-full relative"
+        :validation-schema="formSchema"
+        @submit="onSubmit"
+      >
+        <FormLoadingSpinner :isSubmitting="isSubmitting" />
+
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-12">
+          <ScalePlanFormFields />
+        </div>
+        <Button type="submit" class="mt-3" :disabled="isSubmitting || !meta.dirty">
+          Edit {{ scalePlan.label }} Scale Plan
+        </Button>
+      </form>
+    </CardContent>
+  </Card>
+  <!--  <p class="text-xs font-semibold text-center mb-3">Scale plan for {{ scalePlan.label }}</p>
   <form class="flex flex-col h-full relative" :validation-schema="formSchema" @submit="onSubmit">
     <FormLoadingSpinner :isSubmitting="isSubmitting" />
 
@@ -66,5 +87,5 @@ const onSubmit = handleSubmit(async (values) => {
     <Button type="submit" class="mt-3" :disabled="isSubmitting || !meta.dirty">
       Edit {{ scalePlan.label }} Scale Plan
     </Button>
-  </form>
+  </form>-->
 </template>

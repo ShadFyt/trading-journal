@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/select'
 import { useTradeExecutionMutations } from '@/composables'
 
-const { scalePlan } = defineProps<{ scalePlan: ScalePlan; extraClass?: string }>()
+const { scalePlan, extraClass } = defineProps<{ scalePlan: ScalePlan; extraClass?: string }>()
 const $emit = defineEmits<{
   (e: 'close'): void
 }>()
@@ -43,10 +43,15 @@ const onSubmit = handleSubmit(async (values) => {
     },
   })
 })
+
+const classes = computed(() => {
+  if (extraClass) return extraClass
+  return 'bg-slate-900/60'
+})
 </script>
 
 <template>
-  <Card :class="extraClass">
+  <Card :class="classes">
     <slot name="header">
       <p class="text-xs font-semibold text-center mb-3">Execute scale plan {{ scalePlan.label }}</p>
     </slot>

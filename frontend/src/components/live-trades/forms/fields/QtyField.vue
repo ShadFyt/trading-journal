@@ -2,13 +2,15 @@
 import { Icon } from '@iconify/vue'
 import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 
-const { planId } = defineProps<{ planId: string }>()
+const { planId } = defineProps<{ planId?: string }>()
+
+const fieldName = computed(() => (planId ? `${planId}.qty` : 'qty'))
 </script>
 <template>
-  <FormField class="space-y-2" :name="`${planId}.qty`" v-slot="{ value, setValue }">
+  <FormField class="space-y-2" :name="fieldName" v-slot="{ value, setValue }">
     <FormItem>
       <FormLabel
-        :for="`${planId}.qty`"
+        :for="fieldName"
         class="text-xs font-medium text-slate-300 flex items-center gap-1"
       >
         <Icon icon="lucide:hash" width="14" height="14" class="text-slate-400" />

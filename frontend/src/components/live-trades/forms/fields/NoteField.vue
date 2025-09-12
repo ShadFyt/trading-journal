@@ -1,14 +1,14 @@
 <script lang="ts" setup>
 import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-const { planId } = defineProps<{ planId: string }>()
+const { planId } = defineProps<{ planId?: string }>()
+
+const fieldName = computed(() => (planId ? `${planId}.notes` : 'notes'))
 </script>
 
 <template>
-  <FormField class="space-y-2" :name="`${planId}.notes`" v-slot="{ value, setValue }">
+  <FormField class="space-y-2" :name="fieldName" v-slot="{ value, setValue }">
     <FormItem>
-      <FormLabel :for="`${planId}.notes`" class="text-xs font-medium text-slate-300"
-        >Notes
-      </FormLabel>
+      <FormLabel :for="fieldName" class="text-xs font-medium text-slate-300">Notes </FormLabel>
       <Textarea
         :model-value="value"
         @update:model-value="setValue"

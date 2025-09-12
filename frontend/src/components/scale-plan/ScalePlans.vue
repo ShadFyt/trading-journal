@@ -45,7 +45,7 @@ const closeEditForm = () => {
     <PopoverAnchor as-child>
       <div class="mb-3">
         <div class="flex justify-between">
-          <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">Targets</p>
+          <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1 bg">Targets</p>
           <ScalePlanQuickAdd />
         </div>
         <div class="flex flex-wrap gap-1">
@@ -60,7 +60,7 @@ const closeEditForm = () => {
         </div>
       </div>
     </PopoverAnchor>
-    <PopoverContent side="bottom" align="start">
+    <PopoverContent side="bottom" align="start" class="p-0">
       <ScalePlanQuickEdit
         v-if="selectedPlan && formType === 'edit'"
         :scalePlan="selectedPlan"

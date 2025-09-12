@@ -1,12 +1,14 @@
 <script lang="ts" setup>
 import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-const { planId } = defineProps<{ planId: string }>()
+const { planId } = defineProps<{ planId?: string }>()
+
+const fieldName = computed(() => (planId ? `${planId}.tradeType` : 'tradeType'))
 </script>
 
 <template>
-  <FormField class="space-y-2" :name="`${planId}.tradeType`" v-slot="{ value, setValue }">
+  <FormField class="space-y-2" :name="fieldName" v-slot="{ value, setValue }">
     <FormItem>
-      <FormLabel for="tradeType" class="text-xs font-medium text-slate-300">Trade Type</FormLabel>
+      <FormLabel :for="fieldName" class="text-xs font-medium text-slate-300">Trade Type</FormLabel>
       <Select :model-value="value" @update:model-value="setValue">
         <SelectTrigger class="w-full bg-slate-800 border border-slate-600 text-slate-200">
           <SelectValue placeholder="Long" />
