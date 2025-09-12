@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useTradeFetchingService } from '@/composables'
+import { useTradeFetchingService, useProvideTradeActions } from '@/composables'
 import { Icon } from '@iconify/vue'
 import type { Trade } from '@/interfaces'
 import { ScalePlanTypeEnum } from '@/enums'
@@ -29,7 +29,13 @@ const { results } = useFuse(searchQuery, watchlist, {
 })
 
 const filteredWatchlist = computed(() => {
-  return results.value.map((result) => result.item)
+  const searchResults = results.value.map((result) => result.item)
+
+  if (selectedTrade.value && !searchResults.some((trade) => trade.id === selectedTrade.value?.id)) {
+    return [selectedTrade.value, ...searchResults]
+  }
+
+  return searchResults
 })
 
 const entryPlan = computed(() => {
@@ -44,6 +50,11 @@ const handleTradeFormOpen = () => {
   selectedTrade.value = null
   toggleTradeFormExpanded(true)
 }
+
+useProvideTradeActions({
+  openExecutionForm: () => toggleExecutionFormExpanded(true),
+  openTradeForm: () => toggleTradeFormExpanded(true),
+})
 </script>
 
 <template>
@@ -115,11 +126,7 @@ const handleTradeFormOpen = () => {
         v-if="selectedTrade && !isExecutionFormOpen"
         class="flex-1 max-h-[50vh] border-t border-gray-700"
       >
-        <TradeDetails
-          :selected-trade="selectedTrade"
-          @open-execution-form="toggleExecutionFormExpanded"
-          @open-trade-form="toggleTradeFormExpanded"
-        />
+        <TradeDetails :selected-trade="selectedTrade" />
       </div>
     </template>
   </aside>

@@ -4,35 +4,13 @@ import { useFormatters, useTradeMetrics } from '@/composables'
 
 const { formatCurrency } = useFormatters()
 const { selectedTrade } = defineProps<{ selectedTrade: Trade }>()
-const emit = defineEmits<{
-  'open-execution-form': []
-  'open-trade-form': []
-}>()
 const { entryPrice, stopLoss } = useTradeMetrics(selectedTrade)
 </script>
 
 <template>
   <div class="h-full flex flex-col">
     <Card class="p-3 m-2 bg-gray-800/50 border-none flex flex-col flex-1 min-h-0">
-      <CardHeader class="flex items-center justify-between flex-shrink-0">
-        <h3 class="text-white font-semibold text-sm">{{ selectedTrade?.symbol }} Details</h3>
-        <div class="flex gap-2">
-          <Button
-            @click="emit('open-execution-form')"
-            size="sm"
-            class="h-7 px-3 text-xs bg-blue-600 hover:bg-blue-700"
-          >
-            Trade
-          </Button>
-          <Button
-            @click="emit('open-trade-form')"
-            size="sm"
-            class="h-7 px-3 text-xs bg-blue-600 hover:bg-blue-700"
-          >
-            Edit
-          </Button>
-        </div>
-      </CardHeader>
+      <TradeDetailHeader :trade="selectedTrade" />
       <div class="flex-1 overflow-y-auto">
         <CardContent class="pb-4">
           <div class="grid grid-cols-2 gap-x-4 gap-y-3 mb-4">
