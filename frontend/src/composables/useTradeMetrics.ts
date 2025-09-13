@@ -2,11 +2,13 @@ import type { InjectionKey } from 'vue'
 import type { Trade } from '@/interfaces'
 import { ScalePlanStatusEnum, ScalePlanTypeEnum, ScaleTradeTypeEnum } from '@/enums'
 
+type TradeType = 'long' | 'short'
+
 type EntryPlanMetrics = {
   entryPriceAvg: number
   qty: number
   stopLoss: number
-  tradeType: typeof ScaleTradeTypeEnum
+  tradeType: TradeType
 }
 
 export const useTradeMetrics = (trade: Trade) => {
@@ -32,7 +34,7 @@ export const useTradeMetrics = (trade: Trade) => {
     entryPriceAvg: number,
     qty: number,
     stopLoss: number,
-    tradeType: typeof ScaleTradeTypeEnum,
+    tradeType: TradeType,
   ): EntryPlanMetrics => ({
     entryPriceAvg,
     qty,
@@ -41,7 +43,7 @@ export const useTradeMetrics = (trade: Trade) => {
   })
 
   // Helper to get default trade type
-  const getDefaultTradeType = (plan?: any): typeof ScaleTradeTypeEnum =>
+  const getDefaultTradeType = (plan?: any): TradeType =>
     plan?.tradeType ?? ScaleTradeTypeEnum.enum.LONG
 
   const latestStopLossPlan = computed(() => {
