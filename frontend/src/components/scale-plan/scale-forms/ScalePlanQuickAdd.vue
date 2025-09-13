@@ -8,7 +8,7 @@ import { useInjectTradeMetrics, useScalePlanMutations } from '@/composables'
 import { OrderTypeEnum, ScalePlanTypeEnum } from '@/enums'
 import { addScalePlanLimitIssue, addScalePlanTargetPriceIssue } from '@/utils/scale-plan.util.ts'
 
-const { entryPrice, initialPosition, trade } = useInjectTradeMetrics()
+const { initialPosition, trade, entryPlan } = useInjectTradeMetrics()
 
 const targetPlans = computed(() =>
   trade.scalePlans.filter((p) => p.planType === ScalePlanTypeEnum.enum.TARGET),
@@ -24,7 +24,7 @@ const refinedSchema = ScalePlanCreateSchema.superRefine((data, ctx) => {
   const existingTotal = targetPlans.value.reduce((sum, p) => sum + (p.qty ?? 0), 0)
   const newTotal = existingTotal + (data.qty ?? 0)
   addScalePlanLimitIssue(ctx, initialPosition, newTotal)
-  addScalePlanTargetPriceIssue(ctx, data.targetPrice, entryPrice)
+  addScalePlanTargetPriceIssue(ctx, data.targetPrice, entryPlan.value.entryPriceAvg)
 })
 
 const formSchema = toTypedSchema(refinedSchema)
@@ -35,8 +35,9 @@ const { isSubmitting, handleSubmit, meta } = useForm({
     notes: '',
     orderType: OrderTypeEnum.enum.LIMIT,
     planType: ScalePlanTypeEnum.enum.TARGET,
-    targetPrice: entryPrice + 0.5,
+    targetPrice: entryPlan.value.entryPriceAvg + 0.5,
     label: `T${targetPlans.value.length + 1}(Target ${targetPlans.value.length + 1})`,
+    tradeType: entryPlan.value.tradeType,
   },
 })
 

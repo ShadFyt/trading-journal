@@ -1,6 +1,13 @@
 import type { InjectionKey } from 'vue'
 import type { Trade } from '@/interfaces'
-import { ScalePlanStatusEnum, ScalePlanTypeEnum } from '@/enums'
+import { ScalePlanStatusEnum, ScalePlanTypeEnum, ScaleTradeTypeEnum } from '@/enums'
+
+type EntryPlanMetrics = {
+  entryPriceAvg: number
+  qty: number
+  stopLoss: number
+  tradeType: typeof ScaleTradeTypeEnum
+}
 
 export const useTradeMetrics = (trade: Trade) => {
   const executions = computed(() =>
@@ -9,6 +16,7 @@ export const useTradeMetrics = (trade: Trade) => {
       .flatMap((plan) => plan.executions),
   )
   const soldShares = computed(() => executions.value.reduce((total, exec) => total + exec.qty, 0))
+
   // Helper to calculate weighted average price from executions
   const calculateWeightedAvgPrice = (executions: Array<{ price: number; qty: number }>) => {
     if (executions.length === 0) return 0
@@ -20,6 +28,22 @@ export const useTradeMetrics = (trade: Trade) => {
     return totalValue / totalQty
   }
 
+  const createEntryPlanMetrics = (
+    entryPriceAvg: number,
+    qty: number,
+    stopLoss: number,
+    tradeType: typeof ScaleTradeTypeEnum,
+  ): EntryPlanMetrics => ({
+    entryPriceAvg,
+    qty,
+    stopLoss,
+    tradeType,
+  })
+
+  // Helper to get default trade type
+  const getDefaultTradeType = (plan?: any): typeof ScaleTradeTypeEnum =>
+    plan?.tradeType ?? ScaleTradeTypeEnum.enum.LONG
+
   const latestStopLossPlan = computed(() => {
     return trade.scalePlans.find(
       (plan) =>
@@ -28,7 +52,7 @@ export const useTradeMetrics = (trade: Trade) => {
     )
   })
 
-  const entryPlan = computed(() => {
+  const entryPlan = computed((): EntryPlanMetrics => {
     const plan = trade.scalePlans.find(
       (plan) =>
         plan.planType === ScalePlanTypeEnum.enum.ENTRY &&
@@ -36,30 +60,30 @@ export const useTradeMetrics = (trade: Trade) => {
           plan.status === ScalePlanStatusEnum.enum.PLANNED),
     )
 
+    const defaultStopLoss = latestStopLossPlan.value?.stopPrice ?? 0
+    const tradeType = getDefaultTradeType(plan)
+
+    // Handle planned entry (not yet executed)
     if (plan?.status === ScalePlanStatusEnum.enum.PLANNED) {
-      return {
-        entryPriceAvg: plan.limitPrice ?? 0,
-        qty: plan.qty ?? 0,
-        stopLoss: plan.stopPrice ?? 0,
-      }
+      return createEntryPlanMetrics(
+        plan.limitPrice ?? 0,
+        plan.qty ?? 0,
+        plan.stopPrice ?? 0,
+        tradeType,
+      )
     }
 
+    // Handle missing plan or no executions
     if (!plan?.executions?.length) {
-      return {
-        entryPriceAvg: 0,
-        qty: 0,
-        stopLoss: latestStopLossPlan.value?.stopPrice ?? 0,
-      }
+      return createEntryPlanMetrics(0, 0, defaultStopLoss, tradeType)
     }
 
+    // Handle executed entry plan
     const totalQty = plan.executions.reduce((sum, exec) => sum + exec.qty, 0)
     const avgPrice = calculateWeightedAvgPrice(plan.executions)
+    const stopLoss = (defaultStopLoss || plan.stopPrice) ?? 0
 
-    return {
-      entryPriceAvg: avgPrice,
-      qty: totalQty,
-      stopLoss: latestStopLossPlan.value?.stopPrice ?? plan.stopPrice ?? 0,
-    }
+    return createEntryPlanMetrics(avgPrice, totalQty, stopLoss, tradeType)
   })
 
   const realizedPnL = computed(() => {
@@ -110,6 +134,7 @@ export const useTradeMetrics = (trade: Trade) => {
     stopLoss: entryPlan.value.stopLoss,
     executions,
     trade,
+    entryPlan,
   }
 }
 
