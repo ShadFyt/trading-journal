@@ -54,7 +54,7 @@ const slippagePct = computed(() => {
 })
 
 const posNegClass = (v?: number | null, neutral = 'text-gray-700') =>
-  v == null ? neutral : v >= 0 ? 'text-emerald-700' : 'text-rose-700'
+  v == null ? neutral : v >= 0 ? 'text-emerald-500' : 'text-rose-700'
 </script>
 
 <template>
@@ -65,7 +65,7 @@ const posNegClass = (v?: number | null, neutral = 'text-gray-700') =>
 
     <InfoWrapper title="Realized PnL" :extra-classes="posNegClass(realizedPnL)">
       {{ formatCurrency(realizedPnL) }}
-      <span class="ml-1 text-xs" :class="realizedPnL >= 0 ? 'text-emerald-700' : 'text-rose-700'">
+      <span class="ml-1 text-xs" :class="realizedPnL >= 0 ? 'text-emerald-600' : 'text-rose-700'">
         ({{ realizedPct != null ? formatPercentage(realizedPct) : '' }})
       </span>
     </InfoWrapper>
@@ -74,7 +74,7 @@ const posNegClass = (v?: number | null, neutral = 'text-gray-700') =>
       {{ formatCurrency(slippageAbs as number) }}
       <span
         class="ml-1 text-xs"
-        :class="(slippageAbs as number) >= 0 ? 'text-emerald-700' : 'text-rose-700'"
+        :class="(slippageAbs as number) >= 0 ? 'text-emerald-600' : 'text-rose-700'"
       >
         ({{ slippagePct != null ? formatPercentage(slippagePct as number) : '' }})
       </span>

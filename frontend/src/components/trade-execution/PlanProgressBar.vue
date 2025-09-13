@@ -38,7 +38,7 @@ const ariaValueText = computed(
         :style="`transform: translateX(-${100 - fillPct}%)`"
       />
     </ProgressRoot>
-    <p class="mt-1 text-[11px] text-gray-600 text-center">
+    <p class="mt-1 text-[11px] text-slate-300 text-center">
       {{ filledQty }} / {{ plannedShares }} shares ({{ fillPct }}%) • Commissions:
       {{ formatCurrency(commissions) }}
     </p>
