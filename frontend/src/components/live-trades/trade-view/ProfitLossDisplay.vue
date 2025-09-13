@@ -25,7 +25,7 @@ const pnlStyling = computed(() => {
     class="grid grid-cols-1 gap-3 sm:grid-cols-3 p-3 rounded-lg mb-3 border"
     :class="[pnlStyling.bgColor, pnlStyling.borderColor]"
   >
-    <InfoWrapper :title="'Current Price'" :is-green="trade.currentPrice >= entryPrice">
+    <InfoWrapper :title="'Last Price'" :is-green="trade.currentPrice >= entryPrice">
       {{ formatCurrency(trade.currentPrice) }}
     </InfoWrapper>
 

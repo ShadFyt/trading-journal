@@ -10,7 +10,7 @@ const planId = computed(() => `scalePlans.${idx}`)
   <div class="space-y-4">
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
       <OrderTypeField :plan-id="planId" />
-      <FormField class="space-y-2" :name="`${planId}.label`" v-slot="{ value, setValue }">
+      <FormField :name="`${planId}.label`" v-slot="{ value, setValue }">
         <FormItem>
           <FormLabel
             :for="`${planId}.label`"
