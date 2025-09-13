@@ -29,7 +29,7 @@ const refinedSchema = ScalePlanCreateSchema.superRefine((data, ctx) => {
 
 const formSchema = toTypedSchema(refinedSchema)
 const { createPlanMutation } = useScalePlanMutations()
-const { isFieldDirty, isSubmitting, handleSubmit } = useForm({
+const { isSubmitting, handleSubmit, meta } = useForm({
   validationSchema: formSchema,
   initialValues: {
     notes: '',
@@ -75,28 +75,35 @@ const onSubmit = handleSubmit(async (values) => {
           </TooltipTrigger>
           <TooltipContent>
             <p class="text-xs font-semibold tracking-wide">
-              {{ isDisabled ? 'Max quantity reached' : 'Add Scale Plan' }}
+              {{ isDisabled ? 'Max quantity reached' : 'Add Target Plan' }}
             </p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
     </PopoverTrigger>
-    <PopoverContent>
-      <p class="text-xs font-semibold text-center mb-3">Scale Out Plan</p>
-      <form
-        class="flex flex-col h-full relative"
-        :validation-schema="formSchema"
-        @submit="onSubmit"
-      >
-        <FormLoadingSpinner :isSubmitting="isSubmitting" />
-
-        <div class="grid grid-cols-1 gap-3 md:grid-cols-12">
-          <ScalePlanFormFields />
-        </div>
-        <Button type="submit" class="mt-3" :disabled="!isFieldDirty('qty') || isSubmitting">
-          Add New Plan
-        </Button>
-      </form>
+    <PopoverContent class="p-0 bg-slate-900 rounded-lg">
+      <Card class="border border-slate-600 rounded-lg p-4 bg-slate-800/50 border-none">
+        <form
+          class="flex flex-col h-full relative m-0 p-0"
+          :validation-schema="formSchema"
+          @submit="onSubmit"
+        >
+          <FormLoadingSpinner :isSubmitting="isSubmitting" />
+          <CardHeader class="bg-blue-900/30 flex justify-between px-4 py-3 -m-4 mb-4 rounded-t-lg">
+            <CardTitle class="text-blue-400 text-base flex gap-2">
+              <Icon icon="lucide:target" width="24" height="24" /> Add Plan
+            </CardTitle>
+            <Button type="submit" size="sm" class="gap-1" :disabled="!meta.valid || isSubmitting">
+              <Icon icon="lucide:plus" width="24" height="24" /> Add Target
+            </Button>
+          </CardHeader>
+          <CardContent class="space-y-4 p-0">
+            <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-start">
+              <ScalePlanFormFields />
+            </div>
+          </CardContent>
+        </form>
+      </Card>
     </PopoverContent>
   </Popover>
 </template>

@@ -22,7 +22,7 @@ export const ScalePlanSchema = z.object({
   stopPrice: z.number().optional(),
   limitPrice: z.number().optional(),
   executions: z.array(ExecutionSchema),
-  tradeType: ScaleTradeTypeEnum,
+  tradeType: ScaleTradeTypeEnum.optional(),
 })
 
 export const ScalePlanCreateSchema = ScalePlanSchema.omit({

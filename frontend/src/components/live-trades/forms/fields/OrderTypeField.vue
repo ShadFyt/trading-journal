@@ -1,13 +1,12 @@
 <script lang="ts" setup>
 import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-const { planId } = defineProps<{ planId: string }>()
+const { planId } = defineProps<{ planId?: string }>()
+const fieldName = computed(() => (planId ? `${planId}.orderType` : 'orderType'))
 </script>
 <template>
-  <FormField :name="`${planId}.orderType`" class="space-y-2" v-slot="{ value, setValue }">
+  <FormField :name="fieldName" v-slot="{ value, setValue }">
     <FormItem>
-      <FormLabel :for="`${planId}.orderType`" class="text-xs font-medium text-slate-300"
-        >Order Type
-      </FormLabel>
+      <FormLabel :for="fieldName" class="text-xs font-medium text-slate-300">Order Type </FormLabel>
       <Select :model-value="value" @update:model-value="setValue">
         <SelectTrigger class="w-full bg-slate-800 border border-slate-600 text-slate-200">
           <SelectValue placeholder="Market" />

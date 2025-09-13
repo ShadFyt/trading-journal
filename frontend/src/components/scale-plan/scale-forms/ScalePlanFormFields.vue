@@ -34,7 +34,7 @@ import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/for
   </FormField>
 
   <div class="md:col-span-6">
-    <TradeTypeField />
+    <OrderTypeField />
   </div>
   <div class="md:col-span-6">
     <QtyField />
