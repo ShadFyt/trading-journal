@@ -1,32 +1,32 @@
 <script lang="ts" setup>
 import type { Trade } from '@/interfaces'
 import { useFormatters, useTradeMetrics } from '@/composables'
+import { ScaleTradeTypeEnum } from '@/enums'
 const { formatCurrency, formatPercentage } = useFormatters()
 
 const { trade } = defineProps<{
   trade: Trade
 }>()
 
-const { entryPrice } = useTradeMetrics(trade)
+const { entryPrice, entryPlan } = useTradeMetrics(trade)
 
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case 'watching':
-      return 'bg-blue-500/10 text-blue-400 border-blue-500/20'
-    case 'alert':
-      return 'bg-orange-500/10 text-orange-400 border-orange-500/20'
-    default:
-      return 'bg-gray-500/10 text-gray-400 border-gray-500/20'
-  }
-}
+const isLong = computed(() => entryPlan.value.tradeType === ScaleTradeTypeEnum.enum.LONG)
+
+const tradeTypeBadgeClass = computed(() => {
+  const baseClasses = 'rounded-full uppercase'
+
+  return isLong
+    ? `${baseClasses} bg-green-100 text-green-700 border border-green-200`
+    : `${baseClasses} bg-red-100 text-red-700 border border-red-200`
+})
 </script>
 
 <template>
   <div class="flex items-center justify-between mb-1">
     <div class="flex items-center gap-2">
       <span class="font-semibold text-white text-sm">{{ trade.symbol }}</span>
-      <Badge :class="[getStatusColor(trade.status), 'text-xs']">
-        {{ trade.status }}
+      <Badge :class="tradeTypeBadgeClass">
+        {{ entryPlan.tradeType }}
       </Badge>
     </div>
   </div>

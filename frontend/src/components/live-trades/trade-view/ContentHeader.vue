@@ -28,7 +28,7 @@ const statusBadgeClass = computed(() => {
 })
 
 const tradeTypeBadgeClass = computed(() => {
-  const baseClasses = 'px-2 py-1 text-xs rounded-full font-semibold uppercase tracking-wide'
+  const baseClasses = 'rounded-full uppercase tracking-wide'
 
   return isLong
     ? `${baseClasses} bg-green-100 text-green-700 border border-green-200`
