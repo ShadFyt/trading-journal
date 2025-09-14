@@ -6,10 +6,10 @@ const { trade } = defineProps<{ trade: Trade }>()
 </script>
 
 <template>
-  <section class="space-y-3">
+  <section class="mt-2">
     <div>
-      <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Setup</p>
-      <p class="text-xs text-gray-500 italic">{{ trade.setup }}</p>
+      <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Setup</p>
+      <p class="text-xs text-gray-100 italic">{{ trade.setup }}</p>
     </div>
 
     <!-- Catalysts -->
