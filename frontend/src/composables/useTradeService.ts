@@ -1,9 +1,10 @@
 import {
-  createLiveTrade,
-  deleteLiveTrade,
-  getLiveTrades,
+  createTrade,
+  deleteTrade,
+  getTrades,
+  invalidateTrade,
   replaceTrade,
-  updateLiveTrade,
+  updateTrade,
 } from '@/api/trade.api.ts'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue-sonner'
@@ -21,7 +22,7 @@ export const liveTradeKeys = {
 export const useTradeFetchingService = () => {
   const { data, isLoading, refetch } = useQuery({
     queryKey: liveTradeKeys.list(),
-    queryFn: () => getLiveTrades(),
+    queryFn: () => getTrades(),
     staleTime: 60 * 60 * 1000, // 1 hour
     refetchOnWindowFocus: true,
   })
@@ -44,7 +45,7 @@ export const useTradeMutationService = () => {
   }
 
   const createMutation = useMutation({
-    mutationFn: (data: TradeCreate) => createLiveTrade(data),
+    mutationFn: (data: TradeCreate) => createTrade(data),
     onSuccess: () => handleSuccess('create'),
     onError: (e) => handleErrorDisplay(e, 'create', domain),
   })
@@ -60,19 +61,26 @@ export const useTradeMutationService = () => {
   })
 
   const updateMutation = useMutation<
-    Awaited<ReturnType<typeof updateLiveTrade>>,
+    Awaited<ReturnType<typeof updateTrade>>,
     AxiosError,
     { id: string; data: TradeUpdate; message?: string }
   >({
-    mutationFn: ({ id, data }) => updateLiveTrade(id, data),
+    mutationFn: ({ id, data }) => updateTrade(id, data),
     onSuccess: (_data, variables) => handleSuccess('update', variables?.message),
     onError: (e) => handleErrorDisplay(e, 'update', domain),
   })
+
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteLiveTrade(id),
+    mutationFn: (id: string) => deleteTrade(id),
     onSuccess: () => handleSuccess('delete'),
     onError: (e) => handleErrorDisplay(e, 'delete', domain),
   })
 
-  return { createMutation, updateMutation, deleteMutation, replaceMutation }
+  const invalidateMutation = useMutation({
+    mutationFn: (id: string) => invalidateTrade(id),
+    onSuccess: () => handleSuccess('update', 'Trade invalidated successfully'),
+    onError: (e) => handleErrorDisplay(e, 'update', domain),
+  })
+
+  return { createMutation, updateMutation, deleteMutation, replaceMutation, invalidateMutation }
 }

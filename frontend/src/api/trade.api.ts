@@ -1,28 +1,32 @@
 import { apiClient } from './client'
 import type { Trade, TradeCreate, TradeUpdate } from '@/interfaces/trade.type.ts'
 
-const LIVE_TRADE_API_URL = '/trades'
+const TRADE_API_URL = '/trades'
 
-export const getLiveTrades = () => {
-  return apiClient.get<Trade[]>(LIVE_TRADE_API_URL)
+export const getTrades = () => {
+  return apiClient.get<Trade[]>(TRADE_API_URL)
 }
 
-export const createLiveTrade = (data: TradeCreate) => {
+export const createTrade = (data: TradeCreate) => {
   const { ...rest } = data
 
-  return apiClient.post<Trade>(LIVE_TRADE_API_URL, {
+  return apiClient.post<Trade>(TRADE_API_URL, {
     ...rest,
   })
 }
 
-export const updateLiveTrade = (id: string, data: TradeUpdate) => {
-  return apiClient.patch<Trade>(`${LIVE_TRADE_API_URL}/${id}`, data)
+export const updateTrade = (id: string, data: TradeUpdate) => {
+  return apiClient.patch<Trade>(`${TRADE_API_URL}/${id}`, data)
 }
 
-export const deleteLiveTrade = (id: string) => {
-  return apiClient.delete(`${LIVE_TRADE_API_URL}/${id}`)
+export const deleteTrade = (id: string) => {
+  return apiClient.delete(`${TRADE_API_URL}/${id}`)
 }
 
 export const replaceTrade = (id: string, data: TradeCreate) => {
-  return apiClient.put<Trade>(`${LIVE_TRADE_API_URL}/${id}`, data)
+  return apiClient.put<Trade>(`${TRADE_API_URL}/${id}`, data)
+}
+
+export const invalidateTrade = (id: string) => {
+  return apiClient.patch(`${TRADE_API_URL}/${id}/invalidate`)
 }
