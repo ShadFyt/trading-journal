@@ -90,6 +90,17 @@ class TradeService:
 
         return result
 
+    async def invalidate_trade(self, trade_id: str) -> None:
+        trade = await self.repo.get_trade_by_id(trade_id)
+        if not trade:
+            raise HTTPException(status_code=404, detail="Trade not found")
+        if trade.status != TradeStatus.WATCHING:
+            raise HTTPException(
+                status_code=400, detail="Can only invalidate trades in watching status"
+            )
+        trade.status = TradeStatus.INVALIDATED
+        await self.repo.update_trade(trade_id, trade)
+
     async def delete_trade(self, trade_id: str) -> None:
         return await self.repo.delete_trade(trade_id)
 

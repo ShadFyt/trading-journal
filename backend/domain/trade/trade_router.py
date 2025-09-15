@@ -30,6 +30,11 @@ async def update_live_trade(service: TradeServiceDep, id: str, payload: TradeUpd
     return await service.update_trade(id, payload)
 
 
+@router.patch("/{trade_id}/invalidate", status_code=status.HTTP_204_NO_CONTENT)
+async def invalidate_trade(service: TradeServiceDep, trade_id: str):
+    return await service.invalidate_trade(trade_id)
+
+
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_live_trade(service: TradeServiceDep, id: str):
     return await service.delete_trade(id)
