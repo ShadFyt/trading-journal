@@ -4,7 +4,7 @@ import os
 import asyncio
 import httpx
 from typing import List
-from .finnhub_schema import StockQuote
+from .finnhub_schema import StockQuote, CompanyProfile
 
 load_dotenv()
 logger = logging.getLogger(__name__)
@@ -14,23 +14,32 @@ class FinnhubService:
     def __init__(self):
         self.api_key = os.getenv("FINHUB_API_KEY")
         self.base_url = os.getenv("FINHUB_BASE_URL")
-        self.client = httpx.AsyncClient()
+        self._validate_config()
+        
+        # Configure client with default headers
+        headers = {
+            "Content-Type": "application/json",
+            "X-Finnhub-Token": self.api_key
+        }
+        self.client = httpx.AsyncClient(headers=headers)
+
+    def _validate_config(self):
+        """Validate API configuration on initialization."""
+        if not self.api_key:
+            raise ValueError("FINHUB_API_KEY not found in environment variables")
+        if not self.base_url:
+            raise ValueError("FINHUB_BASE_URL not found in environment variables")
 
     async def close(self):
         await self.client.aclose()
 
     async def get_stock_price(self, symbol: str) -> StockQuote:
         """Fetch current stock price for a given symbol."""
-        if not self.api_key:
-            raise ValueError("FINHUB_API_KEY not found in environment variables")
-        if not self.base_url:
-            raise ValueError("FINHUB_BASE_URL not found in environment variables")
 
         url = f"{self.base_url}/quote?symbol={symbol.upper()}"
-        headers = {"Content-Type": "application/json", "X-Finnhub-Token": self.api_key}
 
         try:
-            response = await self.client.get(url, headers=headers, timeout=10)
+            response = await self.client.get(url, timeout=10)
             response.raise_for_status()
             data = response.json()
             data["symbol"] = symbol
@@ -41,10 +50,6 @@ class FinnhubService:
 
     async def get_stock_price_batch(self, symbols: List[str]) -> List[StockQuote]:
         """Fetch current stock prices for a list of symbols using individual API calls."""
-        if not self.api_key:
-            raise ValueError("FINHUB_API_KEY not found in environment variables")
-        if not self.base_url:
-            raise ValueError("FINHUB_BASE_URL not found in environment variables")
 
         tasks = [self.get_stock_price(symbol) for symbol in symbols]
         results = await asyncio.gather(*tasks, return_exceptions=True)
@@ -56,6 +61,19 @@ class FinnhubService:
 
             quotes.append(result)
         return quotes
+
+    async def get_company_profile(self, symbol: str) -> CompanyProfile:
+        """Fetch company profile for a given symbol."""
+        url = f"{self.base_url}/profile2?symbol={symbol.upper()}"
+        
+        try:
+            response = await self.client.get(url, timeout=10)
+            response.raise_for_status()
+            data = response.json()
+            return CompanyProfile(**data)
+        except httpx.HTTPError as e:
+            logger.error(f"Error fetching company profile: {e}")
+            raise
 
 
 # Usage example
