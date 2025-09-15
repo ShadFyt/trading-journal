@@ -188,6 +188,7 @@ export const handleErrorDisplay = (e: unknown, type: crudType, domain: string) =
       description: e.response?.data?.message || e.message || 'An error occurred',
     })
   } else {
-    toast.error(`Failed to ${type} ${domain}`)
+    const message = (e as any)?.message ?? `Failed to ${type} ${domain}`
+    toast.error(message)
   }
 }

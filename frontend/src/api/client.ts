@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { AxiosInstance, AxiosRequestConfig, AxiosError } from 'axios'
+import type { AxiosInstance, AxiosRequestConfig } from 'axios'
 import axios from 'axios'
 import { parseApiError } from './api-error.util'
 
@@ -17,7 +17,7 @@ const axiosInstance: AxiosInstance = axios.create({
 // Add response interceptor for error handling
 axiosInstance.interceptors.response.use(
   (response) => response,
-  (error: AxiosError) => {
+  (error: any) => {
     // Parse and rethrow the error using our utility
     throw parseApiError(error)
   },
