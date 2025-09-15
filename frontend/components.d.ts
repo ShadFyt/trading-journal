@@ -164,6 +164,7 @@ declare module 'vue' {
     TooltipContent: typeof import('./src/components/ui/tooltip/TooltipContent.vue')['default']
     TooltipProvider: typeof import('./src/components/ui/tooltip/TooltipProvider.vue')['default']
     TooltipTrigger: typeof import('./src/components/ui/tooltip/TooltipTrigger.vue')['default']
+    TradeActionMenu: typeof import('./src/components/live-trades/watchlist/TradeActionMenu.vue')['default']
     TradeDetailHeader: typeof import('./src/components/live-trades/watchlist/TradeDetailHeader.vue')['default']
     TradeDetails: typeof import('./src/components/live-trades/watchlist/TradeDetails.vue')['default']
     TradeExecutionContent: typeof import('./src/components/trade-execution/TradeExecutionContent.vue')['default']

@@ -29,6 +29,7 @@ const tradeTypeBadgeClass = computed(() => {
         {{ entryPlan.tradeType }}
       </Badge>
     </div>
+    <TradeActionMenu :trade="trade" />
   </div>
 
   <div class="flex justify-between items-center mb-1">
