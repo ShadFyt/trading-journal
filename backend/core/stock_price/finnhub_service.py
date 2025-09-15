@@ -10,7 +10,7 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 
-class StockPriceService:
+class FinnhubService:
     def __init__(self):
         self.api_key = os.getenv("FINHUB_API_KEY")
         self.base_url = os.getenv("FINHUB_BASE_URL")
@@ -61,7 +61,7 @@ class StockPriceService:
 # Usage example
 async def main():
     try:
-        stock_price_service = StockPriceService()
+        stock_price_service = FinnhubService()
         quotes = await stock_price_service.get_stock_price_batch(
             ["AMSC", "AAPL", "MSFT"]
         )

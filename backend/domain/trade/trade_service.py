@@ -16,7 +16,7 @@ from database.models import (
     TradeType,
 )
 from fastapi import HTTPException, status
-from core.stock_price.stock_price_service import StockPriceService
+from core.stock_price.finnhub_service import FinnhubService
 
 
 class TradeService:
@@ -24,7 +24,7 @@ class TradeService:
         self,
         repo: TradeRepo,
         annotation_repo: AnnotationRepo,
-        stock_price_service: StockPriceService,
+        stock_price_service: FinnhubService,
     ):
         self.repo = repo
         self.annotation_repo = annotation_repo
