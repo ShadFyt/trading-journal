@@ -4,7 +4,7 @@ import os
 import asyncio
 import httpx
 from typing import List
-from .stock_price_schema import StockQuote
+from .finnhub_schema import StockQuote
 
 load_dotenv()
 logger = logging.getLogger(__name__)
@@ -62,7 +62,9 @@ class StockPriceService:
 async def main():
     try:
         stock_price_service = StockPriceService()
-        quotes = await stock_price_service.get_stock_price_batch(["AMSC", "AAPL", "MSFT"])
+        quotes = await stock_price_service.get_stock_price_batch(
+            ["AMSC", "AAPL", "MSFT"]
+        )
         for quote in quotes:
             print(f"Stock: {quote.symbol}")
             print(f"Current price: ${quote.current_price}")
@@ -73,6 +75,7 @@ async def main():
         await stock_price_service.close()
     except Exception as e:
         print(f"Failed to get price: {e}")
+
 
 if __name__ == "__main__":
     asyncio.run(main())
