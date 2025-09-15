@@ -67,7 +67,6 @@ export const LiveTradeUpdateSchema = TradeSchema.omit({
   percentChange: true,
   currentPrice: true,
   rrRatio: true,
-  status: true,
   scalePlans: true,
   openPrice: true,
   previousClose: true,

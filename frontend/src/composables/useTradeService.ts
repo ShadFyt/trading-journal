@@ -90,7 +90,20 @@ export const useTradeMutationService = () => {
 
   const invalidateMutation = useMutation({
     mutationFn: (id: string) => invalidateTrade(id),
-    onSuccess: () => handleSuccess('update', 'Trade invalidated successfully'),
+    onSuccess: (_data, id) => {
+      queryClient.invalidateQueries({ queryKey: liveTradeKeys.list() })
+      toast('Trade invalidated successfully', {
+        description: 'Trade will be removed from watchlist',
+        action: {
+          label: 'Undo',
+          onClick: () => {
+            console.log('undo for trade:', id)
+            updateTrade(id, { status: TradeStatusEnum.enum.WATCHING })
+            queryClient.invalidateQueries({ queryKey: liveTradeKeys.list() })
+          },
+        },
+      })
+    },
     onError: (e) => handleErrorDisplay(e, 'update', domain),
   })
 
