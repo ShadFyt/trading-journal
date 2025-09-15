@@ -24,11 +24,11 @@ class TradeService:
         self,
         repo: TradeRepo,
         annotation_repo: AnnotationRepo,
-        stock_price_service: FinnhubService,
+        finnhub_service: FinnhubService,
     ):
         self.repo = repo
         self.annotation_repo = annotation_repo
-        self.stock_price_service = stock_price_service
+        self.finnhub_service = finnhub_service
 
     async def get_all_trades(self) -> list[TradeResponse]:
         # Get all trades from the repository
@@ -64,6 +64,11 @@ class TradeService:
         return await self.repo.get_trade_by_id(live_trade_id)
 
     async def create_trade(self, trade: TradeCreate) -> TradeResponse:
+        profile = await self.finnhub_service.get_company_profile(trade.symbol)
+        if not profile:
+            raise HTTPException(
+                status_code=404, detail=f"Stock not found for symbol {trade.symbol}"
+            )
         payload = self._build_watchlist_payload(trade)
         # Create LiveTrade instance
         trade_instance = Trade(**payload)
@@ -105,7 +110,7 @@ class TradeService:
         return await self.repo.delete_trade(trade_id)
 
     async def _get_price_map(self, symbols: list[str]):
-        quotes = await self.stock_price_service.get_stock_price_batch(symbols)
+        quotes = await self.finnhub_service.get_stock_price_batch(symbols)
         return {quote.symbol: quote for quote in quotes}
 
     def _build_watchlist_payload(self, trade: TradeCreate):

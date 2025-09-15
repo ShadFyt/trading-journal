@@ -15,12 +15,9 @@ class FinnhubService:
         self.api_key = os.getenv("FINHUB_API_KEY")
         self.base_url = os.getenv("FINHUB_BASE_URL")
         self._validate_config()
-        
+
         # Configure client with default headers
-        headers = {
-            "Content-Type": "application/json",
-            "X-Finnhub-Token": self.api_key
-        }
+        headers = {"Content-Type": "application/json", "X-Finnhub-Token": self.api_key}
         self.client = httpx.AsyncClient(headers=headers)
 
     def _validate_config(self):
@@ -62,10 +59,10 @@ class FinnhubService:
             quotes.append(result)
         return quotes
 
-    async def get_company_profile(self, symbol: str) -> CompanyProfile:
+    async def get_company_profile(self, symbol: str) -> CompanyProfile | None:
         """Fetch company profile for a given symbol."""
         url = f"{self.base_url}/profile2?symbol={symbol.upper()}"
-        
+
         try:
             response = await self.client.get(url, timeout=10)
             response.raise_for_status()
@@ -73,7 +70,7 @@ class FinnhubService:
             return CompanyProfile(**data)
         except httpx.HTTPError as e:
             logger.error(f"Error fetching company profile: {e}")
-            raise
+            return None
 
 
 # Usage example

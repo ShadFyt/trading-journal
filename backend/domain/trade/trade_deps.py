@@ -24,7 +24,7 @@ def get_trade_service(
     return TradeService(
         repo=repo,
         annotation_repo=annotation_repo,
-        stock_price_service=stock_price_service,
+        finnhub_service=stock_price_service,
     )
 
 
