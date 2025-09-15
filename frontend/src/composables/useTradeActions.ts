@@ -3,6 +3,7 @@ import { inject, provide, type InjectionKey } from 'vue'
 export interface TradeActions {
   openExecutionForm: () => void
   openTradeForm: () => void
+  clearSelectedTrade: () => void
 }
 
 export type TradeActionsType = TradeActions

@@ -14,24 +14,36 @@ import { handleErrorDisplay } from '@/api/api-error.util.ts'
 import { TradeStatusEnum } from '@/enums/trade.enum.ts'
 
 export const liveTradeKeys = {
-  all: ['live-trades'] as const,
+  all: ['trades'] as const,
   list: () => [...liveTradeKeys.all, 'list'] as const,
   detail: (id: string) => [...liveTradeKeys.all, 'detail', id] as const,
 }
 
 export const useTradeFetchingService = () => {
-  const { data, isLoading, refetch } = useQuery({
+  const tradesQuery = useQuery({
     queryKey: liveTradeKeys.list(),
     queryFn: () => getTrades(),
     staleTime: 60 * 60 * 1000, // 1 hour
     refetchOnWindowFocus: true,
   })
-  const liveTrades = computed(() => data.value?.filter((trade) => trade.status === 'open') ?? [])
-  const watchlist = computed(
-    () => data.value?.filter((trade) => trade.status === TradeStatusEnum.enum.WATCHING) ?? [],
+
+  const liveTrades = computed(
+    () => tradesQuery.data.value?.filter((trade) => trade.status === 'open') ?? [],
   )
 
-  return { liveTrades, isLoading, refetchLiveTrades: refetch, watchlist }
+  const watchlist = computed(
+    () =>
+      tradesQuery.data.value?.filter((trade) => trade.status === TradeStatusEnum.enum.WATCHING) ??
+      [],
+  )
+
+  return {
+    liveTrades,
+    watchlist,
+    isLoading: tradesQuery.isLoading,
+    refetchLiveTrades: tradesQuery.refetch,
+    tradesQuery,
+  }
 }
 
 export const useTradeMutationService = () => {

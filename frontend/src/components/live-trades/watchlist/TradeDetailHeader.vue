@@ -7,11 +7,16 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import type { Trade } from '@/interfaces'
-import { useInjectTradeActions } from '@/composables'
+import { useInjectTradeActions, useTradeMutationService } from '@/composables'
 
-defineProps<{ trade: Trade }>()
+const { trade } = defineProps<{ trade: Trade }>()
 
 const tradeActions = useInjectTradeActions()
+const { invalidateMutation } = useTradeMutationService()
+
+const handleInvalidate = () => {
+  invalidateMutation.mutate(trade.id, { onSuccess: () => tradeActions.clearSelectedTrade() })
+}
 </script>
 
 <template>
@@ -42,8 +47,8 @@ const tradeActions = useInjectTradeActions()
           <DropdownMenuItem @click="tradeActions.openTradeForm">
             <Icon icon="lucide:lightbulb" class="text-amber-200" />Edit Idea
           </DropdownMenuItem>
-          <DropdownMenuItem class="text-red-600"
-            ><Icon icon="lucide:octagon-x" class="text-red-400" />Invalidate
+          <DropdownMenuItem class="text-red-600" @click="handleInvalidate">
+            <Icon icon="lucide:octagon-x" class="text-red-400" />Invalidate
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

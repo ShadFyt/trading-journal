@@ -55,6 +55,7 @@ const handleTradeFormOpen = () => {
 useProvideTradeActions({
   openExecutionForm: () => toggleExecutionFormExpanded(true),
   openTradeForm: () => toggleTradeFormExpanded(true),
+  clearSelectedTrade: () => (selectedTrade.value = null),
 })
 </script>
 
