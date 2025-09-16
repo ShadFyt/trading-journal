@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import type { Trade } from '@/interfaces'
 import { useFormatters, useTradeMetrics } from '@/composables'
+import { ScalePlanTypeEnum, ScalePlanStatusEnum } from '@/enums'
 
 const BILLION = 1_000
 const TRILLION = BILLION * 1_000
@@ -8,7 +9,18 @@ const DECIMAL_PLACES = 2
 
 const { formatCurrency } = useFormatters()
 const props = defineProps<{ selectedTrade: Trade }>()
-const { entryPrice, stopLoss } = useTradeMetrics(toRef(props, 'selectedTrade'))
+const { entryPlan } = useTradeMetrics(toRef(props, 'selectedTrade'))
+
+const targetPlans = computed(() => {
+  return props.selectedTrade.scalePlans
+    .filter(
+      (plan) =>
+        plan.planType === ScalePlanTypeEnum.enum.TARGET &&
+        plan.status !== ScalePlanStatusEnum.enum.CANCELLED &&
+        plan.targetPrice != null,
+    )
+    .sort((a, b) => (a.targetPrice || 0) - (b.targetPrice || 0))
+})
 
 const formatMarketCap = (cap?: number) => {
   if (!cap) return 0
@@ -37,23 +49,40 @@ const formatMarketCap = (cap?: number) => {
             </div>
             <div>
               <p class="text-gray-400 text-xs mb-1">Entry Target</p>
-              <p class="text-blue-400 font-medium">{{ formatCurrency(entryPrice) }}</p>
+              <p class="text-blue-400 font-medium">{{ formatCurrency(entryPlan.entryPriceAvg) }}</p>
             </div>
             <div>
               <p class="text-gray-400 text-xs mb-1">Stop Loss</p>
-              <p class="text-red-400 font-medium">{{ formatCurrency(stopLoss) }}</p>
+              <p class="text-red-400 font-medium">{{ formatCurrency(entryPlan.stopLoss) }}</p>
             </div>
-            <div>
-              <p class="text-gray-400 text-xs mb-1">Target 1</p>
-              <p class="text-green-400 font-medium">$50.50</p>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-x-4 gap-y-3 mb-4">
             <div>
               <p class="text-gray-400 text-xs mb-1">R/R Ratio</p>
               <p class="text-white font-medium">{{ props.selectedTrade.rrRatio }}</p>
             </div>
+          </div>
+
+          <div v-if="targetPlans.length > 0" class="mb-4">
+            <p class="text-gray-400 text-xs mb-2">Price Targets</p>
+            <div class="flex flex-wrap gap-2">
+              <div
+                v-for="(target, index) in targetPlans"
+                :key="target.id"
+                class="flex-1 min-w-[120px] p-2 rounded bg-gray-800/30 border border-gray-700"
+              >
+                <div class="text-center">
+                  <p class="text-xs text-gray-400 mb-1">Target {{ index + 1 }}</p>
+                  <p class="text-green-400 font-medium text-sm">
+                    {{ formatCurrency(target.targetPrice || 0) }}
+                  </p>
+                  <p v-if="target.qty" class="text-gray-400 text-xs mt-1">
+                    {{ target.qty }} shares
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 gap-y-3 mb-4">
             <div>
               <p class="text-gray-400 text-xs mb-1">Timeframe</p>
               <p class="text-white font-medium">3-6 months</p>
