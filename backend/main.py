@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi_cache.backends.inmemory import InMemoryBackend
+from fastapi_cache import FastAPICache
 import contextlib
 
 from database.db import create_db_and_tables
@@ -12,6 +14,8 @@ from domain.execution.execution_router import router as execution_router
 @contextlib.asynccontextmanager
 async def lifespan(app: FastAPI):
     await create_db_and_tables()
+    FastAPICache.init(InMemoryBackend(), prefix="fastapi-cache")
+
     yield
 
 

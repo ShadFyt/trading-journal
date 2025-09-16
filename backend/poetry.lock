@@ -1,4 +1,15 @@
 [[package]]
+name = "aiomcache"
+version = "0.8.2"
+description = "Minimal pure python memcached client"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.dependencies]
+typing-extensions = {version = ">=4", markers = "python_version < \"3.11\""}
+
+[[package]]
 name = "aiosqlite"
 version = "0.21.0"
 description = "asyncio bridge to the standard sqlite3 module"
@@ -190,7 +201,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7
 
 [[package]]
 name = "coverage"
-version = "7.10.2"
+version = "7.10.6"
 description = "Code coverage measurement for Python"
 category = "main"
 optional = false
@@ -313,8 +324,29 @@ standard = ["fastapi-cli[standard] (>=0.0.5)", "httpx (>=0.23.0)", "jinja2 (>=3.
 all = ["fastapi-cli[standard] (>=0.0.5)", "httpx (>=0.23.0)", "jinja2 (>=3.1.5)", "python-multipart (>=0.0.18)", "itsdangerous (>=1.1.0)", "pyyaml (>=5.3.1)", "ujson (>=4.0.1,!=4.0.2,!=4.1.0,!=4.2.0,!=4.3.0,!=5.0.0,!=5.1.0)", "orjson (>=3.2.1)", "email-validator (>=2.0.0)", "uvicorn[standard] (>=0.12.0)", "pydantic-settings (>=2.0.0)", "pydantic-extra-types (>=2.0.0)"]
 
 [[package]]
+name = "fastapi-cache2"
+version = "0.2.2"
+description = "Cache for FastAPI"
+category = "main"
+optional = false
+python-versions = "<4.0,>=3.8"
+
+[package.dependencies]
+aiomcache = {version = ">=0.8.2,<0.9.0", optional = true, markers = "extra == \"memcache\" or extra == \"all\""}
+fastapi = "*"
+pendulum = ">=3.0.0,<4.0.0"
+typing-extensions = ">=4.1.0"
+uvicorn = "*"
+
+[package.extras]
+dynamodb = ["aiobotocore (>=2.13.1,<3.0.0)"]
+all = ["aiobotocore (>=2.13.1,<3.0.0)", "aiomcache (>=0.8.2,<0.9.0)", "redis (>=4.2.0rc1,<5.0.0)"]
+memcache = ["aiomcache (>=0.8.2,<0.9.0)"]
+redis = ["redis (>=4.2.0rc1,<5.0.0)"]
+
+[[package]]
 name = "fastapi-cli"
-version = "0.0.8"
+version = "0.0.11"
 description = "Run and manage FastAPI apps from the command line with FastAPI CLI. 🚀"
 category = "main"
 optional = false
@@ -603,6 +635,21 @@ description = "Utility library for gitignore style pattern matching of file path
 category = "dev"
 optional = false
 python-versions = ">=3.8"
+
+[[package]]
+name = "pendulum"
+version = "3.1.0"
+description = "Python datetimes made easy"
+category = "main"
+optional = false
+python-versions = ">=3.9"
+
+[package.dependencies]
+python-dateutil = ">=2.6"
+tzdata = ">=2020.1"
+
+[package.extras]
+test = ["time-machine (>=2.6.0)"]
 
 [[package]]
 name = "platformdirs"
@@ -1151,6 +1198,14 @@ python-versions = ">=3.9"
 typing-extensions = ">=4.12.0"
 
 [[package]]
+name = "tzdata"
+version = "2025.2"
+description = "Provider of IANA time zone data"
+category = "main"
+optional = false
+python-versions = ">=2"
+
+[[package]]
 name = "urllib3"
 version = "2.5.0"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
@@ -1239,9 +1294,10 @@ python-versions = ">=3.9"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "90d3b2ac07dc778e82f67d034f91bcc2b9b18d0dc4d2701c7ca204febfbafd05"
+content-hash = "daa697c5c93b01e480f4b50e57abfc7762a0e2a5eea79eba052489e0390e9d48"
 
 [metadata.files]
+aiomcache = []
 aiosqlite = []
 alembic = []
 annotated-types = []
@@ -1265,6 +1321,7 @@ ecdsa = []
 email-validator = []
 exceptiongroup = []
 fastapi = []
+fastapi-cache2 = []
 fastapi-cli = []
 fastapi-cloud-cli = []
 fastapi-events = []
@@ -1289,6 +1346,7 @@ mypy-extensions = []
 nodeenv = []
 packaging = []
 pathspec = []
+pendulum = []
 platformdirs = []
 pluggy = []
 pre-commit = []
@@ -1328,6 +1386,7 @@ tomli = []
 typer = []
 typing-extensions = []
 typing-inspection = []
+tzdata = []
 urllib3 = []
 uvicorn = []
 uvloop = []
