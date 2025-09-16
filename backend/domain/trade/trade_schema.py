@@ -39,6 +39,7 @@ class TradeResponse(TradeBase):
     name: Optional[str] = None
     industry: Optional[str] = None
     logo: Optional[str] = None
+    cap: Optional[float] = None
     executions: list[ExecutionRead] = Field(default_factory=list)
 
 

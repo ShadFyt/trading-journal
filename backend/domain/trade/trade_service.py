@@ -47,10 +47,14 @@ class TradeService:
             return []
 
         # Extract unique symbols for market data lookup (only for active trades)
-        symbols = list({
-            trade.symbol for trade in db_trades 
-            if trade.symbol and trade.status in (TradeStatus.OPEN, TradeStatus.WATCHING)
-        })
+        symbols = list(
+            {
+                trade.symbol
+                for trade in db_trades
+                if trade.symbol
+                and trade.status in (TradeStatus.OPEN, TradeStatus.WATCHING)
+            }
+        )
 
         # Early return if no symbols to lookup
         if not symbols:
@@ -107,6 +111,7 @@ class TradeService:
                             "name": profile.name,
                             "industry": profile.finnhubIndustry,
                             "logo": profile.logo,
+                            "cap": profile.marketCapitalization,
                         }
                     )
 
