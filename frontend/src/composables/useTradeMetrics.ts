@@ -11,9 +11,10 @@ type EntryPlanMetrics = {
   tradeType: TradeType
 }
 
-export const useTradeMetrics = (trade: Trade) => {
+export const useTradeMetrics = (trade: Ref<Trade> | Trade) => {
+  const tradeRef = isRef(trade) ? trade : ref(trade)
   const executions = computed(() =>
-    trade.scalePlans
+    tradeRef.value.scalePlans
       .filter((plan) => plan.planType === ScalePlanTypeEnum.enum.TARGET)
       .flatMap((plan) => plan.executions),
   )
@@ -47,7 +48,7 @@ export const useTradeMetrics = (trade: Trade) => {
     plan?.tradeType ?? ScaleTradeTypeEnum.enum.LONG
 
   const latestStopLossPlan = computed(() => {
-    return trade.scalePlans.find(
+    return tradeRef.value.scalePlans.find(
       (plan) =>
         plan.planType === ScalePlanTypeEnum.enum.STOP_LOSS &&
         plan.status !== ScalePlanStatusEnum.enum.CANCELLED,
@@ -55,7 +56,7 @@ export const useTradeMetrics = (trade: Trade) => {
   })
 
   const entryPlan = computed((): EntryPlanMetrics => {
-    const plan = trade.scalePlans.find(
+    const plan = tradeRef.value.scalePlans.find(
       (plan) =>
         plan.planType === ScalePlanTypeEnum.enum.ENTRY &&
         (plan.status === ScalePlanStatusEnum.enum.FILLED ||
@@ -107,7 +108,7 @@ export const useTradeMetrics = (trade: Trade) => {
 
   const unrealizedPnL = computed(() => {
     if (remainingShares.value <= 0) return 0
-    return (trade.currentPrice - entryPlan.value.entryPriceAvg) * remainingShares.value
+    return (tradeRef.value.currentPrice - entryPlan.value.entryPriceAvg) * remainingShares.value
   })
 
   const unrealizedPct = computed(() => {
@@ -135,7 +136,7 @@ export const useTradeMetrics = (trade: Trade) => {
     initialPosition: entryPlan.value.qty,
     stopLoss: entryPlan.value.stopLoss,
     executions,
-    trade,
+    trade: tradeRef,
     entryPlan,
   }
 }

@@ -7,8 +7,8 @@ const TRILLION = BILLION * 1_000
 const DECIMAL_PLACES = 2
 
 const { formatCurrency } = useFormatters()
-const { selectedTrade } = defineProps<{ selectedTrade: Trade }>()
-const { entryPrice, stopLoss } = useTradeMetrics(selectedTrade)
+const props = defineProps<{ selectedTrade: Trade }>()
+const { entryPrice, stopLoss } = useTradeMetrics(toRef(props, 'selectedTrade'))
 
 const formatMarketCap = (cap?: number) => {
   if (!cap) return 0
@@ -25,13 +25,15 @@ const formatMarketCap = (cap?: number) => {
 <template>
   <div class="h-full flex flex-col">
     <Card class="p-3 m-2 bg-gray-800/50 border-none flex flex-col flex-1 min-h-0">
-      <TradeDetailHeader :trade="selectedTrade" />
+      <TradeDetailHeader :trade="props.selectedTrade" />
       <div class="flex-1 overflow-y-auto">
         <CardContent class="pb-4">
           <div class="grid grid-cols-2 gap-x-4 gap-y-3 mb-4">
             <div>
               <p class="text-gray-400 text-xs mb-1">Last Price</p>
-              <p class="text-white font-medium">{{ formatCurrency(selectedTrade.currentPrice) }}</p>
+              <p class="text-white font-medium">
+                {{ formatCurrency(props.selectedTrade.currentPrice) }}
+              </p>
             </div>
             <div>
               <p class="text-gray-400 text-xs mb-1">Entry Target</p>
@@ -50,7 +52,7 @@ const formatMarketCap = (cap?: number) => {
           <div class="grid grid-cols-2 gap-x-4 gap-y-3 mb-4">
             <div>
               <p class="text-gray-400 text-xs mb-1">R/R Ratio</p>
-              <p class="text-white font-medium">{{ selectedTrade.rrRatio }}</p>
+              <p class="text-white font-medium">{{ props.selectedTrade.rrRatio }}</p>
             </div>
             <div>
               <p class="text-gray-400 text-xs mb-1">Timeframe</p>
@@ -67,11 +69,11 @@ const formatMarketCap = (cap?: number) => {
           </div>
         </CardContent>
         <CardFooter class="border-t border-gray-700 flex items-center justify-between">
-          <span v-if="selectedTrade.industry" class="text-blue-400 text-xs font-medium"
-            >{{ selectedTrade.industry }}
+          <span v-if="props.selectedTrade.industry" class="text-blue-400 text-xs font-medium"
+            >{{ props.selectedTrade.industry }}
           </span>
-          <span v-if="selectedTrade.cap" class="text-gray-400 text-xs"
-            >Cap: {{ formatMarketCap(selectedTrade.cap) }}
+          <span v-if="props.selectedTrade.cap" class="text-gray-400 text-xs"
+            >Cap: {{ formatMarketCap(props.selectedTrade.cap) }}
           </span>
         </CardFooter>
       </div>

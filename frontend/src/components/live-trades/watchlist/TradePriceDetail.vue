@@ -4,11 +4,11 @@ import { useFormatters, useTradeMetrics } from '@/composables'
 import { ScaleTradeTypeEnum } from '@/enums'
 const { formatCurrency, formatPercentage } = useFormatters()
 
-const { trade } = defineProps<{
+const props = defineProps<{
   trade: Trade
 }>()
 
-const { entryPrice, entryPlan } = useTradeMetrics(trade)
+const { entryPlan } = useTradeMetrics(toRef(props, 'trade'))
 
 const isLong = computed(() => entryPlan.value.tradeType === ScaleTradeTypeEnum.enum.LONG)
 
@@ -25,7 +25,7 @@ const tradeTypeBadgeClass = computed(() => {
   <div class="flex items-center justify-between mb-1">
     <div class="flex items-center gap-2">
       <CompanyLogo :trade />
-      <span class="font-semibold text-white text-sm">{{ trade.symbol }}</span>
+      <span class="font-semibold text-white text-sm">{{ props.trade.symbol }}</span>
       <Badge :class="tradeTypeBadgeClass">
         {{ entryPlan.tradeType }}
       </Badge>
@@ -34,17 +34,19 @@ const tradeTypeBadgeClass = computed(() => {
   </div>
 
   <div class="flex justify-between items-center mb-1">
-    <span class="text-white font-medium">Last Price: {{ formatCurrency(trade.currentPrice) }}</span>
+    <span class="text-white font-medium"
+      >Last Price: {{ formatCurrency(props.trade.currentPrice) }}</span
+    >
     <span
       v-if="trade.percentChange != null"
       class="text-xs"
       :class="trade.percentChange < 0 ? 'text-red-400' : 'text-green-400'"
-      >{{ formatPercentage(trade.percentChange) }}</span
+      >{{ formatPercentage(props.trade.percentChange) }}</span
     >
   </div>
 
   <div class="flex justify-between text-xs text-gray-400">
-    <span>Entry Target: {{ formatCurrency(entryPrice) }}</span>
-    <RatingBadge :rating="trade.rating" />
+    <span>Entry Target: {{ formatCurrency(entryPlan.entryPriceAvg) }}</span>
+    <RatingBadge :rating="props.trade.rating" />
   </div>
 </template>

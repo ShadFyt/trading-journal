@@ -11,7 +11,7 @@ import { addScalePlanLimitIssue, addScalePlanTargetPriceIssue } from '@/utils/sc
 const { initialPosition, trade, entryPlan } = useInjectTradeMetrics()
 
 const targetPlans = computed(() =>
-  trade.scalePlans.filter((p) => p.planType === ScalePlanTypeEnum.enum.TARGET),
+  trade.value.scalePlans.filter((p) => p.planType === ScalePlanTypeEnum.enum.TARGET),
 )
 const isDisabled = computed(() => {
   const totalQty = targetPlans.value.reduce((sum, p) => sum + (p.qty ?? 0), 0)
@@ -45,7 +45,7 @@ const onSubmit = handleSubmit(async (values) => {
   createPlanMutation.mutate(
     {
       data: values,
-      tradeId: trade.id,
+      tradeId: trade.value.id,
     },
     {
       onSuccess() {
