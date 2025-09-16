@@ -7,7 +7,7 @@ import os
 import asyncio
 import httpx
 import time
-from typing import List
+from typing import List, cast
 
 from pydantic import ValidationError
 
@@ -124,6 +124,22 @@ class FinnhubService:
             raise HTTPException(
                 status_code=500, detail=f"Internal error processing symbol {symbol}"
             )
+
+    async def get_company_profile_batch(
+        self, symbols: List[str]
+    ) -> List[CompanyProfile]:
+        """Fetch company profiles for a list of symbols using individual API calls."""
+        tasks = [self.get_company_profile(symbol) for symbol in symbols]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        profiles: List[CompanyProfile] = []
+        for symbol, result in zip(symbols, results):
+            if isinstance(result, Exception):
+                print(f"Error fetching profile for {symbol}: {result}")
+                continue
+
+            if result is not None:
+                profiles.append(cast(CompanyProfile, result))
+        return profiles
 
 
 # Usage example

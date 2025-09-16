@@ -1,3 +1,4 @@
+from core.stock_price.finnhub_schema import CompanyProfile
 from domain.trade.trade_repo import TradeRepo
 from domain.trade.trade_schema import (
     TradeCreate,
@@ -30,14 +31,19 @@ class TradeService:
         self.annotation_repo = annotation_repo
         self.finnhub_service = finnhub_service
 
+    async def get_company_profile(self, symbol: str) -> CompanyProfile | None:
+        return await self.finnhub_service.get_company_profile(symbol)
+
     async def get_all_trades(self) -> list[TradeResponse]:
         # Get all trades from the repository
         db_trades = await self.repo.get_all_trades()
 
-        # Convert SQLModel instances to Pydantic models for modification
+        if not db_trades:
+            return []
+
         trades = [TradeResponse.model_validate(trade) for trade in db_trades]
 
-        # Extract unique symbols from live trades
+        # Extract unique symbols from trades
         symbols = list(dict.fromkeys(t.symbol for t in trades if t.symbol))
         if not symbols:
             return trades
@@ -45,15 +51,39 @@ class TradeService:
         # Fetch current prices for all symbols
         try:
             price_map = await self._get_price_map(symbols)
-            # Merge current price data with live trades
-            for trade in trades:
+            profile_map = await self._get_profile_map(symbols)
+            # Merge current price data and profile data with trades
+            for i, trade in enumerate(trades):
+                updates = {}
+
                 if trade.symbol in price_map:
                     quote = price_map[trade.symbol]
-                    trade.current_price = quote.current_price
-                    trade.price_change = quote.change
-                    trade.percent_change = quote.percent_change
-                    trade.open_price = quote.open_price
-                    trade.previous_close = quote.previous_close
+                    updates.update(
+                        {
+                            "current_price": quote.current_price,
+                            "price_change": quote.change,
+                            "percent_change": quote.percent_change,
+                            "open_price": quote.open_price,
+                            "previous_close": quote.previous_close,
+                        }
+                    )
+
+                if trade.symbol in profile_map:
+                    profile = profile_map[trade.symbol]
+                    updates.update(
+                        {
+                            "country": profile.country,
+                            "currency": profile.currency,
+                            "exchange": profile.exchange,
+                            "name": profile.name,
+                            "industry": profile.finnhubIndustry,
+                            "logo": profile.logo,
+                        }
+                    )
+
+                # Apply all updates at once if we have any
+                if updates:
+                    trades[i] = trade.model_copy(update=updates)
         except Exception as e:
             # Log error but don't fail the entire request
             print(f"Warning: Could not fetch current prices: {e}")
@@ -112,6 +142,10 @@ class TradeService:
     async def _get_price_map(self, symbols: list[str]):
         quotes = await self.finnhub_service.get_stock_price_batch(symbols)
         return {quote.symbol: quote for quote in quotes}
+
+    async def _get_profile_map(self, symbols: list[str]):
+        profiles = await self.finnhub_service.get_company_profile_batch(symbols)
+        return {profile.ticker: profile for profile in profiles}
 
     def _build_watchlist_payload(self, trade: TradeCreate):
         scale_plans = self._build_plans(trade.scale_plans)

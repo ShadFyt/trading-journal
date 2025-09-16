@@ -33,6 +33,12 @@ class TradeResponse(TradeBase):
     percent_change: Optional[float] = None
     open_price: Optional[float] = None
     previous_close: Optional[float] = None
+    country: Optional[str] = None
+    currency: Optional[str] = None
+    exchange: Optional[str] = None
+    name: Optional[str] = None
+    industry: Optional[str] = None
+    logo: Optional[str] = None
     executions: list[ExecutionRead] = Field(default_factory=list)
 
 
