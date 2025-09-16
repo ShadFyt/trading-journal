@@ -2,20 +2,22 @@
 import type { Trade } from '@/interfaces'
 import { useFormatters, useTradeMetrics } from '@/composables'
 
+const BILLION = 1_000
+const TRILLION = BILLION * 1_000
+const DECIMAL_PLACES = 2
+
 const { formatCurrency } = useFormatters()
 const { selectedTrade } = defineProps<{ selectedTrade: Trade }>()
 const { entryPrice, stopLoss } = useTradeMetrics(selectedTrade)
 
-const formatMarketCap = (cap: number) => {
-  if (cap >= 1_000_000) {
-    // Trillion+
-    return `$${(cap / 1_000_000).toFixed(2)}T`
-  } else if (cap >= 1_000) {
-    // Billion+
-    return `$${(cap / 1_000).toFixed(2)}B`
+const formatMarketCap = (cap?: number) => {
+  if (!cap) return 0
+  if (cap >= TRILLION) {
+    return `$${(cap / TRILLION).toFixed(DECIMAL_PLACES)}T`
+  } else if (cap >= BILLION) {
+    return `$${(cap / BILLION).toFixed(DECIMAL_PLACES)}B`
   } else {
-    // Million
-    return `$${cap.toFixed(2)}M`
+    return `$${cap.toFixed(DECIMAL_PLACES)}M`
   }
 }
 </script>
@@ -63,19 +65,15 @@ const formatMarketCap = (cap: number) => {
               after recent pullback.
             </p>
           </div>
-
-          <!--    fetch sector and cap from finnhub api  -->
-          <div class="mt-4 pt-3 border-t border-gray-700">
-            <div class="flex items-center justify-between">
-              <span v-if="selectedTrade.industry" class="text-blue-400 text-xs font-medium">{{
-                selectedTrade.industry
-              }}</span>
-              <span v-if="selectedTrade.cap" class="text-gray-400 text-xs"
-                >Cap: {{ formatMarketCap(selectedTrade.cap) }}</span
-              >
-            </div>
-          </div>
         </CardContent>
+        <CardFooter class="border-t border-gray-700 flex items-center justify-between">
+          <span v-if="selectedTrade.industry" class="text-blue-400 text-xs font-medium"
+            >{{ selectedTrade.industry }}
+          </span>
+          <span v-if="selectedTrade.cap" class="text-gray-400 text-xs"
+            >Cap: {{ formatMarketCap(selectedTrade.cap) }}
+          </span>
+        </CardFooter>
       </div>
     </Card>
   </div>

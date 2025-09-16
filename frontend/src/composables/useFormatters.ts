@@ -80,7 +80,8 @@ export const useFormatters = () => {
   /**
    * Format percentage values
    */
-  const formatPercentage = (value: number): string => {
+  const formatPercentage = (value?: number): string => {
+    if (!value) return '0.00%'
     const sign = value >= 0 ? '+' : ''
     return `${sign}${value.toFixed(2)}%`
   }
