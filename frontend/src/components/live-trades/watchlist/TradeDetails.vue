@@ -5,6 +5,19 @@ import { useFormatters, useTradeMetrics } from '@/composables'
 const { formatCurrency } = useFormatters()
 const { selectedTrade } = defineProps<{ selectedTrade: Trade }>()
 const { entryPrice, stopLoss } = useTradeMetrics(selectedTrade)
+
+const formatMarketCap = (cap: number) => {
+  if (cap >= 1_000_000) {
+    // Trillion+
+    return `$${(cap / 1_000_000).toFixed(2)}T`
+  } else if (cap >= 1_000) {
+    // Billion+
+    return `$${(cap / 1_000).toFixed(2)}B`
+  } else {
+    // Million
+    return `$${cap.toFixed(2)}M`
+  }
+}
 </script>
 
 <template>
@@ -54,8 +67,12 @@ const { entryPrice, stopLoss } = useTradeMetrics(selectedTrade)
           <!--    fetch sector and cap from finnhub api  -->
           <div class="mt-4 pt-3 border-t border-gray-700">
             <div class="flex items-center justify-between">
-              <span class="text-blue-400 text-xs font-medium">Energy</span>
-              <span class="text-gray-400 text-xs">Cap: 98.2B</span>
+              <span v-if="selectedTrade.industry" class="text-blue-400 text-xs font-medium">{{
+                selectedTrade.industry
+              }}</span>
+              <span v-if="selectedTrade.cap" class="text-gray-400 text-xs"
+                >Cap: {{ formatMarketCap(selectedTrade.cap) }}</span
+              >
             </div>
           </div>
         </CardContent>

@@ -58,6 +58,10 @@ export const TradeSchema = tradeCreateSchema.extend({
   previousClose: z.number().optional(),
   scalePlans: ScalePlanSchema.array(),
   executions: z.array(ExecutionSchema),
+  logo: z.string().optional(),
+  industry: z.string().optional(),
+  name: z.string().optional(),
+  cap: z.number().optional(),
 })
 
 export const LiveTradeUpdateSchema = TradeSchema.omit({
@@ -70,4 +74,8 @@ export const LiveTradeUpdateSchema = TradeSchema.omit({
   scalePlans: true,
   openPrice: true,
   previousClose: true,
+  cap: true,
+  name: true,
+  industry: true,
+  logo: true,
 }).partial()
