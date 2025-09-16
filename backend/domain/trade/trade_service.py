@@ -1,4 +1,8 @@
-from core.stock_price.finnhub_schema import CompanyProfile
+import asyncio
+import logging
+from typing import Dict, Any
+
+from core.stock_price.finnhub_schema import CompanyProfile, StockQuote
 from domain.trade.trade_repo import TradeRepo
 from domain.trade.trade_schema import (
     TradeCreate,
@@ -35,30 +39,56 @@ class TradeService:
         return await self.finnhub_service.get_company_profile(symbol)
 
     async def get_all_trades(self) -> list[TradeResponse]:
+        """Get all trades with current market data."""
         # Get all trades from the repository
         db_trades = await self.repo.get_all_trades()
 
         if not db_trades:
             return []
 
-        trades = [TradeResponse.model_validate(trade) for trade in db_trades]
+        # Extract unique symbols for market data lookup (only for active trades)
+        symbols = list({
+            trade.symbol for trade in db_trades 
+            if trade.symbol and trade.status in (TradeStatus.OPEN, TradeStatus.WATCHING)
+        })
 
-        # Extract unique symbols from trades
-        symbols = list(dict.fromkeys(t.symbol for t in trades if t.symbol))
+        # Early return if no symbols to lookup
         if not symbols:
-            return trades
+            return [TradeResponse.model_validate(trade) for trade in db_trades]
 
-        # Fetch current prices for all symbols
+        price_map: Dict[str, StockQuote] = {}
+        profile_map: Dict[str, CompanyProfile] = {}
+
         try:
-            price_map = await self._get_price_map(symbols)
-            profile_map = await self._get_profile_map(symbols)
-            # Merge current price data and profile data with trades
-            for i, trade in enumerate(trades):
-                updates = {}
+            price_result, profile_result = await asyncio.gather(
+                self._get_price_map(symbols),
+                self._get_profile_map(symbols),
+                return_exceptions=True,
+            )
 
-                if trade.symbol in price_map:
-                    quote = price_map[trade.symbol]
-                    updates.update(
+            if isinstance(price_result, Exception):
+                logging.warning(f"Failed to fetch prices: {price_result}")
+                price_map = {}
+            else:
+                price_map = price_result
+
+            if isinstance(profile_result, Exception):
+                logging.warning(f"Failed to fetch profiles: {profile_result}")
+                profile_map = {}
+            else:
+                profile_map = profile_result
+
+        except Exception as e:
+            logging.error(f"Error fetching market data: {e}")
+            price_map = profile_map = {}
+
+        trades = []
+        for trade in db_trades:
+            trade_data = TradeResponse.model_validate(trade).model_dump()
+
+            if trade.symbol:
+                if quote := price_map.get(trade.symbol):
+                    trade_data.update(
                         {
                             "current_price": quote.current_price,
                             "price_change": quote.change,
@@ -68,9 +98,8 @@ class TradeService:
                         }
                     )
 
-                if trade.symbol in profile_map:
-                    profile = profile_map[trade.symbol]
-                    updates.update(
+                if profile := profile_map.get(trade.symbol):
+                    trade_data.update(
                         {
                             "country": profile.country,
                             "currency": profile.currency,
@@ -81,12 +110,7 @@ class TradeService:
                         }
                     )
 
-                # Apply all updates at once if we have any
-                if updates:
-                    trades[i] = trade.model_copy(update=updates)
-        except Exception as e:
-            # Log error but don't fail the entire request
-            print(f"Warning: Could not fetch current prices: {e}")
+            trades.append(TradeResponse.model_validate(trade_data))
 
         return trades
 
