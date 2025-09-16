@@ -4,8 +4,7 @@ const { trade, initialPosition } = useInjectTradeMetrics()
 const { formatCurrency, formatTradeDuration } = useFormatters()
 
 const positionValue = computed(() => {
-  const { currentPrice } = trade
-  return initialPosition * currentPrice
+  return initialPosition * trade.value.currentPrice
 })
 </script>
 

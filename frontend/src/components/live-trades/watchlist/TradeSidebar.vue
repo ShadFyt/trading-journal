@@ -126,10 +126,14 @@ useProvideTradeActions({
             </CardHeader>
           </template>
         </TradeExecutionForm>
-        <TradeDetails
-          v-if="selectedTrade && !isExecutionFormOpen"
-          :selected-trade="selectedTrade"
-        />
+        <Suspense v-if="selectedTrade && !isExecutionFormOpen">
+          <TradeDetails :selected-trade="selectedTrade" />
+          <template #fallback>
+            <div class="p-4 flex items-center justify-center">
+              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+            </div>
+          </template>
+        </Suspense>
       </div>
     </template>
   </aside>

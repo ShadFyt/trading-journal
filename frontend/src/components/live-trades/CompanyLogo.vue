@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { Trade } from '@/interfaces'
 
-defineProps<{ trade: Trade }>()
+const { trade } = defineProps<{ trade: Trade }>()
 </script>
 
 <template>

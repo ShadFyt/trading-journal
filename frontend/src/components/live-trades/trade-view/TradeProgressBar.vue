@@ -8,7 +8,7 @@ const { totalPnL, stopLoss, trade } = useInjectTradeMetrics()
  * Calculate progress percentage between stop loss and highest target
  */
 const priceProgress = computed(() => {
-  const highest = trade.scalePlans.reduce<number | null>((max, { targetPrice }) => {
+  const highest = trade.value.scalePlans.reduce<number | null>((max, { targetPrice }) => {
     return typeof targetPrice === 'number' && Number.isFinite(targetPrice)
       ? max === null
         ? targetPrice
@@ -21,7 +21,7 @@ const priceProgress = computed(() => {
   if (range <= 0) return 100
 
   const clamp = (v: number, min = 0, max = 100) => Math.max(min, Math.min(max, v))
-  return clamp(((trade.currentPrice - stopLoss) / range) * 100)
+  return clamp(((trade.value.currentPrice - stopLoss) / range) * 100)
 })
 
 const ariaValueText = computed(() => `${Math.round(priceProgress.value)} percent toward target`)
