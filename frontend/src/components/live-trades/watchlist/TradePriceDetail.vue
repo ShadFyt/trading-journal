@@ -24,6 +24,7 @@ const tradeTypeBadgeClass = computed(() => {
 <template>
   <div class="flex items-center justify-between mb-1">
     <div class="flex items-center gap-2">
+      <CompanyLogo :trade />
       <span class="font-semibold text-white text-sm">{{ trade.symbol }}</span>
       <Badge :class="tradeTypeBadgeClass">
         {{ entryPlan.tradeType }}
