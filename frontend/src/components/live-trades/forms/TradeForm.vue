@@ -23,6 +23,7 @@ const entryPlan = computed(
 const targetPlans = computed(
   () => fields.value.filter((p) => p.value.planType === ScalePlanTypeEnum.enum.TARGET) ?? [],
 )
+const isUpdateForm = computed(() => !!trade)
 
 const title = computed(() => (trade ? `Update Trade ${trade.symbol}` : 'New Trade Idea'))
 
@@ -57,7 +58,7 @@ const removeTargetPlan = (plan: FieldEntry<ScalePlanCreate>) => {
           <CardTitle class="text-base text-slate-100">Basic Details</CardTitle>
         </CardHeader>
         <CardContent class="space-y-4">
-          <BasicTradeField />
+          <BasicTradeField :is-update-form="isUpdateForm" />
         </CardContent>
       </Card>
       <Card class="border border-slate-600 rounded-lg p-4 bg-slate-800/50 m-2">

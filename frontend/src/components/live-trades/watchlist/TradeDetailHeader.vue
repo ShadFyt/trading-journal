@@ -8,7 +8,7 @@ const { trade } = defineProps<{ trade: Trade }>()
   <CardHeader class="flex items-center justify-between flex-shrink-0">
     <div class="flex items-center gap-2">
       <CompanyLogo :trade />
-      <h3 class="text-white font-semibold text-sm">{{ trade?.symbol }} Details</h3>
+      <h3 class="text-white font-semibold text-sm">{{ trade.name ?? trade.symbol }}</h3>
     </div>
     <div>
       <TradeActionMenu :trade="trade" />
