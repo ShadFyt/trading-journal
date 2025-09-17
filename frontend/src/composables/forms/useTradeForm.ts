@@ -1,4 +1,4 @@
-import { useTradeMutationService } from '@/composables'
+import { useInjectTradeActions, useTradeMutationService } from '@/composables'
 import { extendedTradeCreateSchema } from '@/schemas'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
@@ -8,7 +8,7 @@ import type { Trade } from '@/interfaces'
 export const useTradeForm = (close?: () => void, trade?: Trade | null) => {
   const { createMutation, replaceMutation } = useTradeMutationService()
   const tradeFormSchema = toTypedSchema(extendedTradeCreateSchema)
-
+  const tradeActions = useInjectTradeActions()
   const getInitialValues = () => {
     if (trade) {
       return { ...trade }
@@ -27,7 +27,8 @@ export const useTradeForm = (close?: () => void, trade?: Trade | null) => {
   const onSubmit = handleSubmit(async (values) => {
     try {
       if (trade) {
-        await replaceMutation.mutateAsync({ id: trade.id, data: values })
+        const updatedTrade = await replaceMutation.mutateAsync({ id: trade.id, data: values })
+        tradeActions.setSelectedTrade(updatedTrade)
       } else {
         await createMutation.mutateAsync(values)
       }

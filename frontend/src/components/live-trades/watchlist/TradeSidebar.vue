@@ -56,6 +56,7 @@ useProvideTradeActions({
   openExecutionForm: () => toggleExecutionFormExpanded(true),
   openTradeForm: () => toggleTradeFormExpanded(true),
   clearSelectedTrade: () => (selectedTrade.value = null),
+  setSelectedTrade: (trade: Trade) => (selectedTrade.value = trade),
 })
 </script>
 
@@ -126,7 +127,11 @@ useProvideTradeActions({
             </CardHeader>
           </template>
         </TradeExecutionForm>
-        <TradeDetails v-if="selectedTrade" :selected-trade="selectedTrade" />
+        <TradeDetails
+          v-if="selectedTrade"
+          :key="selectedTrade.id"
+          :selected-trade="selectedTrade"
+        />
       </div>
     </template>
   </aside>

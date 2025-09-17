@@ -1,9 +1,11 @@
 import { inject, provide, type InjectionKey } from 'vue'
+import type { Trade } from '@/interfaces'
 
 export interface TradeActions {
   openExecutionForm: () => void
   openTradeForm: () => void
   clearSelectedTrade: () => void
+  setSelectedTrade: (trade: Trade) => void
 }
 
 export type TradeActionsType = TradeActions

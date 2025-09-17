@@ -1,13 +1,7 @@
 <script setup lang="ts">
 import { useFormatters, useInjectTradeMetrics } from '@/composables'
 
-const {
-  remainingShares,
-  entryPrice,
-  initialPosition,
-  stopLoss,
-  trade: { rating },
-} = useInjectTradeMetrics()
+const { remainingShares, entryPrice, initialPosition, stopLoss, trade } = useInjectTradeMetrics()
 
 const { formatCurrency } = useFormatters()
 </script>
@@ -27,7 +21,7 @@ const { formatCurrency } = useFormatters()
     <KeyValueItem label="Initial Position:"> {{ initialPosition }} shares </KeyValueItem>
     <KeyValueItem label="Remaining Position:"> {{ remainingShares }} shares </KeyValueItem>
     <KeyValueItem label="Rating:">
-      <RatingBadge :rating />
+      <RatingBadge :rating="trade.rating" />
     </KeyValueItem>
   </dl>
 </template>
