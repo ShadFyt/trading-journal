@@ -73,8 +73,8 @@ const actionMenuBind = computed(() => {
   return {
     menuOpen: menuOpen.value,
     confirmOpen: confirmOpen.value,
-    'onUpdate:menuOpen': (v: boolean) => (menuOpen.value = v),
-    'onUpdate:confirmOpen': (v: boolean) => (confirmOpen.value = v),
+    'onUpdate:menuOpen': (v: boolean | undefined) => (menuOpen.value = v ?? false),
+    'onUpdate:confirmOpen': (v: boolean | undefined) => (confirmOpen.value = v ?? false),
     onDelete: onConfirmDelete,
     ...(isReached.value ? executionBindings : planBindings),
   }

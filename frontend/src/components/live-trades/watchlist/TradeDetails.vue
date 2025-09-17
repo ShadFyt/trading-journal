@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { Trade } from '@/interfaces'
+import type { ScalePlan, Trade } from '@/interfaces'
 import { useFormatters, useTradeMetrics } from '@/composables'
 import { ScalePlanTypeEnum, ScalePlanStatusEnum } from '@/enums'
 
@@ -31,6 +31,19 @@ const formatMarketCap = (cap?: number) => {
   } else {
     return `$${cap.toFixed(DECIMAL_PLACES)}M`
   }
+}
+
+const calculateRRRatio = (targetPlan: ScalePlan) => {
+  const entryPrice = entryPlan.value.entryPriceAvg
+  const targetPrice = targetPlan.targetPrice || 0
+  const stopLoss = entryPlan.value.stopLoss
+
+  if (entryPrice === 0 || stopLoss === 0) return 0
+
+  const reward = targetPrice - entryPrice
+  const risk = entryPrice - stopLoss
+
+  return Math.round((reward / risk) * 100) / 100
 }
 </script>
 
@@ -70,7 +83,9 @@ const formatMarketCap = (cap?: number) => {
                 class="flex-1 min-w-[120px] p-2 rounded bg-gray-800/30 border border-gray-700"
               >
                 <div class="text-center">
-                  <p class="text-xs text-gray-400 mb-1">Target {{ index + 1 }}</p>
+                  <p class="text-xs text-gray-400 mb-1">
+                    Target {{ index + 1 }} ({{ calculateRRRatio(target) }} R/R)
+                  </p>
                   <p class="text-green-400 font-medium text-sm">
                     {{ formatCurrency(target.targetPrice || 0) }}
                   </p>
@@ -101,8 +116,8 @@ const formatMarketCap = (cap?: number) => {
           <span v-if="props.selectedTrade.industry" class="text-blue-400 text-xs font-medium"
             >{{ props.selectedTrade.industry }}
           </span>
-          <span v-if="props.selectedTrade.cap" class="text-gray-400 text-xs"
-            >Cap: {{ formatMarketCap(props.selectedTrade.cap) }}
+          <span v-if="props.selectedTrade.cap" class="text-gray-400 text-xs">
+            Cap: {{ formatMarketCap(props.selectedTrade.cap) }}
           </span>
         </CardFooter>
       </div>
