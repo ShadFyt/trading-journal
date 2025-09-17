@@ -57,3 +57,11 @@ class TradeUpdate(TradeBase):
     status: Optional[TradeStatus] = None
     scale_plans: Optional[List[ScalePlanCreate]] = None
     annotations: Optional[List[AnnotationCreate]] = None
+
+
+class Quote(BaseSchema):
+    current_price: float
+    price_change: float
+    percent_change: float
+    open_price: float
+    previous_close: float
