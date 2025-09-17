@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from typing import Dict, Any
+from typing import Dict, List
 
 from core.stock_price.finnhub_schema import CompanyProfile, StockQuote
 from domain.trade.trade_repo import TradeRepo
@@ -19,6 +19,7 @@ from database.models import (
     ScalePlan,
     PlanType,
     TradeType,
+    ScalePlanStatus,
 )
 from fastapi import HTTPException, status
 from core.stock_price.finnhub_service import FinnhubService
@@ -40,7 +41,6 @@ class TradeService:
 
     async def get_all_trades(self) -> list[TradeResponse]:
         """Get all trades with current market data."""
-        # Get all trades from the repository
         db_trades = await self.repo.get_all_trades()
 
         if not db_trades:
@@ -192,13 +192,32 @@ class TradeService:
         )
         return payload
 
-    @staticmethod
     def _enrich_trade(
+        self,
         trade: Trade,
         price_map: Dict[str, StockQuote],
         profile_map: Dict[str, CompanyProfile],
     ):
         trade_data = TradeResponse.model_validate(trade).model_dump()
+        entry_plan = next(
+            (
+                plan
+                for plan in trade.scale_plans
+                if plan.plan_type == PlanType.ENTRY
+                and plan.status != ScalePlanStatus.CANCELED
+            ),
+            None,
+        )
+
+        target_plans = [
+            sp for sp in trade.scale_plans if sp.plan_type == PlanType.TARGET
+        ]
+
+        trade_data.update(
+            {
+                "rr_ratio": self._calculate_rr_ratio(target_plans, entry_plan),
+            }
+        )
 
         if trade.symbol:
             if quote := price_map.get(trade.symbol):
@@ -322,3 +341,21 @@ class TradeService:
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="Total target shares cannot exceed entry shares.",
                 )
+
+    @staticmethod
+    def _calculate_rr_ratio(
+        targets: List[ScalePlan], entry_plan: ScalePlan | None
+    ) -> float:
+        if not targets or not entry_plan:
+            return 0.0
+
+        if not entry_plan.stop_price:
+            return 0.0
+        avg_target = sum(t.target_price * t.qty for t in targets) / sum(
+            t.qty for t in targets
+        )
+
+        risk = abs(entry_plan.limit_price - entry_plan.stop_price)
+        reward = abs(avg_target - entry_plan.limit_price)
+
+        return round(reward / risk, 2) if risk > 0 else 0.0

@@ -23,7 +23,7 @@ class TradeResponse(TradeBase):
     id: str
     annotations: List[AnnotationRead]
     scale_plans: List[ScalePlanRead]
-    # rr_ratio: Optional[float] = None
+    rr_ratio: Optional[float] = None
     idea_date: datetime
     status: TradeStatus
 
