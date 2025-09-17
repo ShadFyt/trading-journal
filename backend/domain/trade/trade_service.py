@@ -1,6 +1,12 @@
 import asyncio
 import logging
-from typing import Dict, List
+from typing import Dict, List, Optional
+import time
+
+from fastapi_cache import KeyBuilder
+from fastapi_cache.decorator import cache
+from starlette.requests import Request
+from starlette.responses import Response
 
 from core.stock_price.finnhub_schema import CompanyProfile, StockQuote
 from domain.trade.trade_repo import TradeRepo
@@ -24,6 +30,29 @@ from database.models import (
 from fastapi import HTTPException, status
 from core.stock_price.finnhub_service import FinnhubService
 
+logging.basicConfig(level=logging.INFO)
+
+logger = logging.getLogger(__name__)
+
+
+class TradesKeyBuilder(KeyBuilder):
+    """Custom key builder class that ignores 'self' parameter for consistent caching."""
+
+    def __call__(
+        self,
+        func,
+        namespace: str = "",
+        *,
+        request: Optional[Request] = None,
+        response: Optional[Response] = None,
+        args: tuple = (),
+        kwargs: dict = None,
+    ) -> str:
+        return f"{namespace}:all_trades"
+
+
+key_builder = TradesKeyBuilder()
+
 
 class TradeService:
     def __init__(
@@ -39,9 +68,19 @@ class TradeService:
     async def get_company_profile(self, symbol: str) -> CompanyProfile | None:
         return await self.finnhub_service.get_company_profile(symbol)
 
+    @cache(namespace="trades", expire=3600, key_builder=key_builder)
+    async def _get_cached_trades(self) -> list[Trade]:
+        logger.info("🔥 CACHE MISS: Fetching all trades from database")
+
+        start_time = time.time()
+        trades = await self.repo.get_all_trades()
+        end_time = time.time()
+        logger.info(f"✅ API call took {end_time - start_time:.2f} seconds")
+        return trades
+
     async def get_all_trades(self) -> list[TradeResponse]:
         """Get all trades with current market data."""
-        db_trades = await self.repo.get_all_trades()
+        db_trades = await self._get_cached_trades()
 
         if not db_trades:
             return []
