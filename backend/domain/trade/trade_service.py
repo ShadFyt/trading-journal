@@ -88,32 +88,7 @@ class TradeService:
 
         trades = []
         for trade in db_trades:
-            trade_data = TradeResponse.model_validate(trade).model_dump()
-
-            if trade.symbol:
-                if quote := price_map.get(trade.symbol):
-                    trade_data.update(
-                        {
-                            "current_price": quote.current_price,
-                            "price_change": quote.change,
-                            "percent_change": quote.percent_change,
-                            "open_price": quote.open_price,
-                            "previous_close": quote.previous_close,
-                        }
-                    )
-
-                if profile := profile_map.get(trade.symbol):
-                    trade_data.update(
-                        {
-                            "country": profile.country,
-                            "currency": profile.currency,
-                            "exchange": profile.exchange,
-                            "name": profile.name,
-                            "industry": profile.finnhubIndustry,
-                            "logo": profile.logo,
-                            "cap": profile.marketCapitalization,
-                        }
-                    )
+            trade_data = self._enrich_trade(trade, price_map, profile_map)
 
             trades.append(TradeResponse.model_validate(trade_data))
 
@@ -142,17 +117,19 @@ class TradeService:
     ) -> TradeResponse | None:
         return await self.repo.update_trade(trade_id, payload)
 
-    async def replace_trade(self, trade_id: str, payload: TradeCreate) -> Trade:
+    async def replace_trade(self, trade_id: str, payload: TradeCreate) -> TradeResponse:
         """Replace an existing trade with new data while preserving certain fields."""
-        # Convert TradeCreate to TradeUpdate for the repository method
-        # TradeUpdate should have all the same fields as TradeCreate but as optional
         trade_update_data = payload.model_dump()
         trade_update = TradeUpdate(**trade_update_data)
 
-        # Replace the trade in the repository using SQLModel patterns
         result = await self.repo.replace_trade(trade_id, trade_update)
 
-        return result
+        # Enrich the result with current market data if it's an active trade
+        if result.symbol and result.status in (TradeStatus.OPEN, TradeStatus.WATCHING):
+            enriched_result = await self._enrich_single_trade(result)
+            return enriched_result
+
+        return TradeResponse.model_validate(result)
 
     async def invalidate_trade(self, trade_id: str) -> None:
         trade = await self.repo.get_trade_by_id(trade_id)
@@ -176,6 +153,33 @@ class TradeService:
         profiles = await self.finnhub_service.get_company_profile_batch(symbols)
         return {profile.ticker: profile for profile in profiles}
 
+    async def _enrich_single_trade(self, trade: Trade) -> TradeResponse:
+        """Enrich a single trade with current market data."""
+        if not trade.symbol:
+            return TradeResponse.model_validate(trade)
+
+        try:
+            quote_task = self.finnhub_service.get_stock_price(trade.symbol)
+            profile_task = self.finnhub_service.get_company_profile(trade.symbol)
+
+            quote, profile = await asyncio.gather(
+                quote_task, profile_task, return_exceptions=True
+            )
+
+            price_map = (
+                {trade.symbol: quote} if not isinstance(quote, Exception) else {}
+            )
+            profile_map = (
+                {trade.symbol: profile} if not isinstance(profile, Exception) else {}
+            )
+
+            enriched_data = self._enrich_trade(trade, price_map, profile_map)
+            return TradeResponse.model_validate(enriched_data)
+
+        except Exception as e:
+            logging.warning(f"Failed to enrich trade {trade.id} with market data: {e}")
+            return TradeResponse.model_validate(trade)
+
     def _build_watchlist_payload(self, trade: TradeCreate):
         scale_plans = self._build_plans(trade.scale_plans)
 
@@ -187,6 +191,41 @@ class TradeService:
             }
         )
         return payload
+
+    @staticmethod
+    def _enrich_trade(
+        trade: Trade,
+        price_map: Dict[str, StockQuote],
+        profile_map: Dict[str, CompanyProfile],
+    ):
+        trade_data = TradeResponse.model_validate(trade).model_dump()
+
+        if trade.symbol:
+            if quote := price_map.get(trade.symbol):
+                trade_data.update(
+                    {
+                        "current_price": quote.current_price,
+                        "price_change": quote.change,
+                        "percent_change": quote.percent_change,
+                        "open_price": quote.open_price,
+                        "previous_close": quote.previous_close,
+                    }
+                )
+
+            if profile := profile_map.get(trade.symbol):
+                trade_data.update(
+                    {
+                        "country": profile.country,
+                        "currency": profile.currency,
+                        "exchange": profile.exchange,
+                        "name": profile.name,
+                        "industry": profile.finnhubIndustry,
+                        "logo": profile.logo,
+                        "cap": profile.marketCapitalization,
+                    }
+                )
+
+        return trade_data
 
     @staticmethod
     def _build_annotations(dto: TradeCreate):
